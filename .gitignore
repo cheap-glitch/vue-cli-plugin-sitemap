@@ -1,0 +1,5 @@
+/node_modules
+/test-app/
+
+/.nyc-output/
+/.eslintrc.json

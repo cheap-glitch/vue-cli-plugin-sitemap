@@ -1,0 +1,19 @@
+{
+  "name": "vue-cli-plugin-sitemap",
+  "version": "1.0.0",
+  "description": "A Vue CLI 3 plugin to generate sitemaps automatically.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "vue",
+    "vue-cli",
+    "vue-cli-3",
+    "vue-cli-plugin",
+    "sitemap",
+    "sitemap-xml"
+  ],
+  "author": "cheap-glitch <cheap.glitch@gmail.com> (https://github.com/cheap-glitch)",
+  "license": "ISC"
+}
