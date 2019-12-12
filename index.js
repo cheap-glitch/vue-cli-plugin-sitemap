@@ -20,4 +20,44 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+/**
+ * Helper functions to generate XML
+ */
+const fullTag    = (_tag, _innerVal, _attrs) => `${openingTag(_tag, _attrs)}${_innerVal}${closingTag(_tag)}`;
+const openingTag = (_tag, _attrs)            => `<${_tag}${this.attrStr(_attrs)}>`;
+const closingTag = _tag                      => `</${_tag}>`;
+const singleTag  = (_tag, _attrs)            => `<${_tag}${this.attrStr(_attrs)} />`;
+const attrStr    = _attrs                    => Object.keys(_attrs).reduce((__str, __attr) => _attrs[__attr] !== null
+                                                                                            ? __str + `${__attr}="${_attrs[__attr]}"`
+                                                                                            : __str);
 
+/**
+ * Function to generate the XML sitemap from an array of routes
+ */
+function generateSitemap(_routes)
+{
+}
+
+/**
+ * Webpack plugin
+ */
+// @TODO
+
+/**
+ * Service plugin
+ */
+module.exports = function(_api, _options)
+{
+	_api.registerCommand(
+		'sitemap',
+		{
+			usage:        'vue-cli-service sitemap',
+			description:  'Generate a sitemap file',
+			options: {
+				'--pretty': 'Add line breaks and tabs to make the sitemap human-readable',
+			}
+		},
+		() => {
+		}
+	);
+}

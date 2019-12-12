@@ -1,0 +1,22 @@
+{
+	"extends": "eslint:recommended",
+
+	"env": {
+		"es6":  true,
+		"node": true
+	},
+
+	"parserOptions": {
+		"sourceType": "module",
+		"ecmaVersion": 2018
+	},
+
+	"plugins": [
+		"smarter-tabs"
+	],
+
+	"rules": {
+		"no-mixed-spaces-and-tabs":   ["warn", "smart-tabs"],
+		"smarter-tabs/smarter-tabs":  "warn"
+	}
+}

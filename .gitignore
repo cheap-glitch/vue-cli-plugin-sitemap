@@ -1,5 +1,8 @@
-/node_modules
-/test-app/
 
-/.nyc-output/
-/.eslintrc.json
+#
+# .gitignore
+#
+
+/.nyc_output/
+/node_modules/
+/test/test-app/
