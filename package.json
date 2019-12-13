@@ -1,9 +1,17 @@
 {
   "name": "vue-cli-plugin-sitemap",
+  "description": "A Vue CLI 3 plugin to generate sitemaps automatically.",
   "version": "1.0.0",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheap-glitch/vue-cli-plugin-sitemap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cheap-glitch/vue-cli-plugin-sitemap/issues"
+  },
   "author": "cheap-glitch <cheap.glitch@gmail.com> (https://github.com/cheap-glitch)",
-  "description": "A Vue CLI 3 plugin to generate sitemaps automatically.",
+  "homepage": "https://github.com/cheap-glitch/vue-cli-plugin-sitemap#readme",
   "keywords": [
     "vue",
     "vue-cli",
@@ -14,7 +22,11 @@
     "sitemap-generator"
   ],
   "main": "index.js",
+  "scripts": {
+    "test": "mocha test/*.test.js",
+    "lint": "eslint *.js test/*.js"
+  },
   "devDependencies": {
-    "eslint-plugin-smarter-tabs": "^1.0.0"
+    "eslint-plugin-smarter-tabs": "^1.1.0"
   }
 }
