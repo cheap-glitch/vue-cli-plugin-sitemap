@@ -20,67 +20,19 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-const AJV = require('ajv');
+const xml       = require('./src/xml');
+const validator = require('./src/validation');
 
-/**
- * Create a validator for the routes
- */
-const validator = new AJV();
-const validate  = validator.compile({
-	type: 'array',
-	items: {
-		type: 'object',
-
-		properties: {
-			loc: {
-				type:   'string',
-				format: 'uri',
-			},
-			lastmod: {
-				type:   'string',
-
-				/**
-				 * @TODO:
-				 * Check that the date follows the W3C format:
-				 *
-				 * YYYY-MM-DDThh:mm:ss.sTZD
-				 *
-				 * where:
-				 *    YYYY = four-digit year
-				 *    MM   = two-digit month (01=January, etc.)
-				 *    DD   = two-digit day of month (01 through 31)
-				 *    hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
-				 *    mm   = two digits of minute (00 through 59)
-				 *    ss   = two digits of second (00 through 59)
-				 *    s    = one or more digits representing a decimal fraction of a second
-				 *    TZD  = time zone designator (Z or +hh:mm or -hh:mm)
-				 */
-				pattern: '',
-			},
-			changefreq: {
-				type:   'string',
-				enum:   ['always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never'],
-			},
-		},
-		additionalProperties: true,
-	},
-});
-
-/**
- * Helper functions to generate XML
- */
-const fullTag    = (_tag, _innerText, _attrs) => `${openingTag(_tag, _attrs)}${_innerText}${closingTag(_tag)}`;
-const openingTag = (_tag, _attrs)             => `<${_tag}${this.attrStr(_attrs)}>`;
-const closingTag = _tag                       => `</${_tag}>`;
-const singleTag  = (_tag, _attrs)             => `<${_tag}${this.attrStr(_attrs)} />`;
-const attrStr    = _attrs                     => Object.keys(_attrs).reduce((_s, _a) => _attrs[_a] !== null ? _s + `${_a}="${_attrs[_a]}"` : _s);
-
-/**
- * Function to generate the XML sitemap from an array of routes
- */
 function generateSitemap(_routes)
 {
+	return `<?xml version="1.0" encoding="UTF-8"?>
+		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+		${
+			_routes.map(_route => {
 
+			});
+		}
+		</urlset>`;
 }
 
 /**

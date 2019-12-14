@@ -22,6 +22,9 @@
     "sitemap-generator"
   ],
   "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
     "test": "mocha test/*.test.js",
     "lint": "eslint *.js test/*.js"
