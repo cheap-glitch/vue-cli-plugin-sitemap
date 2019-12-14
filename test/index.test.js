@@ -1,5 +1,0 @@
-
-/**
- * test/index.test.js
- */
-

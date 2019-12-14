@@ -20,20 +20,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-const xml       = require('./src/xml');
 const validator = require('./src/validation');
-
-function generateSitemap(_routes)
-{
-	return `<?xml version="1.0" encoding="UTF-8"?>
-		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-		${
-			_routes.map(_route => {
-
-			});
-		}
-		</urlset>`;
-}
 
 /**
  * Webpack plugin
