@@ -20,28 +20,63 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-const validator = require('./src/validation');
-
-/**
- * Webpack plugin
- */
-// @TODO
+const fs                 = require('fs');
+const generateSitemapXML = require('./src/sitemap');
 
 /**
  * Service plugin
  */
 module.exports = function(_api, _options)
 {
+	/**
+	 * Add a new command to generate the sitemap
+	 */
 	_api.registerCommand(
 		'sitemap',
 		{
-			usage:        'vue-cli-service sitemap',
-			description:  'Generate a sitemap file',
-			options: {
-				'--pretty': 'Add line breaks and tabs to make the sitemap human-readable',
-			}
+			usage:        'vue-cli-service sitemap [options]',
+			options:      { '--pretty': 'Prettify the XML to make the sitemap more human-readable' },
+			description:  'Generate the sitemap',
 		},
-		() => {
+		function(__args)
+		{
+			if (__args.pretty)
+			{
+				// @TODO
+			}
+
+			writeSitemap(_options);
 		}
 	);
+
+	/**
+	 * Modify the 'build' command to generate the sitemap automatically
+	 */
+	const { build } = _api.service.commands;
+	const buildFn   = build.fn;
+	build.fn = async function(...__args)
+	{
+		await buildFn(...__args);
+		writeSitemap(_options);
+	};
+}
+
+/**
+ * Generate and save a sitemap in a file inside the build directory
+ */
+function writeSitemap(_options)
+{
+	const buildDir = ('outputDir' in _options === true) ? _options.outputDir : 'dist';
+
+	// @TODO : check the mode and do nothing if only in dev mode
+
+	try {
+		fs.writeFileSync(
+			`${buildDir}/sitemap.xml`,
+			generateSitemapXML([]),
+		);
+	}
+	catch (error) {
+		console.log(error);
+	}
 }

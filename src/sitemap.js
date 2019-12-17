@@ -32,15 +32,14 @@ function generateUrlsFromRoutes(_routes, _options)
 
 function generateUrlXML(_urls)
 {
-	return `<loc>${_url.loc}</loc>
-		${
-			// Generate a tag for each optional parameter
-			['lastmod', 'changefreq', 'priority'].map(
-				_param => (_param in _url === true)
-					? `<${_param}>${_url[_param]}</${_param}>`
-					: ''
-			).join();
-		}`;
+	// Generate a tag for each optional parameter
+	const tags = ['lastmod', 'changefreq', 'priority'].map(
+		_param => (_param in _url === true)
+			? `<${_param}>${_url[_param]}</${_param}>`
+			: ''
+	);
+
+	return `<loc>${_url.loc}</loc>${tags.join()}`;
 }
 
 function generateSitemapXML(_routes, _options)

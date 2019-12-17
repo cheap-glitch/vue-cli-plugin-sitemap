@@ -26,10 +26,12 @@
     "test": "test"
   },
   "scripts": {
+    "lint": "eslint *.js test/*.js",
     "test": "mocha test/*.test.js",
-    "lint": "eslint *.js test/*.js"
+    "cover": "nyc npm test"
   },
   "devDependencies": {
-    "eslint-plugin-smarter-tabs": "^1.1.0"
+    "eslint-plugin-smarter-tabs": "^1.1.0",
+    "nyc": "^14.1.1"
   }
 }

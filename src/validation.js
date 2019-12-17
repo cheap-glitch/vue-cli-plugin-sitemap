@@ -35,10 +35,10 @@ const mm   = '[0-5]\\d';
 const ss   = '[0-5]\\d';
 const s    = '\\d+';
 const TZD  = `(?:Z|[+-]${hh}:${mm})`;
-const W3CdatePattern = `^${YYYY}(?:-${MM}(?:-${DD}(?:T${hh}:${mm}(?::${ss}(?:\\.${s})?)?${TZD})?)?$`;
+const W3CDatePattern = `^${YYYY}(?:-${MM}(?:-${DD}(?:T${hh}:${mm}(?::${ss}(?:\\.${s})?)?${TZD})?)?$`;
 
 /**
- * Create a validator for the routes
+ * Create a validator for the array of routes
  */
 module.exports = validator.compile({
 	type: 'array',
@@ -46,25 +46,32 @@ module.exports = validator.compile({
 		type: 'object',
 
 		properties: {
-			loc: {
-				type:    'string',
-				format:  'uri',
-			},
-			lastmod: {
-				type:     'string',
-				pattern:  W3CdatePattern;
-			},
-			changefreq: {
-				type:  'string',
-				enum:  ['always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never'],
-			},
-			priority: {
-				type:        'number',
-				multipleOf:  0.1,
-				minimum:     0.0,
-				maximum:     1.0,
-			},
+			sitemap: {
+				type: 'object',
+
+				properties: {
+					loc: {
+						type:        'string',
+						format:      'uri',
+					},
+					lastmod: {
+						type:        'string',
+						pattern:     W3CDatePattern;
+					},
+					changefreq: {
+						type:        'string',
+						enum:        ['always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never'],
+					},
+					priority: {
+						type:        'number',
+						multipleOf:  0.1,
+						minimum:     0.0,
+						maximum:     1.0,
+					},
+				},
+				additionalProperties: false
+			}
 		},
-		additionalProperties: true,
+		additionalProperties: true
 	},
 });
