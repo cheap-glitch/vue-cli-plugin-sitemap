@@ -4,7 +4,7 @@
  */
 
 const AJV       = require('ajv');
-const validator = new AJV();
+const validator = new AJV({ useDefaults: true });
 
 /**
  * Regex to check that the date follows the W3C format
@@ -38,40 +38,93 @@ const TZD  = `(?:Z|[+-]${hh}:${mm})`;
 const W3CDatePattern = `^${YYYY}(?:-${MM}(?:-${DD}(?:T${hh}:${mm}(?::${ss}(?:\\.${s})?)?${TZD})?)?$`;
 
 /**
- * Create a validator for the array of routes
+ * Schemas for the URL parameters
  */
-module.exports = validator.compile({
-	type: 'array',
-	items: {
-		type: 'object',
+const URLParamsSchemas = {
+	lastmod: {
+		type:        'string',
+		pattern:     W3CDatePattern;
+	},
+	changefreq: {
+		type:        'string',
+		enum:        ['always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never'],
+	},
+	priority: {
+		type:        'number',
 
-		properties: {
-			sitemap: {
+		multipleOf:  0.1,
+		minimum:     0.0,
+		maximum:     1.0,
+	},
+}
+
+module.exports = validator.compile({
+	type: 'object',
+
+	properties: {
+		productionOnly: {
+			type: 'boolean',
+			default: false,
+		},
+		baseUrl: {
+			type: 'string',
+			format: 'uri',
+		},
+		defaults: {
+			type: 'object',
+			properties: URLParamsSchemas,
+			additionalProperties: false,
+		},
+
+		/**
+		 * Routes
+		 * -------------------------------------------------------------
+		 */
+		routes: {
+			type: 'array',
+
+			items: {
+				type: 'object',
+
+				properties: {
+					sitemap: {
+						type: 'object',
+
+						properties: {
+							slugs: {
+								type: 'array',
+								items: { type: ['number', 'string'] }
+							},
+							...URLParamsSchemas
+						},
+						additionalProperties: false
+					}
+				},
+				additionalProperties: true
+			}
+		},
+
+		/**
+		 * URLs
+		 * -------------------------------------------------------------
+		 */
+		urls: {
+			type: 'array',
+
+			items: {
 				type: 'object',
 
 				properties: {
 					loc: {
-						type:        'string',
-						format:      'uri',
+						type: 'string',
+						format: 'uri',
 					},
-					lastmod: {
-						type:        'string',
-						pattern:     W3CDatePattern;
-					},
-					changefreq: {
-						type:        'string',
-						enum:        ['always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never'],
-					},
-					priority: {
-						type:        'number',
-						multipleOf:  0.1,
-						minimum:     0.0,
-						maximum:     1.0,
-					},
+					...URLParamsSchemas
 				},
-				additionalProperties: false
+				required: ['loc'],
+				additionalProperties: false,
 			}
 		},
-		additionalProperties: true
 	},
-});
+	additionalProperties: false,
+)};

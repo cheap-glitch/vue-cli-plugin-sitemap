@@ -3,7 +3,30 @@
  * src/sitemap.js
  */
 
-function generateUrlsFromRoutes(_routes, _options)
+function generateSitemapXML(_options)
+{
+	const urls = _options.urls || generateUrlsFromRoutes(_options.routes, _options.baseUrl);
+
+	return `<?xml version="1.0" encoding="UTF-8"?>
+		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+			${urls.map(_url => generateUrlXML(_url)).join()}
+		</urlset>`
+		.replace(/\n|\s+/g, '');
+}
+
+function generateUrlXML(_url)
+{
+	// Generate a tag for each optional parameter
+	const tags = ['lastmod', 'changefreq', 'priority'].map(
+		__param => (__param in _url === true)
+			? `<${__param}>${_url[__param]}</${__param}>`
+			: ''
+	);
+
+	return `<loc>${_url.loc}</loc>${tags.join()}`;
+}
+
+function generateUrlsFromRoutes(_routes, _baseUrl)
 {
 	return _routes.reduce(function(_urls, _route)
 	{
@@ -16,7 +39,7 @@ function generateUrlsFromRoutes(_routes, _options)
 			if (_route.path == '*') return _urls;
 
 			// For static routes, simply prepend the base URL to the path
-			if (!_route.path.includes(':')) return [..._urls, { loc: `${_options.baseUrl}${_route.path}`, ...url }];
+			if (!_route.path.includes(':')) return [..._urls, { loc: `${_baseUrl}${_route.path}`, ...url }];
 
 			// Ignore dynamic routes if no slugs are provided
 			if (!url.slugs) return _urls;
@@ -25,30 +48,9 @@ function generateUrlsFromRoutes(_routes, _options)
 			const param = _route.path.match(/:\w+/)[0];
 
 			// Build an array of URLs
-			return [..._urls, ...url.slugs.map(_slug => ({ loc: `${_options.baseUrl}${_route.path.replace(param, _slug)}`, ...url }))];
+			return [..._urls, ...url.slugs.map(__slug => ({ loc: `${_baseUrl}${_route.path.replace(param, __slug)}`, ...url }))];
 		}
 	}, []);
-}
-
-function generateUrlXML(_urls)
-{
-	// Generate a tag for each optional parameter
-	const tags = ['lastmod', 'changefreq', 'priority'].map(
-		_param => (_param in _url === true)
-			? `<${_param}>${_url[_param]}</${_param}>`
-			: ''
-	);
-
-	return `<loc>${_url.loc}</loc>${tags.join()}`;
-}
-
-function generateSitemapXML(_routes, _options)
-{
-	return `<?xml version="1.0" encoding="UTF-8"?>
-		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-			${generateUrlsFromRoutes(_routes, _options).map(__url => generateUrlXML(__url)).join()}
-		</urlset>`
-		.replace(/\n|\s+/g, '');
 }
 
 module.exports = generateSitemapXML;

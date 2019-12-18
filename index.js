@@ -45,7 +45,7 @@ module.exports = function(_api, _options)
 				// @TODO
 			}
 
-			writeSitemap(_options);
+			writeSitemap(_options, '.');
 		}
 	);
 
@@ -57,23 +57,23 @@ module.exports = function(_api, _options)
 	build.fn = async function(...__args)
 	{
 		await buildFn(...__args);
-		writeSitemap(_options);
+		writeSitemap(_options, ('outputDir' in _options === true) ? _options.outputDir : 'dist');
 	};
 }
 
 /**
  * Generate and save a sitemap in a file inside the build directory
  */
-function writeSitemap(_options)
+function writeSitemap(_options, _outputDir)
 {
-	const buildDir = ('outputDir' in _options === true) ? _options.outputDir : 'dist';
+	// @TODO: config validation
 
-	// @TODO : check the mode and do nothing if only in dev mode
+	// @TODO : check 'productionOnly' + current mode
 
 	try {
 		fs.writeFileSync(
-			`${buildDir}/sitemap.xml`,
-			generateSitemapXML([]),
+			`${_outputDir}/sitemap.xml`,
+			generateSitemapXML(_options.pluginOptions.sitemap || {}),
 		);
 	}
 	catch (error) {
