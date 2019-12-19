@@ -1,6 +1,6 @@
 
 /**
- * test/validation.test.js
+ * tests/validation.test.js
  */
 
 // const { expect }                       = require('chai');

@@ -21,6 +21,7 @@
  */
 
 const fs                 = require('fs');
+const validateOptions    = require('./src/validation');
 const generateSitemapXML = require('./src/sitemap');
 
 /**
@@ -45,7 +46,7 @@ module.exports = function(_api, _options)
 				// @TODO
 			}
 
-			writeSitemap(_options, '.');
+			writeSitemap(_options.pluginOptions.sitemap, '.');
 		}
 	);
 
@@ -57,7 +58,7 @@ module.exports = function(_api, _options)
 	build.fn = async function(...__args)
 	{
 		await buildFn(...__args);
-		writeSitemap(_options, ('outputDir' in _options === true) ? _options.outputDir : 'dist');
+		writeSitemap(_options.pluginOptions.sitemap, ('outputDir' in _options === true) ? _options.outputDir : 'dist');
 	};
 }
 
@@ -66,14 +67,19 @@ module.exports = function(_api, _options)
  */
 function writeSitemap(_options, _outputDir)
 {
-	// @TODO: config validation
+	const error = validateOptions(_options);
+	if (error !== null)
+	{
+		console.error(`[vue-cli-plugin-sitemap]: ${error.replace(/^data/, 'options')}`);
+		return;
+	}
 
 	// @TODO : check 'productionOnly' + current mode
 
 	try {
 		fs.writeFileSync(
 			`${_outputDir}/sitemap.xml`,
-			generateSitemapXML(_options.pluginOptions.sitemap || {}),
+			generateSitemapXML(_options),
 		);
 	}
 	catch (error) {

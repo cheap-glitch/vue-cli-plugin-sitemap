@@ -3,8 +3,7 @@
  * src/validation.js
  */
 
-const AJV       = require('ajv');
-const validator = new AJV({ useDefaults: true });
+const AJV = require('ajv');
 
 /**
  * Regex to check that the date follows the W3C format
@@ -27,15 +26,15 @@ const validator = new AJV({ useDefaults: true });
  *    s    = one or more digits representing a decimal fraction of a second
  *    TZD  = time zone designator (Z or +hh:mm or -hh:mm)
  */
-const YYYY = '^[12]\\d{3}';
+const YYYY = '[12]\\d{3}';
 const MM   = '(?:0[1-9]|1[0-2])';
-const DD   = '(?:0[1-9]|2\\d|3[01])';
+const DD   = '(?:0[1-9]|[12]\\d|3[01])';
 const hh   = '(?:[01]\\d|2[0-3])';
 const mm   = '[0-5]\\d';
 const ss   = '[0-5]\\d';
 const s    = '\\d+';
 const TZD  = `(?:Z|[+-]${hh}:${mm})`;
-const W3CDatePattern = `^${YYYY}(?:-${MM}(?:-${DD}(?:T${hh}:${mm}(?::${ss}(?:\\.${s})?)?${TZD})?)?$`;
+const W3CDatePattern = `^${YYYY}(?:-${MM}(?:-${DD}(?:T${hh}:${mm}(?::${ss}(?:\\.${s})?)?${TZD})?)?)?$`;
 
 /**
  * Schemas for the URL parameters
@@ -43,7 +42,7 @@ const W3CDatePattern = `^${YYYY}(?:-${MM}(?:-${DD}(?:T${hh}:${mm}(?::${ss}(?:\\.
 const URLParamsSchemas = {
 	lastmod: {
 		type:        'string',
-		pattern:     W3CDatePattern;
+		pattern:     W3CDatePattern,
 	},
 	changefreq: {
 		type:        'string',
@@ -58,73 +57,86 @@ const URLParamsSchemas = {
 	},
 }
 
-module.exports = validator.compile({
-	type: 'object',
+module.exports = function validateOptions(_options)
+{
+	const validator = new AJV({ useDefaults: true });
 
-	properties: {
-		productionOnly: {
-			type: 'boolean',
-			default: false,
-		},
-		baseUrl: {
-			type: 'string',
-			format: 'uri',
-		},
-		defaults: {
-			type: 'object',
-			properties: URLParamsSchemas,
-			additionalProperties: false,
-		},
+	const schema = {
+		type: 'object',
 
-		/**
-		 * Routes
-		 * -------------------------------------------------------------
-		 */
-		routes: {
-			type: 'array',
+		// Require either the 'urls' or 'routes' property, but not both
+		oneOf: [
+			{ required: ['urls']   },
+			{ required: ['routes'] },
+		],
 
-			items: {
+		properties: {
+			productionOnly: {
+				type: 'boolean',
+				default: false,
+			},
+			baseUrl: {
+				type: 'string',
+				format: 'uri',
+			},
+			defaults: {
 				type: 'object',
-
-				properties: {
-					sitemap: {
-						type: 'object',
-
-						properties: {
-							slugs: {
-								type: 'array',
-								items: { type: ['number', 'string'] }
-							},
-							...URLParamsSchemas
-						},
-						additionalProperties: false
-					}
-				},
-				additionalProperties: true
-			}
-		},
-
-		/**
-		 * URLs
-		 * -------------------------------------------------------------
-		 */
-		urls: {
-			type: 'array',
-
-			items: {
-				type: 'object',
-
-				properties: {
-					loc: {
-						type: 'string',
-						format: 'uri',
-					},
-					...URLParamsSchemas
-				},
-				required: ['loc'],
+				properties: URLParamsSchemas,
 				additionalProperties: false,
-			}
+			},
+
+			/**
+			 * Routes
+			 * -------------------------------------------------------------
+			 */
+			routes: {
+				type: 'array',
+
+				items: {
+					type: 'object',
+
+					properties: {
+						sitemap: {
+							type: 'object',
+
+							properties: {
+								slugs: {
+									type: 'array',
+									items: { type: ['number', 'string'] }
+								},
+								...URLParamsSchemas
+							},
+							additionalProperties: false
+						}
+					},
+					additionalProperties: true
+				}
+			},
+
+			/**
+			 * URLs
+			 * -------------------------------------------------------------
+			 */
+			urls: {
+				type: 'array',
+
+				items: {
+					type: 'object',
+
+					properties: {
+						loc: {
+							type: 'string',
+							format: 'uri',
+						},
+						...URLParamsSchemas
+					},
+					required: ['loc'],
+					additionalProperties: false,
+				}
+			},
 		},
-	},
-	additionalProperties: false,
-)};
+		additionalProperties: false,
+	}
+
+	return !validator.validate(schema, _options) ? validator.errorsText() : null;
+}

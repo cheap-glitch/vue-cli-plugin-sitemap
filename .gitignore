@@ -6,4 +6,4 @@
 # Folders
 /.nyc_output/
 /node_modules/
-/test/test-app/
+/tests/test-app/

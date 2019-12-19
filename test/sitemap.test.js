@@ -1,5 +1,0 @@
-
-/**
- * src/sitemap.test.js
- */
-
