@@ -3,4 +3,5 @@
  * vue-cli-plugin-sitemap/generator.js
  */
 
-module.exports = () => {};
+// Add a "sitemap" script to package.json
+module.exports = _api => _api.extendPackage({ scripts: { sitemap: "vue-cli-service sitemap" } });
