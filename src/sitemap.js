@@ -5,28 +5,28 @@
 
 function generateSitemapXML(_options)
 {
-	const urls = _options.urls || generateUrlsFromRoutes(_options.routes, _options.baseUrl);
+	const urls = _options.urls || generateUrlsFromRoutes(_options.routes);
 
 	return `<?xml version="1.0" encoding="UTF-8"?>
 		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-			${urls.map(_url => generateUrlXML(_url)).join()}
+			${urls.map(__url => generateUrlXML(__url, _options)).join()}
 		</urlset>`
 		.replace(/\n|\s+/g, '');
 }
 
-function generateUrlXML(_url)
+function generateUrlXML(_url, _options)
 {
 	// Generate a tag for each optional parameter
 	const tags = ['lastmod', 'changefreq', 'priority'].map(
-		__param => (__param in _url === true)
-			? `<${__param}>${_url[__param]}</${__param}>`
+		__param => (__param in _url === true || __param in _options.defaults === true)
+			? `<${__param}>${(__param in _url === true) ? _url[__param] : _options.defaults[__param]}</${__param}>`
 			: ''
 	);
 
-	return `<loc>${_url.loc}</loc>${tags.join()}`;
+	return `<loc>${_options.baseUrl}${_url.loc}</loc>${tags.join()}`;
 }
 
-function generateUrlsFromRoutes(_routes, _baseUrl)
+function generateUrlsFromRoutes(_routes)
 {
 	return _routes.reduce(function(_urls, _route)
 	{
@@ -39,7 +39,7 @@ function generateUrlsFromRoutes(_routes, _baseUrl)
 			if (_route.path == '*') return _urls;
 
 			// For static routes, simply prepend the base URL to the path
-			if (!_route.path.includes(':')) return [..._urls, { loc: `${_baseUrl}${_route.path}`, ...url }];
+			if (!_route.path.includes(':')) return [..._urls, { loc: _route.path, ...url }];
 
 			// Ignore dynamic routes if no slugs are provided
 			if (!url.slugs) return _urls;
@@ -48,7 +48,7 @@ function generateUrlsFromRoutes(_routes, _baseUrl)
 			const param = _route.path.match(/:\w+/)[0];
 
 			// Build an array of URLs
-			return [..._urls, ...url.slugs.map(__slug => ({ loc: `${_baseUrl}${_route.path.replace(param, __slug)}`, ...url }))];
+			return [..._urls, ...url.slugs.map(__slug => ({ loc: _route.path.replace(param, __slug), ...url }))];
 		}
 	}, []);
 }

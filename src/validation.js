@@ -72,17 +72,19 @@ module.exports = function validateOptions(_options)
 
 		properties: {
 			productionOnly: {
-				type: 'boolean',
-				default: false,
+				type:                  'boolean',
+				default:               false,
 			},
 			baseUrl: {
-				type: 'string',
-				format: 'uri',
+				type:                  'string',
+				format:                'uri',
+				default:               '',
 			},
 			defaults: {
-				type: 'object',
-				properties: URLParamsSchemas,
-				additionalProperties: false,
+				type:                  'object',
+				properties:            URLParamsSchemas,
+				additionalProperties:  false,
+				default:               {},
 			},
 
 			/**
@@ -101,7 +103,7 @@ module.exports = function validateOptions(_options)
 
 							properties: {
 								slugs: {
-									type: 'array',
+									type:  'array',
 									items: { type: ['number', 'string'] }
 								},
 								...URLParamsSchemas
@@ -125,13 +127,13 @@ module.exports = function validateOptions(_options)
 
 					properties: {
 						loc: {
-							type: 'string',
+							type:   'string',
 							format: 'uri',
 						},
 						...URLParamsSchemas
 					},
-					required: ['loc'],
-					additionalProperties: false,
+					required:              ['loc'],
+					additionalProperties:  false,
 				}
 			},
 		},
