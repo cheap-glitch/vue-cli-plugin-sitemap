@@ -24,9 +24,6 @@ const fs                 = require('fs');
 const validateOptions    = require('./src/validation');
 const generateSitemapXML = require('./src/sitemap');
 
-/**
- * Service plugin
- */
 module.exports = function(_api, _options)
 {
 	/**
@@ -62,11 +59,9 @@ module.exports = function(_api, _options)
 	};
 }
 
-/**
- * Generate and save a sitemap in a file inside the build directory
- */
 function writeSitemap(_options, _outputDir)
 {
+	// Validate the config and set the default values
 	const error = validateOptions(_options);
 	if (error !== null)
 	{
@@ -74,8 +69,10 @@ function writeSitemap(_options, _outputDir)
 		return;
 	}
 
-	// @TODO : check 'productionOnly' + current mode
+	// Don't generate the sitemap if not in production and the option 'productionOnly' is set
+	if (_options.productionOnly && process.env.NODE_ENV !== 'production') return;
 
+	// Generate the sitemap and write it to the disk
 	try {
 		fs.writeFileSync(
 			`${_outputDir}/sitemap.xml`,
