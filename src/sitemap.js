@@ -16,6 +16,9 @@ function generateSitemapXML(_options)
 
 function generateUrlXML(_url, _options)
 {
+	// If a base URL is specified, make sure it ends with a slash
+	const baseUrl = _options.baseUrl ? `${_options.baseUrl.replace(/\/+$/, '')}/` : '';
+
 	// Generate a tag for each optional parameter
 	const tags = ['lastmod', 'changefreq', 'priority'].map(
 		__param => (__param in _url === true || __param in _options.defaults === true)
@@ -23,7 +26,7 @@ function generateUrlXML(_url, _options)
 			: ''
 	);
 
-	return `<loc>${_options.baseUrl}${_url.loc}</loc>${tags.join()}`;
+	return `<loc>${baseUrl}${_url.loc}</loc>${tags.join()}`;
 }
 
 function generateUrlsFromRoutes(_routes)

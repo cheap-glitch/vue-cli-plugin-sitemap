@@ -78,7 +78,7 @@ module.exports = function validateOptions(_options)
 			baseUrl: {
 				type:                  'string',
 				format:                'uri',
-				default:               '',
+				default:               null,
 			},
 			defaults: {
 				type:                  'object',
@@ -109,7 +109,8 @@ module.exports = function validateOptions(_options)
 								...URLParamsSchemas
 							},
 							additionalProperties: false
-						}
+						},
+						...URLParamsSchemas
 					},
 					additionalProperties: true
 				}
