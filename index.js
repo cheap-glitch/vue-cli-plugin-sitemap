@@ -43,7 +43,7 @@ module.exports = function(_api, _options)
 				// @TODO
 			}
 
-			writeSitemap(_options.pluginOptions.sitemap, '.');
+			writeSitemap(_options.pluginOptions.sitemap);
 		}
 	);
 
@@ -55,11 +55,15 @@ module.exports = function(_api, _options)
 	build.fn = async function(...__args)
 	{
 		await buildFn(...__args);
+
+		// Don't generate the sitemap if not in production and the option 'productionOnly' is set
+		if (_options.pluginOptions.sitemap.productionOnly && process.env.NODE_ENV !== 'production') return;
+
 		writeSitemap(_options.pluginOptions.sitemap, ('outputDir' in _options === true) ? _options.outputDir : 'dist');
 	};
 }
 
-function writeSitemap(_options, _outputDir)
+function writeSitemap(_options, _outputDir = '.')
 {
 	// Validate the config and set the default values
 	const error = validateOptions(_options);
@@ -68,9 +72,6 @@ function writeSitemap(_options, _outputDir)
 		console.error(`[vue-cli-plugin-sitemap]: ${error.replace(/^data/, 'options')}`);
 		return;
 	}
-
-	// Don't generate the sitemap if not in production and the option 'productionOnly' is set
-	if (_options.productionOnly && process.env.NODE_ENV !== 'production') return;
 
 	// Generate the sitemap and write it to the disk
 	try {
@@ -81,5 +82,8 @@ function writeSitemap(_options, _outputDir)
 	}
 	catch (error) {
 		console.log(error);
+		return;
 	}
+
+	console.log(`Generated and written sitemap at '${_outputDir}/sitemap.xml'`);
 }

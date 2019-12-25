@@ -9,7 +9,7 @@ function generateSitemapXML(_options)
 
 	return `<?xml version="1.0" encoding="UTF-8"?>
 		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-			${urls.map(__url => generateUrlXML(__url, _options)).join()}
+			${urls.map(__url => generateUrlXML(__url, _options)).join('')}
 		</urlset>`
 		.replace(/\n|\s+/g, '');
 }
@@ -26,7 +26,7 @@ function generateUrlXML(_url, _options)
 			: ''
 	);
 
-	return `<loc>${baseUrl}${_url.loc}</loc>${tags.join()}`;
+	return `<url><loc>${baseUrl}${_url.loc}</loc>${tags.join('')}</url>`;
 }
 
 function generateUrlsFromRoutes(_routes)
@@ -41,8 +41,11 @@ function generateUrlsFromRoutes(_routes)
 			// Ignore the "catch-all" 404 route
 			if (_route.path == '*') return _urls;
 
+			// Remove a potential slash at the beginning of the path
+			const path = _route.path.replace(/^\/+/, '');
+
 			// For static routes, simply prepend the base URL to the path
-			if (!_route.path.includes(':')) return [..._urls, { loc: _route.path, ...url }];
+			if (!_route.path.includes(':')) return [..._urls, { loc: path, ...url }];
 
 			// Ignore dynamic routes if no slugs are provided
 			if (!url.slugs) return _urls;
@@ -51,7 +54,7 @@ function generateUrlsFromRoutes(_routes)
 			const param = _route.path.match(/:\w+/)[0];
 
 			// Build an array of URLs
-			return [..._urls, ...url.slugs.map(__slug => ({ loc: _route.path.replace(param, __slug), ...url }))];
+			return [..._urls, ...url.slugs.map(__slug => ({ loc: path.replace(param, __slug), ...url }))];
 		}
 	}, []);
 }
