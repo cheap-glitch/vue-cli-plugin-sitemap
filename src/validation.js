@@ -75,6 +75,10 @@ module.exports = function validateOptions(_options)
 				type:                  'boolean',
 				default:               false,
 			},
+			pretty: {
+				type:                  'boolean',
+				default:               false,
+			},
 			baseUrl: {
 				type:                  'string',
 				format:                'uri',

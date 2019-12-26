@@ -38,12 +38,12 @@ module.exports = function(_api, _options)
 		},
 		function(__args)
 		{
-			if (__args.pretty)
-			{
-				// @TODO
-			}
+			const options = { ..._options.pluginOptions.sitemap };
 
-			writeSitemap(_options.pluginOptions.sitemap);
+			if (__args.pretty)
+				options.pretty = true;
+
+			writeSitemap(options);
 		}
 	);
 

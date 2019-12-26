@@ -7,11 +7,13 @@ function generateSitemapXML(_options)
 {
 	const urls = _options.urls || generateUrlsFromRoutes(_options.routes);
 
-	return `<?xml version="1.0" encoding="UTF-8"?>
-		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-			${urls.map(__url => generateUrlXML(__url, _options)).join('')}
-		</urlset>`
-		.replace(/\n|\s+/g, '');
+	const sitemap =
+	       '<?xml version="1.0" encoding="UTF-8"?>\n'
+	     + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+	     + `${urls.map(__url => generateUrlXML(__url, _options)).join('')}`
+	     + '</urlset>';
+
+	return _options.pretty ? sitemap : sitemap.replace(/\t|\n/g, '');
 }
 
 function generateUrlXML(_url, _options)
@@ -20,13 +22,11 @@ function generateUrlXML(_url, _options)
 	const baseUrl = _options.baseUrl ? `${_options.baseUrl.replace(/\/+$/, '')}/` : '';
 
 	// Generate a tag for each optional parameter
-	const tags = ['lastmod', 'changefreq', 'priority'].map(
-		__param => (__param in _url === true || __param in _options.defaults === true)
-			? `<${__param}>${(__param in _url === true) ? _url[__param] : _options.defaults[__param]}</${__param}>`
-			: ''
-	);
+	const tags = ['lastmod', 'changefreq', 'priority']
+		.filter(__param => __param in _url === true || __param in _options.defaults === true)
+		.map(   __param => `\t\t<${__param}>${(__param in _url === true) ? _url[__param] : _options.defaults[__param]}</${__param}>\n`);
 
-	return `<url><loc>${baseUrl}${_url.loc}</loc>${tags.join('')}</url>`;
+	return `\t<url>\n\t\t<loc>${baseUrl}${_url.loc}</loc>\n${tags.join('')}\t</url>\n`;
 }
 
 function generateUrlsFromRoutes(_routes)
