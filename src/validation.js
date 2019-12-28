@@ -41,8 +41,7 @@ const W3CDatePattern = `^${YYYY}(?:-${MM}(?:-${DD}(?:T${hh}:${mm}(?::${ss}(?:\\.
  */
 const URLParamsSchemas = {
 	lastmod: {
-		type:        'string',
-		pattern:     W3CDatePattern,
+		W3CDate:     true,
 	},
 	changefreq: {
 		type:        'string',
@@ -60,6 +59,43 @@ const URLParamsSchemas = {
 module.exports = function validateOptions(_options)
 {
 	const validator = new AJV({ useDefaults: true });
+
+	// Add a keyword to validate the dates
+	validator.addKeyword('W3CDate', {
+		validate(_data, _dataPath, _parentData, _parentDataPropName)
+		{
+			// If the provided data is a Date object
+			if (Object.prototype.toString.call(_data) === "[object Date]")
+			{
+				// Export the date in a W3C-approved format
+				_parentData[_parentDataPropName] = _data.toISOString();
+
+				return true;
+			}
+
+			// If the data is a string
+			if (typeof _data == 'string')
+			{
+				// Check that it matches the W3C date format
+				const W3CDateFormat = new RegExp(W3CDatePattern);
+				if (W3CDateFormat.test(_data))
+					return true;
+
+				// Else, try to create a Date object and to export it as a string
+				const date = new Date(_data);
+				if (isNaN(date.getTime()))
+					return false;
+
+				_parentData[_parentDataPropName] = date.toISOString();
+
+				return true;
+			}
+
+			return false;
+		},
+		schema:    false,
+		modifying: true,
+	});
 
 	const schema = {
 		type: 'object',
@@ -157,7 +193,7 @@ module.exports = function validateOptions(_options)
 			},
 		},
 		additionalProperties: false,
-	}
+	};
 
 	return !validator.validate(schema, _options) ? validator.errorsText() : null;
 }
