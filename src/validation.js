@@ -37,10 +37,11 @@ const TZD  = `(?:Z|[+-]${hh}:${mm})`;
 const W3CDatePattern = `^${YYYY}(?:-${MM}(?:-${DD}(?:T${hh}:${mm}(?::${ss}(?:\\.${s})?)?${TZD})?)?)?$`;
 
 /**
- * Schemas for the URL parameters
+ * Schema for the URL parameters
  */
 const URLParamsSchemas = {
 	lastmod: {
+		type:        ['object', 'string'],
 		W3CDate:     true,
 	},
 	changefreq: {
@@ -49,7 +50,6 @@ const URLParamsSchemas = {
 	},
 	priority: {
 		type:        'number',
-
 		multipleOf:  0.1,
 		minimum:     0.0,
 		maximum:     1.0,
@@ -57,7 +57,7 @@ const URLParamsSchemas = {
 }
 
 /**
- * Validation function for the 'W3CDate' keyword
+ * Custom validation function for the 'W3CDate' keyword
  */
 function validateW3CDate(_data, _dataPath, _parentData, _parentDataPropName)
 {
@@ -113,9 +113,19 @@ module.exports = function validateOptions(_options)
 {
 	const validator = new AJV({ useDefaults: true });
 
+	/**
+	 * Set the validation schema of the URL location according to the 'baseURL' option:
+	 *  - if set, require the locations to be simple strings and NOT resembling URIs
+	 *  - if unset, require the locations to be full URIs
+	 */
+	const URLLocationSchema = (_options && typeof options == 'object' && 'baseURL' in _options === true)
+	                        ? { format: 'uri' }
+	                        : { not: { anyOf: [{ pattern: '^https?:\\/\\/' }, { pattern: '\\.' }] } }
+
 	// Add a keyword to validate the dates
 	validator.addKeyword('W3CDate', {
 		validate:  validateW3CDate,
+		type:      ['object', 'string'],
 		schema:    false,
 		modifying: true,
 	});
@@ -139,7 +149,7 @@ module.exports = function validateOptions(_options)
 				type:     'boolean',
 				default:  false,
 			},
-			baseUrl: {
+			baseURL: {
 				type:     'string',
 				format:   'uri',
 				default:  null,
@@ -193,7 +203,8 @@ module.exports = function validateOptions(_options)
 						},
 						...URLParamsSchemas
 					},
-					additionalProperties: true
+					required:              ['path'],
+					additionalProperties:  true
 				}
 			},
 
@@ -209,8 +220,8 @@ module.exports = function validateOptions(_options)
 
 					properties: {
 						loc: {
-							type:   'string',
-							format: 'uri',
+							type: 'string',
+							...URLLocationSchema
 						},
 						...URLParamsSchemas
 					},

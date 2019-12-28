@@ -10,7 +10,7 @@ function generateSitemapXML(_options)
 	const sitemap =
 	       '<?xml version="1.0" encoding="UTF-8"?>\n'
 	     + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-	     + `${urls.map(__url => generateURLTag(__url, _options)).join('')}`
+	     +     `${urls.map(__url => generateURLTag(__url, _options)).join('')}`
 	     + '</urlset>';
 
 	return _options.pretty ? sitemap : sitemap.replace(/\t|\n/g, '');
@@ -19,10 +19,10 @@ function generateSitemapXML(_options)
 function generateURLTag(_url, _options)
 {
 	// If a base URL is specified, make sure it ends with a slash
-	const baseUrl = _options.baseUrl ? `${_options.baseUrl.replace(/\/+$/, '')}/` : '';
+	const baseURL = _options.baseURL ? `${_options.baseURL.replace(/\/+$/, '')}/` : '';
 
 	// Create the URL location
-	let loc = escapeUrl(`${baseUrl}${_url.loc}`).replace(/\/$/, '') + (_options.trailingSlash ? '/' : '');
+	let loc = escapeUrl(`${baseURL}${_url.loc.replace(/^\//, '')}`).replace(/\/$/, '') + (_options.trailingSlash ? '/' : '');
 
 	// Generate a tag for each optional parameter
 	const tags = ['lastmod', 'changefreq', 'priority']
