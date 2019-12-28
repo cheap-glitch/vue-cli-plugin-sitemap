@@ -142,7 +142,7 @@ module.exports = function validateOptions(_options)
 		properties: {
 
 			/**
-			 * Meta options
+			 * Global options
 			 * -------------------------------------------------------------
 			 */
 			productionOnly: {
@@ -152,6 +152,7 @@ module.exports = function validateOptions(_options)
 			baseURL: {
 				type:     'string',
 				format:   'uri',
+				pattern:  '\\.[a-z]+$',
 				default:  null,
 			},
 			trailingSlash: {
@@ -162,11 +163,7 @@ module.exports = function validateOptions(_options)
 				type:     'boolean',
 				default:  false,
 			},
-
-			/**
-			 * Default URL parameters
-			 * -------------------------------------------------------------
-			 */
+			// Default URL parameters
 			defaults: {
 				type:                  'object',
 				properties:            URLParamsSchemas,
