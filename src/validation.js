@@ -71,19 +71,33 @@ module.exports = function validateOptions(_options)
 		],
 
 		properties: {
+
+			/**
+			 * Meta options
+			 * -------------------------------------------------------------
+			 */
 			productionOnly: {
-				type:                  'boolean',
-				default:               false,
-			},
-			pretty: {
-				type:                  'boolean',
-				default:               false,
+				type:     'boolean',
+				default:  false,
 			},
 			baseUrl: {
-				type:                  'string',
-				format:                'uri',
-				default:               null,
+				type:     'string',
+				format:   'uri',
+				default:  null,
 			},
+			trailingSlash: {
+				type:     'boolean',
+				default:  false,
+			},
+			pretty: {
+				type:     'boolean',
+				default:  false,
+			},
+
+			/**
+			 * Default URL parameters
+			 * -------------------------------------------------------------
+			 */
 			defaults: {
 				type:                  'object',
 				properties:            URLParamsSchemas,

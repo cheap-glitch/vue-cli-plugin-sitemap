@@ -21,12 +21,15 @@ function generateURLTag(_url, _options)
 	// If a base URL is specified, make sure it ends with a slash
 	const baseUrl = _options.baseUrl ? `${_options.baseUrl.replace(/\/+$/, '')}/` : '';
 
+	// Create the URL location
+	let loc = escapeUrl(`${baseUrl}${_url.loc}`).replace(/\/$/, '') + (_options.trailingSlash ? '/' : '');
+
 	// Generate a tag for each optional parameter
 	const tags = ['lastmod', 'changefreq', 'priority']
 		.filter(__param => __param in _url === true || __param in _options.defaults === true)
 		.map(   __param => `\t\t<${__param}>${(__param in _url === true) ? _url[__param] : _options.defaults[__param]}</${__param}>\n`);
 
-	return `\t<url>\n\t\t<loc>${escapeUrl(`${baseUrl}${_url.loc}`)}</loc>\n${tags.join('')}\t</url>\n`;
+	return `\t<url>\n\t\t<loc>${loc}</loc>\n${tags.join('')}\t</url>\n`;
 }
 
 function escapeUrl(_url)
