@@ -2,10 +2,10 @@
 
 **vue-cli-plugin-sitemap** generates sitemaps  for your webapps. You  can use it
 on its own or integrate it in the definition of your routes. Features:
- * generate from an array of routes
- * support for dynamic routes
- * optionally prettified output
- * split sitemaps (TODO)
+ * can generate sitemaps from an array of routes
+ * supports dynamic routes
+ * auto-escapes the URLs
+ * optionally prettifies the output
 
 #### What are sitemaps?
 
@@ -27,6 +27,9 @@ From [sitemaps.org](https://www.sitemaps.org):
 ```
 vue add sitemap
 ```
+
+The plugin will  add a script called `sitemap` to  your `package.json`. No other
+files will be modified.
 
 ## Usage
 

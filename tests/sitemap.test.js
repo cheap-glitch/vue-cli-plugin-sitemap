@@ -12,7 +12,7 @@ describe('vue-cli-plugin-sitemap sitemap generation', () => {
 
 	it("generates a simple sitemap from URLs", () => {
 		expect(generateSitemapXML({
-			urls: [{ loc:  }]
+			urls: [{ loc: '' }]
 		})).to.equal(wrapSitemapXML(
 			`<url><loc></loc>`
 		));
