@@ -3,7 +3,6 @@
 # .gitignore
 #
 
-# Folders
 /.nyc_output/
 /node_modules/
-/tests/test-app/
+/test-app/

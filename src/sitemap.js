@@ -46,7 +46,7 @@ function generateURLsFromRoutes(_routes)
 {
 	return _routes.reduce(function(_urls, _route)
 	{
-		const url = { ..._route.sitemap };
+		const url = { ..._route, ..._route.sitemap };
 
 		// Get location from route path if needed
 		if ('loc' in url === false)

@@ -56,43 +56,66 @@ const URLParamsSchemas = {
 	},
 }
 
+/**
+ * Validation function for the 'W3CDate' keyword
+ */
+function validateW3CDate(_data, _dataPath, _parentData, _parentDataPropName)
+{
+	const errorBase = {
+		keyword: 'W3CDate',
+		params:  {},
+	};
+
+	// If the provided data is a Date object
+	if (Object.prototype.toString.call(_data) === "[object Date]")
+	{
+		// Check the Date object is valid
+		if (isNaN(_data.getTime()))
+		{
+			validateW3CDate.errors = [{
+				...errorBase,
+				message: 'the provided Date object is invalid'
+			}];
+
+			return false;
+		}
+
+		// Export the date in a W3C-approved format
+		_parentData[_parentDataPropName] = _data.toISOString();
+
+		return true;
+	}
+
+	// If the data is a string
+	if (typeof _data == 'string')
+	{
+		// Check that it matches the W3C date format
+		const W3CDateFormat = new RegExp(W3CDatePattern);
+		if (W3CDateFormat.test(_data))
+			return true;
+
+		// Else, create a Date object with the data and validate it
+		return validateW3CDate(new Date(_data), _dataPath, _parentData, _parentDataPropName);
+	}
+
+	validateW3CDate.errors = [{
+		...errorBase,
+		message: 'date must either be a valid Date object or a string following the W3C date format'
+	}];
+
+	return false;
+}
+
+/**
+ * Main validation function
+ */
 module.exports = function validateOptions(_options)
 {
 	const validator = new AJV({ useDefaults: true });
 
 	// Add a keyword to validate the dates
 	validator.addKeyword('W3CDate', {
-		validate(_data, _dataPath, _parentData, _parentDataPropName)
-		{
-			// If the provided data is a Date object
-			if (Object.prototype.toString.call(_data) === "[object Date]")
-			{
-				// Export the date in a W3C-approved format
-				_parentData[_parentDataPropName] = _data.toISOString();
-
-				return true;
-			}
-
-			// If the data is a string
-			if (typeof _data == 'string')
-			{
-				// Check that it matches the W3C date format
-				const W3CDateFormat = new RegExp(W3CDatePattern);
-				if (W3CDateFormat.test(_data))
-					return true;
-
-				// Else, try to create a Date object and to export it as a string
-				const date = new Date(_data);
-				if (isNaN(date.getTime()))
-					return false;
-
-				_parentData[_parentDataPropName] = date.toISOString();
-
-				return true;
-			}
-
-			return false;
-		},
+		validate:  validateW3CDate,
 		schema:    false,
 		modifying: true,
 	});
@@ -163,6 +186,10 @@ module.exports = function validateOptions(_options)
 								...URLParamsSchemas
 							},
 							additionalProperties: false
+						},
+						slugs: {
+							type:  'array',
+							items: { type: ['number', 'string'] }
 						},
 						...URLParamsSchemas
 					},
