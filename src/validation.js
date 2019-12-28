@@ -151,9 +151,18 @@ module.exports = function validateOptions(_options)
 			},
 			baseURL: {
 				type:     'string',
-				format:   'uri',
-				pattern:  '\\.[a-z]+$',
-				default:  null,
+				default:  '',
+
+				anyOf: [
+					{
+						minLength:  0,
+						maxLength:  0,
+					},
+					{
+						format:     'uri',
+						pattern:    '\\.[a-z]+$',
+					}
+				]
 			},
 			trailingSlash: {
 				type:     'boolean',
