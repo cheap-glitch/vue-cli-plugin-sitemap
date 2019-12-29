@@ -3,6 +3,9 @@
 # .gitignore
 #
 
-/.nyc_output/
 /node_modules/
 /test-app/
+
+# Code coverage & reports
+/.codecov.yml
+/.nyc_output/
