@@ -55,8 +55,36 @@ describe('validation of the options returns an error when:', () => {
 			expect(validate({ defaults: { lastmod: new Date('2019-12-28') } })).to.be.null;
 			expect(validate({ defaults: { lastmod: new Date('2019-12-28T21:17:34') } })).to.be.null;
 		});
-		// @TODO : changefreq
-		// @TODO : priority
+		it("'lastmod' is an invalid date", () => {
+			expect(validate({ defaults: { lastmod: 'the first day of the universe' } })).not.to.be.null;
+			expect(validate({ defaults: { lastmod: 'last tuesday, when it was raining' } })).not.to.be.null;
+			expect(validate({ defaults: { lastmod: '1867/45/90' } })).not.to.be.null;
+
+			expect(validate({ defaults: { lastmod: '2019-12-28' } })).to.be.null;
+			expect(validate({ defaults: { lastmod: '2019-12-28T21:17:34' } })).to.be.null;
+		});
+		it("'changefreq' is not a valid value", () => {
+			expect(validate({ defaults: { changefreq: 25 } })).not.to.be.null;
+			expect(validate({ defaults: { changefreq: 'often' } })).not.to.be.null;
+			expect(validate({ defaults: { changefreq: 'sometimes' } })).not.to.be.null;
+			expect(validate({ defaults: { changefreq: 'every 12 seconds' } })).not.to.be.null;
+
+			expect(validate({ defaults: { changefreq: 'monthly' } })).to.be.null;
+			expect(validate({ defaults: { changefreq: 'never' } })).to.be.null;
+		});
+		it("'priority' is not a valid value", () => {
+			expect(validate({ defaults: { priority: 'high' } })).not.to.be.null;
+			expect(validate({ defaults: { priority: 100 } })).not.to.be.null;
+			expect(validate({ defaults: { priority: 100.0 } })).not.to.be.null;
+			expect(validate({ defaults: { priority: 1.1 } })).not.to.be.null;
+			expect(validate({ defaults: { priority: 0.88 } })).not.to.be.null;
+			expect(validate({ defaults: { priority: 0.0 } })).not.to.be.null;
+			expect(validate({ defaults: { priority: -1.0 } })).not.to.be.null;
+
+			expect(validate({ defaults: { priority: 0.3 } })).to.be.null;
+			expect(validate({ defaults: { priority: 0.8 } })).to.be.null;
+			expect(validate({ defaults: { priority: 0.1 } })).to.be.null;
+		});
 	});
 
 	/**

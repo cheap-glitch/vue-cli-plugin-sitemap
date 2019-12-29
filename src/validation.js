@@ -51,7 +51,7 @@ const URLParamsSchemas = {
 	priority: {
 		type:        'number',
 		multipleOf:  0.1,
-		minimum:     0.0,
+		minimum:     0.1,
 		maximum:     1.0,
 	},
 }
@@ -111,7 +111,10 @@ function validateW3CDate(_data, _dataPath, _parentData, _parentDataPropName)
  */
 module.exports = function validateOptions(_options)
 {
-	const validator = new AJV({ useDefaults: true });
+	const validator = new AJV({
+		useDefaults:          true,
+		multipleOfPrecision:  3,
+	});
 
 	/**
 	 * Set the validation schema of the URL location according to the 'baseURL' option:
