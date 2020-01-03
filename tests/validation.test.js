@@ -117,6 +117,15 @@ describe('validation of the options returns an error when:', () => {
 			expect(validateOptions({ routes: [{ path: '/' }] })).to.be.null;
 			expect(validateOptions({ routes: [{ path: '/' }, { path: '/about' }] })).to.be.null;
 		});
+
+		it("there is a route with invalid URL properties", () => {
+			expect(validateOptions({ routes: [{ path: '/', changefreq: true }] })).not.to.be.null;
+			expect(validateOptions({ routes: [{ path: '/', lastmod: 'yesterday' }] })).not.to.be.null;
+			expect(validateOptions({ routes: [{ path: '/', priority: 72 }] })).not.to.be.null;
+			expect(validateOptions({ routes: [{ path: '/', sitemap: { changefreq: true } }] })).not.to.be.null;
+			expect(validateOptions({ routes: [{ path: '/', sitemap: { lastmod: 'yesterday' } }] })).not.to.be.null;
+			expect(validateOptions({ routes: [{ path: '/', sitemap: { priority: 72 } }] })).not.to.be.null;
+		});
 	});
 
 	/**
