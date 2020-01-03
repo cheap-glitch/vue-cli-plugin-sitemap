@@ -126,11 +126,29 @@ describe('validation of the options returns an error when:', () => {
 			expect(validateOptions({ routes: [{ path: '/', sitemap: { lastmod: 'yesterday' } }] })).not.to.be.null;
 			expect(validateOptions({ routes: [{ path: '/', sitemap: { priority: 72 } }] })).not.to.be.null;
 		});
+
+		// @TODO
 	});
 
 	/**
 	 * URLs
 	 * ---------------------------------------------------------------------
 	 */
+	describe("the URLs are invalid, because", () => {
+
+		it("the locations are full URIs even though a base URL is provided", () => {
+			expect(validateOptions({ baseURL: 'https://domain.com', urls: [{ loc: 'https://domain.com/about' }] })).not.to.be.null;
+			expect(validateOptions({ baseURL: 'https://www.awesome-stuff.net', urls: [{ loc: 'https://www.awesome-stuff.net/about' }] })).not.to.be.null;
+
+			expect(validateOptions({ baseURL: 'https://domain.com', urls: [{ loc: '/about' }] })).to.be.null;
+			expect(validateOptions({ baseURL: 'https://www.awesome-stuff.net', urls: [{ loc: 'about' }] })).to.be.null;
+		});
+
+		it("the locations are partial URIs even though no base URL is provided", () => {
+			expect(validateOptions({ urls: [{ loc: '/about' }] })).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'about' }] })).not.to.be.null;
+		});
+
 	// @TODO
+	});
 });

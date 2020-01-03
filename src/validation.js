@@ -121,9 +121,9 @@ module.exports = function validateOptions(_options)
 	 *  - if set, require the locations to be simple strings and NOT resembling URIs
 	 *  - if unset, require the locations to be full URIs
 	 */
-	const URLLocationSchema = (_options && typeof options == 'object' && 'baseURL' in _options === true)
-	                        ? { format: 'uri' }
-	                        : { not: { anyOf: [{ pattern: '^https?:\\/\\/' }, { pattern: '\\.' }] } }
+	const URLLocationSchema = (_options && typeof _options == 'object' && 'baseURL' in _options === true)
+	                        ? { not: { anyOf: [{ pattern: '^https?:\\/\\/' }, { pattern: '\\.' }] } }
+	                        : { allOf: [{ format: 'uri' }, { pattern: '^https?:\\/\\/' }] }
 
 	// Add a keyword to validate the dates
 	validator.addKeyword('W3CDate', {
