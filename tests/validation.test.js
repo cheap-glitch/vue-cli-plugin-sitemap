@@ -140,6 +140,14 @@ describe('validation of the options returns an error when:', () => {
 	 */
 	describe("the URLs are invalid, because", () => {
 
+		it("the 'urls' property is not an array", () => {
+			expect(validateOptions({ urls: {} })).not.to.be.null;
+			expect(validateOptions({ urls: 'https://mywebsite.com' })).not.to.be.null;
+
+			expect(validateOptions({ urls: [] })).to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://www.site.org' }] })).to.be.null;
+		});
+
 		it("the locations are full URIs even though a base URL is provided", () => {
 			expect(validateOptions({ baseURL: 'https://domain.com', urls: [{ loc: 'https://domain.com/about' }] })).not.to.be.null;
 			expect(validateOptions({ baseURL: 'https://www.awesome-stuff.net', urls: [{ loc: 'https://www.awesome-stuff.net/about' }] })).not.to.be.null;
