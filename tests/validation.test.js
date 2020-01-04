@@ -127,7 +127,11 @@ describe('validation of the options returns an error when:', () => {
 			expect(validateOptions({ routes: [{ path: '/', sitemap: { priority: 72 } }] })).not.to.be.null;
 		});
 
-		// @TODO
+		it("a route has invalid slugs", () => {
+			expect(validateOptions({ routes: [{ path: '/user/:pseudo', slugs: {} }] })).not.to.be.null;
+			expect(validateOptions({ routes: [{ path: '/user/:pseudo', slugs: [{}] }] })).not.to.be.null;
+			expect(validateOptions({ routes: [{ path: '/article/:title', slugs: [false, 'title'] }] })).not.to.be.null;
+		});
 	});
 
 	/**
