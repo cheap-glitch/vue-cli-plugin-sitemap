@@ -5,10 +5,9 @@
 
 function generateSitemapXML(_options)
 {
-	const urls = [..._options.urls, ...generateURLsFromRoutes(_options.routes)];
-
-	// Remove duplicate URLs
-	urls = urls.filter(_url => urls.every(__url => _url.loc != __url.loc));
+	// Generate URLs and remove duplicates
+	const urls = [..._options.urls, ...generateURLsFromRoutes(_options.routes)]
+	             .filter((_url, _index, _urls) => _urls.every((__url, __index) => _url.loc != __url.loc || _index == __index));
 
 	const sitemap =
 	       '<?xml version="1.0" encoding="UTF-8"?>\n'

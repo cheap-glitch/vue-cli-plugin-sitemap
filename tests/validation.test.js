@@ -19,8 +19,9 @@ describe("validation of the options returns an error when:", () => {
 		expect(validate({ someProp: true })).not.to.be.null;
 	});
 
-	it("both routes and URLs are provided", () => {
-		expect(validateOptions({ urls: [{ loc: '/' }], routes: [{ path: '/' }] })).not.to.be.null;
+	it("neither routes nor URLs are provided", () => {
+		expect(validateOptions({ pretty: true, baseURL: 'https://whatever.com' })).not.to.be.null;
+		expect(validateOptions({ urls: [], routes: [] })).not.to.be.null;
 	});
 
 	/**
@@ -144,7 +145,6 @@ describe("validation of the options returns an error when:", () => {
 			expect(validateOptions({ urls: {} })).not.to.be.null;
 			expect(validateOptions({ urls: 'https://mywebsite.com' })).not.to.be.null;
 
-			expect(validateOptions({ urls: [] })).to.be.null;
 			expect(validateOptions({ urls: [{ loc: 'https://www.site.org' }] })).to.be.null;
 		});
 

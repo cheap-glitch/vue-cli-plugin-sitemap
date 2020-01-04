@@ -136,14 +136,15 @@ module.exports = function validateOptions(_options)
 	const schema = {
 		type: 'object',
 
-		// Require either the 'urls' or 'routes' property, but not both
-		oneOf: [
-			{ required: ['urls']   },
-			{ required: ['routes'] },
+		// Require at least on URL or one route
+		anyOf: [
+			{ properties: { urls:   { minItems: 1 } } },
+			{ properties: { routes: { minItems: 1 } } },
 		],
 
 		// If some routes are passed, require the 'baseURL' property
-		required: 'routes' in _options && Array.isArray(_options.routes) && _options.routes.length ? ['baseURL'] : [],
+		// required: ('routes' in _options) && Array.isArray(_options.routes) && _options.routes.length ? ['baseURL'] : [],
+		// required: ['baseURL'],
 
 		properties: {
 
