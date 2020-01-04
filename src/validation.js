@@ -143,8 +143,8 @@ module.exports = function validateOptions(_options)
 		],
 
 		// If some routes are passed, require the 'baseURL' property
-		// required: ('routes' in _options) && Array.isArray(_options.routes) && _options.routes.length ? ['baseURL'] : [],
-		// required: ['baseURL'],
+		if:   { properties: { routes:  { minItems:  1 } } },
+		then: { properties: { baseURL: { minLength: 1 } } },
 
 		properties: {
 

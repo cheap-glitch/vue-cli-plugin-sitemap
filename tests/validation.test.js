@@ -7,7 +7,7 @@ const { expect }      = require('chai');
 const validateOptions = require('../src/validation');
 
 // Wrap the options to test in a minimal valid option object
-const validate = _options => validateOptions({ routes: [{ path: '/' }], ..._options});
+const validate = _options => validateOptions({ baseURL: 'https://url.com', routes: [{ path: '/' }], ..._options});
 
 describe("validation of the options returns an error when:", () => {
 
@@ -110,28 +110,28 @@ describe("validation of the options returns an error when:", () => {
 		});
 
 		it("there is a route with no 'path' property", () => {
-			expect(validateOptions({ routes: [{}] })).not.to.be.null;
-			expect(validateOptions({ routes: [{ changefreq: 'weekly' }] })).not.to.be.null;
-			expect(validateOptions({ routes: [{ path: '/' }, {}] })).not.to.be.null;
-			expect(validateOptions({ routes: [{ path: '/' }, { changefreq: 'weekly' }] })).not.to.be.null;
+			expect(validate({ routes: [{}] })).not.to.be.null;
+			expect(validate({ routes: [{ changefreq: 'weekly' }] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/' }, {}] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/' }, { changefreq: 'weekly' }] })).not.to.be.null;
 
-			expect(validateOptions({ routes: [{ path: '/' }] })).to.be.null;
-			expect(validateOptions({ routes: [{ path: '/' }, { path: '/about' }] })).to.be.null;
+			expect(validate({ routes: [{ path: '/' }] })).to.be.null;
+			expect(validate({ routes: [{ path: '/' }, { path: '/about' }] })).to.be.null;
 		});
 
 		it("there is a route with invalid URL properties", () => {
-			expect(validateOptions({ routes: [{ path: '/', changefreq: true }] })).not.to.be.null;
-			expect(validateOptions({ routes: [{ path: '/', lastmod: 'yesterday' }] })).not.to.be.null;
-			expect(validateOptions({ routes: [{ path: '/', priority: 72 }] })).not.to.be.null;
-			expect(validateOptions({ routes: [{ path: '/', sitemap: { changefreq: true } }] })).not.to.be.null;
-			expect(validateOptions({ routes: [{ path: '/', sitemap: { lastmod: 'yesterday' } }] })).not.to.be.null;
-			expect(validateOptions({ routes: [{ path: '/', sitemap: { priority: 72 } }] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/', changefreq: true }] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/', lastmod: 'yesterday' }] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/', priority: 72 }] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/', sitemap: { changefreq: true } }] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/', sitemap: { lastmod: 'yesterday' } }] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/', sitemap: { priority: 72 } }] })).not.to.be.null;
 		});
 
 		it("a route has invalid slugs", () => {
-			expect(validateOptions({ routes: [{ path: '/user/:pseudo', slugs: {} }] })).not.to.be.null;
-			expect(validateOptions({ routes: [{ path: '/user/:pseudo', slugs: [{}] }] })).not.to.be.null;
-			expect(validateOptions({ routes: [{ path: '/article/:title', slugs: [false, 'title'] }] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/user/:pseudo', slugs: {} }] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/user/:pseudo', slugs: [{}] }] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/article/:title', slugs: [false, 'title'] }] })).not.to.be.null;
 		});
 	});
 
