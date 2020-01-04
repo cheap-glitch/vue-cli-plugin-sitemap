@@ -19,7 +19,7 @@ function generateSitemapXML(_options)
 function generateURLTag(_url, _options)
 {
 	// If a base URL is specified, make sure it ends with a slash
-	const baseURL = `${_options.baseURL.replace(/\/+$/, '')}/`;
+	const baseURL = _options.baseURL ? `${_options.baseURL.replace(/\/+$/, '')}/` : '';
 
 	// Create the URL location
 	let loc = escapeUrl(`${baseURL}${_url.loc.replace(/^\//, '')}`).replace(/\/$/, '') + (_options.trailingSlash ? '/' : '');

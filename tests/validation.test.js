@@ -9,7 +9,7 @@ const validateOptions = require('../src/validation');
 // Wrap the options to test in a minimal valid option object
 const validate = _options => validateOptions({ routes: [{ path: '/' }], ..._options});
 
-describe('validation of the options returns an error when:', () => {
+describe("validation of the options returns an error when:", () => {
 
 	/**
 	 * Meta
