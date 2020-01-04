@@ -59,7 +59,7 @@ module.exports = function(_api, _options)
 		// Don't generate the sitemap if not in production and the option 'productionOnly' is set
 		if (_options.pluginOptions.sitemap.productionOnly && process.env.NODE_ENV !== 'production') return;
 
-		writeSitemap(_options.pluginOptions.sitemap, ('outputDir' in _options === true) ? _options.outputDir : 'dist');
+		writeSitemap(_options.pluginOptions.sitemap, ('outputDir' in _options) ? _options.outputDir : 'dist');
 	};
 }
 

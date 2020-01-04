@@ -57,6 +57,74 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				`<url><loc>https://website.net/</loc></url><url><loc>https://website.net/about/</loc></url><url><loc>https://website.net/page/</loc></url>`
 			));
 		});
+
+		it("encodes URIs properly", () => {
+			expect(generateSitemapXML({
+				baseURL:  'https://website.net',
+				defaults: {},
+				urls:     [{ loc: '/search?color="always"&reverse-order' }],
+			})).to.equal(wrapURLs(
+				`<url><loc>https://website.net/search?color=%22always%22&amp;reverse-order</loc></url>`
+			));
+
+			expect(generateSitemapXML({
+				baseURL:  'https://éléphant.net',
+				defaults: {},
+				urls:     [{ loc: '/about' }],
+			})).to.equal(wrapURLs(
+				`<url><loc>https://%C3%A9l%C3%A9phant.net/about</loc></url>`
+			));
+		});
+
+
+		it("takes per-URL parameters into account", () => {
+			expect(generateSitemapXML({
+				baseURL:  '',
+				defaults: {},
+				urls:     [{
+					loc:         'https://website.net/about',
+					changefreq:  'monthly',
+					lastmod:     '2020-01-01',
+					priority:    0.3,
+				}]
+			})).to.equal(wrapURLs(
+				`<url><loc>https://website.net/about</loc><lastmod>2020-01-01</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>`
+			));
+		});
+
+		it("takes default URL parameters into account", () => {
+			expect(generateSitemapXML({
+				baseURL:  '',
+				defaults: {
+					changefreq:  'monthly',
+					lastmod:     '2020-01-01',
+					priority:    0.3,
+				},
+				urls:     [{
+					loc:         'https://website.net/about',
+				}]
+			})).to.equal(wrapURLs(
+				`<url><loc>https://website.net/about</loc><lastmod>2020-01-01</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>`
+			));
+		});
+
+		it("prioritizes per-URL parameters over global defaults", () => {
+			expect(generateSitemapXML({
+				baseURL:  '',
+				defaults: {
+					changefreq:  'never',
+					priority:    0.8,
+				},
+				urls:     [{
+					loc:         'https://website.net/about',
+					changefreq:  'monthly',
+					lastmod:     '2020-01-01',
+					priority:    0.3,
+				}]
+			})).to.equal(wrapURLs(
+				`<url><loc>https://website.net/about</loc><lastmod>2020-01-01</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>`
+			));
+		});
 	});
 
 	/**
@@ -64,6 +132,16 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 	 * ---------------------------------------------------------------------
 	 */
 	describe("from an array of routes", () => {
-		// @TODO
+
+		it("generates a sitemap from simple routes", () => {
+			expect(generateSitemapXML({
+				baseURL:  'https://website.net',
+				defaults: {},
+				routes:   [{ path: '/' }, { path: '/about' }],
+			})).to.equal(wrapURLs(
+				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+			));
+		});
+
 	});
 });

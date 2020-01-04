@@ -121,7 +121,7 @@ module.exports = function validateOptions(_options)
 	 *  - if set, require the locations to be simple strings and NOT resembling URIs
 	 *  - if unset, require the locations to be full URIs
 	 */
-	const URLLocationSchema = (_options && typeof _options == 'object' && 'baseURL' in _options === true)
+	const URLLocationSchema = (_options && typeof _options == 'object' && 'baseURL' in _options)
 	                        ? { not: { anyOf: [{ pattern: '^https?:\\/\\/' }, { pattern: '\\.' }] } }
 	                        : { allOf: [{ format: 'uri' }, { pattern: '^https?:\\/\\/' }] }
 
@@ -141,6 +141,9 @@ module.exports = function validateOptions(_options)
 			{ required: ['urls']   },
 			{ required: ['routes'] },
 		],
+
+		// If some routes are passed, require the 'baseURL' property
+		required: 'routes' in _options && Array.isArray(_options.routes) && _options.routes.length ? ['baseURL'] : [],
 
 		properties: {
 
@@ -188,7 +191,8 @@ module.exports = function validateOptions(_options)
 			 * -------------------------------------------------------------
 			 */
 			routes: {
-				type: 'array',
+				type:    'array',
+				default: [],
 
 				items: {
 					type: 'object',
@@ -222,7 +226,8 @@ module.exports = function validateOptions(_options)
 			 * -------------------------------------------------------------
 			 */
 			urls: {
-				type: 'array',
+				type:    'array',
+				default: [],
 
 				items: {
 					type: 'object',

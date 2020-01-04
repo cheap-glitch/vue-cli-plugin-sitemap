@@ -5,7 +5,10 @@
 
 function generateSitemapXML(_options)
 {
-	const urls = _options.urls || generateURLsFromRoutes(_options.routes);
+	const urls = [..._options.urls, ...generateURLsFromRoutes(_options.routes)];
+
+	// Remove duplicate URLs
+	urls = urls.filter(_url => urls.every(__url => _url.loc != __url.loc));
 
 	const sitemap =
 	       '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -26,8 +29,8 @@ function generateURLTag(_url, _options)
 
 	// Generate a tag for each optional parameter
 	const tags = ['lastmod', 'changefreq', 'priority']
-		.filter(__param => __param in _url === true || __param in _options.defaults === true)
-		.map(   __param => `\t\t<${__param}>${(__param in _url === true) ? _url[__param] : _options.defaults[__param]}</${__param}>\n`);
+		.filter(__param => __param in _url || __param in _options.defaults)
+		.map(   __param => `\t\t<${__param}>${(__param in _url) ? _url[__param] : _options.defaults[__param]}</${__param}>\n`);
 
 	return `\t<url>\n\t\t<loc>${loc}</loc>\n${tags.join('')}\t</url>\n`;
 }
@@ -49,7 +52,7 @@ function generateURLsFromRoutes(_routes)
 		const url = { ..._route, ..._route.sitemap };
 
 		// Get location from route path if needed
-		if ('loc' in url === false)
+		if ('loc' in url == false)
 		{
 			// Ignore the "catch-all" 404 route
 			if (_route.path == '*') return _urls;
