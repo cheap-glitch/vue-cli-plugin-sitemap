@@ -148,6 +148,14 @@ describe('validation of the options returns an error when:', () => {
 			expect(validateOptions({ urls: [{ loc: 'https://www.site.org' }] })).to.be.null;
 		});
 
+		it("some URLs are missing the 'loc' property", () => {
+			expect(validateOptions({ urls: [{}]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ lastmod: '2020-01-01' }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'about' }, { changefreq: 'always' }]})).not.to.be.null;
+
+			expect(validateOptions({ urls: [{ loc: 'https://website.com' }]})).to.be.null;
+		});
+
 		it("the locations are full URIs even though a base URL is provided", () => {
 			expect(validateOptions({ baseURL: 'https://domain.com', urls: [{ loc: 'https://domain.com/about' }] })).not.to.be.null;
 			expect(validateOptions({ baseURL: 'https://www.awesome-stuff.net', urls: [{ loc: 'https://www.awesome-stuff.net/about' }] })).not.to.be.null;
@@ -161,6 +169,23 @@ describe('validation of the options returns an error when:', () => {
 			expect(validateOptions({ urls: [{ loc: 'about' }] })).not.to.be.null;
 		});
 
-	// @TODO
+		it("there is an URL with invalid URL properties", () => {
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', changefreq: false }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', changefreq: {} }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', changefreq: 'sometimes' }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', lastmod: true }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', lastmod: 'yesterday' }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', priority: 'low' }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', priority: 'high' }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', priority: 10 }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { changefreq: false } }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { changefreq: {} } }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { changefreq: 'sometimes' } }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { lastmod: true } }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { lastmod: 'yesterday' } }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { priority: 'low' } }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { priority: 'high' } }]})).not.to.be.null;
+			expect(validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { priority: 10 } }]})).not.to.be.null;
+		});
 	});
 });
