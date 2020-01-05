@@ -5,9 +5,14 @@
 
 function generateSitemapXML(_options)
 {
-	// Generate URLs and remove duplicates
+	// If a base URL is specified, make sure it ends with a slash
+	const baseURL = _options.baseURL ? `${_options.baseURL.replace(/\/+$/, '')}/` : '';
+
 	const urls = [..._options.urls, ...generateURLsFromRoutes(_options.routes)]
-	             .filter((_url, _index, _urls) => _urls.every((__url, __index) => _url.loc != __url.loc || _index == __index));
+		// Generate the location of each URL
+		.map(_url => ({ ..._url, loc: escapeUrl(baseURL + _url.loc.replace(/^\//, '')).replace(/\/$/, '') + (_options.trailingSlash ? '/' : '') }))
+		// Remove duplicate URLs (static URLs have preference over routes)
+		.filter((_url, _index, _urls) => !('path' in _url) || _urls.every((__url, __index) => (_url.loc != __url.loc || _index == __index)));
 
 	const sitemap =
 	       '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -20,18 +25,12 @@ function generateSitemapXML(_options)
 
 function generateURLTag(_url, _options)
 {
-	// If a base URL is specified, make sure it ends with a slash
-	const baseURL = _options.baseURL ? `${_options.baseURL.replace(/\/+$/, '')}/` : '';
-
-	// Create the URL location
-	let loc = escapeUrl(`${baseURL}${_url.loc.replace(/^\//, '')}`).replace(/\/$/, '') + (_options.trailingSlash ? '/' : '');
-
 	// Generate a tag for each optional parameter
 	const tags = ['lastmod', 'changefreq', 'priority']
 		.filter(__param => __param in _url || __param in _options.defaults)
 		.map(   __param => `\t\t<${__param}>${(__param in _url) ? _url[__param] : _options.defaults[__param]}</${__param}>\n`);
 
-	return `\t<url>\n\t\t<loc>${loc}</loc>\n${tags.join('')}\t</url>\n`;
+	return `\t<url>\n\t\t<loc>${_url.loc}</loc>\n${tags.join('')}\t</url>\n`;
 }
 
 function escapeUrl(_url)

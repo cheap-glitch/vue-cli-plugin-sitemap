@@ -4,6 +4,7 @@
  */
 
 const { expect }         = require('chai');
+const validateOptions    = require('../src/validation');
 const generateSitemapXML = require('../src/sitemap');
 
 // Wrap some <url> elements in the same XML elements as the sitemap
@@ -132,6 +133,25 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				}]
 			})).to.equal(wrapURLs(
 				`<url><loc>https://website.net/about</loc><lastmod>2020-01-01</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>`
+			));
+		});
+
+		it("handles dates in various formats", () => {
+			const data = {
+				urls: [
+					{
+						loc:      'https://website.net/about',
+						lastmod:  'December 17, 1995 03:24:00',
+					},
+					{
+						loc:      'https://website.net/info',
+						lastmod:  new Date('December 17, 1995 03:24:00'),
+					},
+				]
+			};
+			validateOptions(data);
+			expect(generateSitemapXML(data)).to.equal(wrapURLs(
+				`<url><loc>https://website.net/about</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url><url><loc>https://website.net/info</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>`
 			));
 		});
 	});
@@ -294,7 +314,28 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 	 * ---------------------------------------------------------------------
 	 */
 	describe("from both routes and URLs", () => {
-		// @TODO
+
+		it("generates a simple sitemap", () => {
+			expect(generateSitemapXML({
+				baseURL:   'https://website.net',
+				defaults:  {},
+				routes:    [{ path: '/about' }],
+				urls:      [{ loc:  '/' }],
+			})).to.equal(wrapURLs(
+				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+			));
+		});
+
+		it("discards duplicate URLs", () => {
+			expect(generateSitemapXML({
+				baseURL:   'https://website.net',
+				defaults:  {},
+				routes:    [{ path: '/' }, { path: '/about' }],
+				urls:      [{ loc:  '/' }],
+			})).to.equal(wrapURLs(
+				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+			));
+		});
 	});
 
 	/**
