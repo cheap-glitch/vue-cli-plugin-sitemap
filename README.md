@@ -48,15 +48,15 @@ npm run sitemap
 #### URL meta tags
 
 In the sitemap format,  each URL can be associated with  some optional meta tags
-to help the crawlers prioritize the critical URLs.
+to help the crawlers navigate the pages and prioritize the critical URLs:
 
- Meta tag  |                                                   Accepted values                                                         | Default value if absent
----------- | ------------------------------------------------------------------------------------------------------------------------- | -----------------------
-lastmod    | a date string in the [W3C format](https://www.w3.org/TR/NOTE-datetime), a JavaScript timestamp string, or a `Date` object | none
-changefreq | `"always"`, `"hourly"`, `"daily"`, `"weekly"`, `"monthly"`, `"yearly"`, `"never"`                                         | none
-priority   | a multiple of `0.1` between `0.0` and `1.0`                                                                               | `0.5`
+  Meta tag   |                                                   Accepted values                                                         | Default value if absent
+------------ | ------------------------------------------------------------------------------------------------------------------------- | -----------------------
+`lastmod`    | a date string in the [W3C format](https://www.w3.org/TR/NOTE-datetime), a JavaScript timestamp string, or a `Date` object | Ø
+`changefreq` | `"always"`, `"hourly"`, `"daily"`, `"weekly"`, `"monthly"`, `"yearly"`, `"never"`                                         | Ø
+`priority`   | a multiple of `0.1` between `0.0` and `1.0`                                                                               | `0.5`
 
-For  more information  on those  meta tags,  you can  consult the  official spec
+For  more information  on those  meta tags,  you can  consult the official specs
 [here](https://www.sitemaps.org/protocol.html#xmlTagDefinitions).
 
 #### Global settings
