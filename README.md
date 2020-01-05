@@ -72,17 +72,43 @@ module.exports = {
 		// […]
 
 		sitemap: {
+			// Only generate for production builds (default: 'false')
+			productionOnly: true,
 
-			// The default parameters for every URL
+			// If set to 'true', add a trailing slash at the end of every URL
+			// Remove it if set to 'false' (the default)
+			trailingSlash: false,
+
+			// Insert line breaks and indent the tags to make the generated file more readable (default: 'false')
+			pretty: true,
+
+			// Define an URL which will serve as a prefix for every URL in the sitemap
+			// If it is provided, all URLs must be partial (e.g. '/page/subpage') and not start with the domain name
+			//
+			// Note that this is required only if some routes are provided, because every URL in the sitemap must be
+			// a full URL that includes the protocol and domain
+			baseURL: 'https://webapp.com',
+
+			// Default meta tags for every URL
+			// These will be overrided by URL-specific tags
 			defaults: {
+				lastmod:    '2020-01-01',
 				changefreq: 'weekly',
-
+				priority:   1.0,
 			},
 		}
 	}
 }
 
 ```
+
+#### Generating from routes
+
+TODO
+
+#### Generating from static URLs
+
+TODO
 
 ## License
 
