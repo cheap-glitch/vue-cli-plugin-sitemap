@@ -51,7 +51,7 @@ const URLParamsSchemas = {
 	priority: {
 		type:        'number',
 		multipleOf:  0.1,
-		minimum:     0.1,
+		minimum:     0.0,
 		maximum:     1.0,
 	},
 }

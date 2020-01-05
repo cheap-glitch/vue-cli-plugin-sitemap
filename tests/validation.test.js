@@ -89,11 +89,11 @@ describe("validation of the options returns an error when:", () => {
 			expect(validate({ defaults: { priority: 100.0 } })).not.to.be.null;
 			expect(validate({ defaults: { priority: 1.1 } })).not.to.be.null;
 			expect(validate({ defaults: { priority: 0.88 } })).not.to.be.null;
-			expect(validate({ defaults: { priority: 0.0 } })).not.to.be.null;
 			expect(validate({ defaults: { priority: -1.0 } })).not.to.be.null;
 
 			expect(validate({ defaults: { priority: 0.3 } })).to.be.null;
 			expect(validate({ defaults: { priority: 0.8 } })).to.be.null;
+			expect(validate({ defaults: { priority: 0.0 } })).to.be.null;
 			expect(validate({ defaults: { priority: 0.1 } })).to.be.null;
 		});
 	});
