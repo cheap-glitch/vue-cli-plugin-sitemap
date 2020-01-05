@@ -49,27 +49,35 @@ function generateURLsFromRoutes(_routes)
 	{
 		const url = { ..._route, ..._route.sitemap };
 
-		// Get location from route path if needed
-		if ('loc' in url == false)
-		{
-			// Ignore the "catch-all" 404 route
-			if (_route.path == '*') return _urls;
+		/**
+		 * Static URLs
+		 */
+		if ('loc' in url) return [..._urls, url];
 
-			// Remove a potential slash at the beginning of the path
-			const path = _route.path.replace(/^\/+/, '');
+		/**
+		 * Static routes
+		 */
 
-			// For static routes, simply prepend the base URL to the path
-			if (!_route.path.includes(':')) return [..._urls, { loc: path, ...url }];
+		// Ignore the "catch-all" 404 route
+		if (_route.path == '*') return _urls;
 
-			// Ignore dynamic routes if no slugs are provided
-			if (!url.slugs) return _urls;
+		// Remove a potential slash at the beginning of the path
+		const path = _route.path.replace(/^\/+/, '');
 
-			// Get the name of the dynamic parameter
-			const param = _route.path.match(/:\w+/)[0];
+		// For static routes, simply prepend the base URL to the path
+		if (!_route.path.includes(':')) return [..._urls, { loc: path, ...url }];
 
-			// Build an array of URLs
-			return [..._urls, ...url.slugs.map(__slug => ({ loc: path.replace(param, __slug), ...url }))];
-		}
+		/**
+		 * Dynamic routes
+		 */
+
+		// Ignore dynamic routes if no slugs are provided
+		if (!url.slugs) return _urls;
+
+		// Get the name of the dynamic parameter
+		const param = _route.path.match(/:\w+/)[0];
+
+		return [..._urls, ...url.slugs.map(__slug => ({ loc: path.replace(param, __slug), ...url }))];
 	}, []);
 }
 

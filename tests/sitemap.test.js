@@ -178,6 +178,17 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
+		it("handles routes with a 'loc' property", () => {
+			expect(generateSitemapXML({
+				baseURL:   'https://website.net',
+				defaults:  {},
+				urls:      [],
+				routes:    [{ path: '/' }, { path: '/complicated/path/here', loc: '/about' }],
+			})).to.equal(wrapURLs(
+				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+			));
+		});
+
 		it("removes trailing slashes", () => {
 			expect(generateSitemapXML({
 				baseURL:   'https://website.net',
@@ -300,6 +311,28 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				}]
 			})).to.equal(wrapURLs(
 				`<url><loc>https://website.net/article/my-first-article</loc></url><url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc></url>`
+			));
+		});
+
+		it("ignores the catch-all route", () => {
+			expect(generateSitemapXML({
+				baseURL:   'https://website.net',
+				defaults:  {},
+				urls:      [],
+				routes:    [{ path: '/' }, { path: '/about' }, { path: '*', name: '404' }],
+			})).to.equal(wrapURLs(
+				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+			));
+		});
+
+		it("ignores dynamic routes with no slugs", () => {
+			expect(generateSitemapXML({
+				baseURL:   'https://website.net',
+				defaults:  {},
+				urls:      [],
+				routes:    [{ path: '/' }, { path: '/about' }, { path: '/user/:id' }],
+			})).to.equal(wrapURLs(
+				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
 			));
 		});
 	});
