@@ -45,7 +45,7 @@ npm run sitemap
 
 ## Configuration
 
-#### URL meta tags
+### URL meta tags
 
 In the sitemap format,  each URL can be associated with  some optional meta tags
 to help the crawlers navigate the pages and prioritize the critical URLs:
@@ -87,9 +87,8 @@ module.exports = {
 			// If it is provided, all URLs must be partial (e.g. '/page/subpage')
 			// and not start with the domain name
 			//
-			// Note that this is required only if some routes are provided,
-			// because every URL in the sitemap must be a full URL that includes
-			// the protocol and domain
+			// Note that this is required if some routes are provided, because
+			// every URL in the sitemap must be a full URL that includes the protocol and domain
 			baseURL: 'https://webapp.com',
 
 			// Default meta tags for every URL
