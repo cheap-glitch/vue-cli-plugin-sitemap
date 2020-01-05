@@ -56,10 +56,10 @@ to help the crawlers navigate the pages and prioritize the critical URLs:
 `changefreq` | `"always"`, `"hourly"`, `"daily"`, `"weekly"`, `"monthly"`, `"yearly"`, `"never"`                                         | Ø
 `priority`   | a multiple of `0.1` between `0.0` and `1.0`                                                                               | `0.5`
 
-For  more information  on those  meta tags,  you can  consult the official specs
-[here](https://www.sitemaps.org/protocol.html#xmlTagDefinitions).
+For  more  information  on  those  meta  tags,  you  can  consult  the  official
+[specification](https://www.sitemaps.org/protocol.html#xmlTagDefinitions).
 
-#### Global settings
+### Global settings
 
 All the  global settings are optional  and can be omitted,  except for `baseURL`
 that must be provided for routes-based sitemaps.
@@ -79,14 +79,17 @@ module.exports = {
 			// Remove it if set to 'false' (the default)
 			trailingSlash: false,
 
-			// Insert line breaks and indent the tags to make the generated file more readable (default: 'false')
+			// Insert line breaks and indent the tags to make the generated
+			// file more readable (default: 'false')
 			pretty: true,
 
 			// Define an URL which will serve as a prefix for every URL in the sitemap
-			// If it is provided, all URLs must be partial (e.g. '/page/subpage') and not start with the domain name
+			// If it is provided, all URLs must be partial (e.g. '/page/subpage')
+			// and not start with the domain name
 			//
-			// Note that this is required only if some routes are provided, because every URL in the sitemap must be
-			// a full URL that includes the protocol and domain
+			// Note that this is required only if some routes are provided,
+			// because every URL in the sitemap must be a full URL that includes
+			// the protocol and domain
 			baseURL: 'https://webapp.com',
 
 			// Default meta tags for every URL
@@ -102,11 +105,11 @@ module.exports = {
 
 ```
 
-#### Generating from routes
+### Generating from routes
 
 TODO
 
-#### Generating from static URLs
+### Generating from static URLs
 
 TODO
 
