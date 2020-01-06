@@ -37,7 +37,7 @@ describe("validation of the options returns an error when:", () => {
 		expect(validate({ baseURL: 'http://www.other-domain.fr' })).to.be.null;
 	});
 
-	describe("the default URL params are invalid, because", () => {
+	describe("the default URL meta tags are invalid, because", () => {
 
 		it("'defaults' is not an object", () => {
 			expect(validate({ defaults: true })).not.to.be.null;

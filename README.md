@@ -92,7 +92,7 @@ module.exports = {
 			baseURL: 'https://webapp.com',
 
 			// Default meta tags for every URL
-			// These will be overrided by URL-specific tags
+			// These will be overridden by URL-specific tags
 			defaults: {
 				lastmod:    '2020-01-01',
 				changefreq: 'weekly',
@@ -106,11 +106,38 @@ module.exports = {
 
 ### Generating from routes
 
-TODO
+
 
 ### Generating from static URLs
 
-TODO
+You can also directly provide some static URLs to the plugin:
+```javascript
+sitemap: {
+	// […]
+
+	urls: [
+		{
+			// The only required property is 'loc'
+			loc: 'https://website.com/'
+		},
+		{
+			loc: 'https://website.com/about,
+
+			// These meta tags will only apply to this specific URL
+			changefreq: 'never',
+			priority:   1.0,
+		},
+		{
+			// If you provided 'baseURL', locations must be partial URLs
+			loc: '/article/lorem-ipsum-dolor-sit-amet',
+		},
+	]
+}
+```
+
+If both routes and  URLs are provided, they will be merged  together in a single
+sitemap. In  the case  of duplicated  locations, static  URLs will  prevail over
+their matching routes.
 
 ## License
 

@@ -25,10 +25,10 @@ function generateSitemapXML(_options)
 
 function generateURLTag(_url, _options)
 {
-	// Generate a tag for each optional parameter
+	// Generate an XML tag for each meta tag
 	const tags = ['lastmod', 'changefreq', 'priority']
-		.filter(__param => __param in _url || __param in _options.defaults)
-		.map(   __param => `\t\t<${__param}>${(__param in _url) ? _url[__param] : _options.defaults[__param]}</${__param}>\n`);
+		.filter(__tag => __tag in _url || __tag in _options.defaults)
+		.map(   __tag => `\t\t<${__tag}>${(__tag in _url) ? _url[__tag] : _options.defaults[__tag]}</${__tag}>\n`);
 
 	return `\t<url>\n\t\t<loc>${_url.loc}</loc>\n${tags.join('')}\t</url>\n`;
 }

@@ -37,9 +37,9 @@ const TZD  = `(?:Z|[+-]${hh}:${mm})`;
 const W3CDatePattern = `^${YYYY}(?:-${MM}(?:-${DD}(?:T${hh}:${mm}(?::${ss}(?:\\.${s})?)?${TZD})?)?)?$`;
 
 /**
- * Schema for the URL parameters
+ * Schema for the URL meta tags
  */
-const URLParamsSchemas = {
+const URLMetaTags = {
 	lastmod: {
 		type:        ['object', 'string'],
 		W3CDate:     true,
@@ -179,10 +179,10 @@ module.exports = function validateOptions(_options)
 				type:     'boolean',
 				default:  false,
 			},
-			// Default URL parameters
+			// Default URL meta tags
 			defaults: {
 				type:                  'object',
-				properties:            URLParamsSchemas,
+				properties:            URLMetaTags,
 				additionalProperties:  false,
 				default:               {},
 			},
@@ -207,7 +207,7 @@ module.exports = function validateOptions(_options)
 									type:  'array',
 									items: { type: ['number', 'string'] }
 								},
-								...URLParamsSchemas
+								...URLMetaTags
 							},
 							additionalProperties: false
 						},
@@ -215,7 +215,7 @@ module.exports = function validateOptions(_options)
 							type:  'array',
 							items: { type: ['number', 'string'] }
 						},
-						...URLParamsSchemas
+						...URLMetaTags
 					},
 					required:              ['path'],
 					additionalProperties:  true
@@ -238,7 +238,7 @@ module.exports = function validateOptions(_options)
 							type: 'string',
 							...URLLocationSchema
 						},
-						...URLParamsSchemas
+						...URLMetaTags
 					},
 					required:              ['loc'],
 					additionalProperties:  false,

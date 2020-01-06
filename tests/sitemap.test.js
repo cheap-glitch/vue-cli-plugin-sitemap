@@ -84,7 +84,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
-		it("takes per-URL parameters into account", () => {
+		it("takes per-URL meta tags into account", () => {
 			expect(generateSitemapXML({
 				baseURL:   '',
 				defaults:  {},
@@ -100,7 +100,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
-		it("takes default URL parameters into account", () => {
+		it("takes default meta tags into account", () => {
 			expect(generateSitemapXML({
 				baseURL:   '',
 				defaults:  {
@@ -117,7 +117,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
-		it("prioritizes per-URL parameters over global defaults", () => {
+		it("prioritizes per-URL meta tags over global defaults", () => {
 			expect(generateSitemapXML({
 				baseURL:   '',
 				defaults:  {
@@ -212,7 +212,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
-		it("takes per-route URL parameters into account", () => {
+		it("takes per-route meta tags into account", () => {
 			expect(generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
@@ -244,7 +244,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
-		it("takes default URL parameters into account", () => {
+		it("takes default meta tags into account", () => {
 			expect(generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {
@@ -261,7 +261,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
-		it("prioritizes per-route URL parameters over global defaults", () => {
+		it("prioritizes per-route meta tags over global defaults", () => {
 			expect(generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {
