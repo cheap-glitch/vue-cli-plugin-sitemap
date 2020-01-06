@@ -202,7 +202,7 @@ sitemap: {
 			loc: 'https://website.com/'
 		},
 		{
-			loc: 'https://website.com/about,
+			loc: 'https://website.com/about',
 
 			// These meta tags will only apply to this specific URL
 			changefreq: 'never',
