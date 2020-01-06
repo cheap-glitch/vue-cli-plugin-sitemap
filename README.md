@@ -56,8 +56,8 @@ to help the crawlers navigate the pages and prioritize the critical URLs:
 `changefreq` | `"always"`, `"hourly"`, `"daily"`, `"weekly"`, `"monthly"`, `"yearly"`, `"never"`                                         | Ø
 `priority`   | a multiple of `0.1` between `0.0` and `1.0`                                                                               | `0.5`
 
-For  more  information  on  those  meta  tags,  you  can  consult  the  official
-[specification](https://www.sitemaps.org/protocol.html#xmlTagDefinitions).
+For  more  information  on  those  meta  tags,  you  can  consult  the  [official
+specification](https://www.sitemaps.org/protocol.html#xmlTagDefinitions).
 
 ### Global settings
 
