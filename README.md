@@ -106,7 +106,88 @@ module.exports = {
 
 ### Generating from routes
 
+The recommended way to provide data to the plugin is to pass the array of routes
+used with `vue-router`. For example, a basic setup could look like this:
 
+```javascript
+// src/routes.js
+
+const routes = [
+	{
+		path: '/',
+		name: 'home',
+
+		// You can add the meta properties directly into the route object
+		lastmod:  '2026-01-01',
+		priority: 1.0,
+	},
+	{
+		path:       '/about',
+		name:       'about',
+		component:  PageAbout,
+
+		// Or to avoid cluttering the route infos,
+		// you can put them in a 'sitemap' property
+		sitemap: {
+			changefreq:  'daily',
+			priority:    0.8,
+			lastmod:     'December 17, 1995',
+		}
+	},
+	{
+		path:    'articles/:title',
+		lastmod: new Date('December 17, 1995'),
+
+		// Dynamic routes need explicit slugs to generate URLs
+		// If no slugs are provided, the dynamic route will be ignored
+		slugs: [
+			'my-amazing-article',
+			'a-life-changing-method-for-folding-socks',
+		],
+	},
+];
+
+module.exports = routes;
+```
+
+```javascript
+// src/main.js
+
+import Vue    from 'vue'
+import Router from 'vue-router'
+
+import App    from './App.vue'
+import routes from '@/routes'
+
+Vue.use(Router);
+new Vue({
+	render: h => h(App),
+
+	router: new Router({
+		mode: 'history',
+		base: process.env.BASE_URL,
+		routes,
+	})
+}).$mount('#app');
+
+```
+
+```javascript
+// vue.config.js
+
+const routes = require('./src/routes');
+
+module.exports = {
+	pluginOptions: {
+		// […]
+
+		sitemap: {
+			routes,
+		}
+	}
+}
+
+```
 
 ### Generating from static URLs
 
