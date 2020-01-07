@@ -37,10 +37,15 @@ files will be modified.
 ## Usage
 
 The sitemap  will be  generated upon  building your app.  To examine  the output
-without triggering the  whole build process, you can run  the following command,
-which will generate a sitemap in the current working directory:
+without triggering  the whole  build process, run  the following  command, which
+will generate a sitemap in the current working directory:
 ```
 npm run sitemap
+```
+
+Use the `--pretty` option to obtain a more readable output:
+```
+npm run sitemap -- --pretty
 ```
 
 ## Configuration
@@ -143,7 +148,31 @@ const routes = [
 		slugs: [
 			'my-amazing-article',
 			'a-life-changing-method-for-folding-socks',
+
+			// Slugs can have their own meta properties
+			{
+				slug:      'a-very-important-article',
+				priority:  1.0,
+				lastmod:   '2020-01-01',
+			}
 		],
+	},
+	{
+		path: '/some/very-long/or/complicated/path',
+
+		// Directly provide an URL that will override the path
+		loc: '/simplified-url'
+	},
+	{
+		// The "catch-all" routes will be automatically ignored
+		path: '*',
+		name: '404',
+	},
+	{
+		path: '/ignore/me',
+
+		// Explicitly ignore this route
+		ignoreRoute: true,
 	},
 ];
 
