@@ -66,7 +66,18 @@ const RouteSpecificProps = {
 	},
 	slugs: {
 		type:  'array',
-		items: { type: ['number', 'string'] }
+		items: {
+			type: ['object', 'number', 'string'],
+
+			properties: {
+				slug: {
+					type: ['number', 'string']
+				},
+				...URLMetaTags,
+			},
+			required:              ['slug'],
+			additionalProperties:  false
+		}
 	},
 }
 

@@ -131,7 +131,18 @@ describe("validation of the options returns an error when:", () => {
 		it("a route has invalid slugs", () => {
 			expect(validate({ routes: [{ path: '/user/:pseudo', slugs: {} }] })).not.to.be.null;
 			expect(validate({ routes: [{ path: '/user/:pseudo', slugs: [{}] }] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/user/:pseudo', slugs: [{ changefreq: 'yearly', priority: 1.0 }] }] })).not.to.be.null;
 			expect(validate({ routes: [{ path: '/article/:title', slugs: [false, 'title'] }] })).not.to.be.null;
+
+			expect(validate({ routes: [{ path: '/user/:pseudo', slugs: ['ok', 'pseudo'] }] })).to.be.null;
+			expect(validate({ routes: [{ path: '/user/:pseudo', slugs: ['ok', { slug: 'pseudo'}] }] })).to.be.null;
+		});
+
+		it("a route has slugs with invalid meta tags", () => {
+			expect(validate({ routes: [{ path: '/user/:pseudo', slugs: [{ slug: 'pseudo', priority: 22 }] }] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/user/:pseudo', slugs: [{ slug: 'pseudo', priority: 'high' }] }] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/user/:pseudo', slugs: [{ slug: 'pseudo', lastmod: 'a while ago' }] }] })).not.to.be.null;
+			expect(validate({ routes: [{ path: '/user/:pseudo', slugs: [{ slug: 'pseudo', changefreq: 'a whole lot' }] }] })).not.to.be.null;
 		});
 	});
 

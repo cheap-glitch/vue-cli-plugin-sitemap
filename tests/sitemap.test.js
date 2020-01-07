@@ -334,6 +334,54 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
+		it("takes slug-specific meta tags into account", () => {
+			expect(generateSitemapXML({
+				baseURL:   'https://website.net',
+				defaults:  {},
+				urls:      [],
+				routes:    [{
+					path:  '/article/:title',
+					slugs: [
+						'my-first-article',
+						{
+							slug:        '3-tricks-to-better-fold-your-socks',
+							changefreq:  'never',
+							lastmod:     '2018-06-24',
+							priority:    0.8,
+						}
+					]
+				}]
+			})).to.equal(wrapURLs(
+				`<url><loc>https://website.net/article/my-first-article</loc></url><url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc><lastmod>2018-06-24</lastmod><changefreq>never</changefreq><priority>0.8</priority></url>`
+			));
+		});
+
+		it("prioritizes slug-specific meta tags over route meta tags and global defaults", () => {
+			expect(generateSitemapXML({
+				baseURL:   'https://website.net',
+				defaults:  {
+					priority:    0.1,
+					changefreq:  'always',
+				},
+				urls:      [],
+				routes:    [{
+					path:    '/article/:title',
+					lastmod: '2020-01-01',
+
+					slugs: [
+						{
+							slug:        '3-tricks-to-better-fold-your-socks',
+							changefreq:  'never',
+							lastmod:     '2018-06-24',
+							priority:    0.8,
+						}
+					]
+				}]
+			})).to.equal(wrapURLs(
+				`<url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc><lastmod>2018-06-24</lastmod><changefreq>never</changefreq><priority>0.8</priority></url>`
+			));
+		});
+
 		it("ignores routes with the 'ignoreRoute' option set to 'true'", () => {
 			expect(generateSitemapXML({
 				baseURL:   'https://website.net',
