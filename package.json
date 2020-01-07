@@ -1,7 +1,7 @@
 {
   "name": "vue-cli-plugin-sitemap",
   "description": "A Vue CLI plugin to generate simple or complex sitemaps easily.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "ISC",
   "repository": {
     "type": "git",
