@@ -57,6 +57,20 @@ const URLMetaTags = {
 }
 
 /**
+ * Additional schema for the route-specific properties
+ */
+const RouteSpecificProps = {
+	ignoreRoute: {
+		type:    'boolean',
+		default: false,
+	},
+	slugs: {
+		type:  'array',
+		items: { type: ['number', 'string'] }
+	},
+}
+
+/**
  * Custom validation function for the 'W3CDate' keyword
  */
 function validateW3CDate(_data, _dataPath, _parentData, _parentDataPropName)
@@ -203,18 +217,12 @@ module.exports = function validateOptions(_options)
 							type: 'object',
 
 							properties: {
-								slugs: {
-									type:  'array',
-									items: { type: ['number', 'string'] }
-								},
+								...RouteSpecificProps,
 								...URLMetaTags
 							},
 							additionalProperties: false
 						},
-						slugs: {
-							type:  'array',
-							items: { type: ['number', 'string'] }
-						},
+						...RouteSpecificProps,
 						...URLMetaTags
 					},
 					required:              ['path'],

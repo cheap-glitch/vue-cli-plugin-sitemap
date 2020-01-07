@@ -61,6 +61,8 @@ function generateURLsFromRoutes(_routes)
 	{
 		const url = { ..._route, ..._route.sitemap };
 
+		if (url.ignoreRoute) return _urls;
+
 		/**
 		 * Static URLs
 		 */

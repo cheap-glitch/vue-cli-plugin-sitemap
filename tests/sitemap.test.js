@@ -334,6 +334,17 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
+		it("ignores routes with the 'ignoreRoute' option set to 'true'", () => {
+			expect(generateSitemapXML({
+				baseURL:   'https://website.net',
+				defaults:  {},
+				urls:      [],
+				routes:    [{ path: '/' }, { path: '/about' }, { path: '/ignore/me', ignoreRoute: true }],
+			})).to.equal(wrapURLs(
+				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+			));
+		});
+
 		it("ignores the catch-all route", () => {
 			expect(generateSitemapXML({
 				baseURL:   'https://website.net',
