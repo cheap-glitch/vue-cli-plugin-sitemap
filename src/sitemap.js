@@ -25,12 +25,24 @@ function generateSitemapXML(_options)
 
 function generateURLTag(_url, _options)
 {
-	// Generate an XML tag for each meta tag
-	const tags = ['lastmod', 'changefreq', 'priority']
-		.filter(__tag => __tag in _url || __tag in _options.defaults)
-		.map(   __tag => `\t\t<${__tag}>${(__tag in _url) ? _url[__tag] : _options.defaults[__tag]}</${__tag}>\n`);
+	const metaTags = ['lastmod', 'changefreq', 'priority'].map(function(__tag)
+	{
+		if (__tag in _url == false && __tag in _options.defaults == false)
+			return '';
 
-	return `\t<url>\n\t\t<loc>${_url.loc}</loc>\n${tags.join('')}\t</url>\n`;
+		let value = (__tag in _url) ? _url[__tag] : _options.defaults[__tag];
+
+		// Fix the bug of whole-number priorities
+		if (__tag == 'priority')
+		{
+			if (value === 0) value = '0.0';
+			if (value === 1) value = '1.0';
+		}
+
+		return `\t\t<${__tag}>${value}</${__tag}>\n`;
+	});
+
+	return `\t<url>\n\t\t<loc>${_url.loc}</loc>\n${metaTags.join('')}\t</url>\n`;
 }
 
 function escapeUrl(_url)

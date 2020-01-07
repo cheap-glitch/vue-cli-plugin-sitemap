@@ -154,6 +154,26 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				`<url><loc>https://website.net/about</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url><url><loc>https://website.net/info</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>`
 			));
 		});
+
+		it("writes whole-number priorities with a decimal", () => {
+			expect(generateSitemapXML({
+				baseURL:   '',
+				defaults:  {},
+				routes:    [],
+				urls:      [
+					{
+						loc:         'https://website.net/about',
+						priority:    1.0,
+					},
+					{
+						loc:         'https://website.net/old',
+						priority:    0.0,
+					},
+				]
+			})).to.equal(wrapURLs(
+				`<url><loc>https://website.net/about</loc><priority>1.0</priority></url><url><loc>https://website.net/old</loc><priority>0.0</priority></url>`
+			));
+		});
 	});
 
 	/**
