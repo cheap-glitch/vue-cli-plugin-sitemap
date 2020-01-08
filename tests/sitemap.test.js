@@ -8,7 +8,10 @@ const validateOptions    = require('../src/validation');
 const generateSitemapXML = require('../src/sitemap');
 
 // Wrap some <url> elements in the same XML elements as the sitemap
-const wrapURLs = _xml => `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${_xml}</urlset>`;
+const wrapURLs = _xml => '<?xml version="1.0" encoding="UTF-8"?>'
+                       + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+                           + (Array.isArray(_xml) ? _xml.join('') : _xml)
+                       + '</urlset>';
 
 describe("vue-cli-plugin-sitemap sitemap generation", () => {
 
@@ -26,7 +29,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				routes:    [],
 				urls:      [{ loc: 'https://website.net' }, { loc: 'https://website.net/about' }],
 			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
 
@@ -37,7 +40,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				routes:    [],
 				urls:      [{ loc: '/' }, { loc: '/about' }],
 			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
 
@@ -47,9 +50,10 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				defaults:  {},
 				routes:    [],
 				urls:      [{ loc: '/' }, { loc: '/about' }, { loc: '/page/' }],
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url><url><loc>https://website.net/page</loc></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>',
+				'<url><loc>https://website.net/page</loc></url>'
+			]));
 		});
 
 		it("adds trailing slashes if the 'trailingSlash' option is set", () => {
@@ -59,9 +63,10 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				routes:    [],
 				urls:      [{ loc: '/' }, { loc: '/about' }, { loc: '/page/' }],
 				trailingSlash: true,
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/</loc></url><url><loc>https://website.net/about/</loc></url><url><loc>https://website.net/page/</loc></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url><loc>https://website.net/</loc></url><url><loc>https://website.net/about/</loc></url>',
+				'<url><loc>https://website.net/page/</loc></url>'
+			]));
 		});
 
 		it("encodes URIs properly", () => {
@@ -71,7 +76,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				routes:    [],
 				urls:      [{ loc: '/search?color="always"&reverse-order' }],
 			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/search?color=%22always%22&amp;reverse-order</loc></url>`
+				'<url><loc>https://website.net/search?color=%22always%22&amp;reverse-order</loc></url>'
 			));
 
 			expect(generateSitemapXML({
@@ -80,7 +85,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				routes:    [],
 				urls:      [{ loc: '/about' }],
 			})).to.equal(wrapURLs(
-				`<url><loc>https://%C3%A9l%C3%A9phant.net/about</loc></url>`
+				'<url><loc>https://%C3%A9l%C3%A9phant.net/about</loc></url>'
 			));
 		});
 
@@ -95,9 +100,14 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 					lastmod:     '2020-01-01',
 					priority:    0.3,
 				}]
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/about</loc><lastmod>2020-01-01</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url>',
+					'<loc>https://website.net/about</loc>',
+					'<lastmod>2020-01-01</lastmod>',
+					'<changefreq>monthly</changefreq>',
+					'<priority>0.3</priority>',
+				'</url>'
+			]));
 		});
 
 		it("takes default meta tags into account", () => {
@@ -112,9 +122,14 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				urls:      [{
 					loc:         'https://website.net/about',
 				}]
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/about</loc><lastmod>2020-01-01</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url>',
+					'<loc>https://website.net/about</loc>',
+					'<lastmod>2020-01-01</lastmod>',
+					'<changefreq>monthly</changefreq>',
+					'<priority>0.3</priority>',
+				'</url>'
+			]));
 		});
 
 		it("prioritizes per-URL meta tags over global defaults", () => {
@@ -131,9 +146,14 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 					lastmod:     '2020-01-01',
 					priority:    0.3,
 				}]
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/about</loc><lastmod>2020-01-01</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url>',
+					'<loc>https://website.net/about</loc>',
+					'<lastmod>2020-01-01</lastmod>',
+					'<changefreq>monthly</changefreq>',
+					'<priority>0.3</priority>',
+				'</url>'
+			]));
 		});
 
 		it("handles dates in various formats", () => {
@@ -150,9 +170,10 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				]
 			};
 			validateOptions(data);
-			expect(generateSitemapXML(data)).to.equal(wrapURLs(
-				`<url><loc>https://website.net/about</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url><url><loc>https://website.net/info</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>`
-			));
+			expect(generateSitemapXML(data)).to.equal(wrapURLs([
+				'<url><loc>https://website.net/about</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>',
+				'<url><loc>https://website.net/info</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>'
+			]));
 		});
 
 		it("writes whole-number priorities with a decimal", () => {
@@ -170,9 +191,10 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 						priority:    0.0,
 					},
 				]
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/about</loc><priority>1.0</priority></url><url><loc>https://website.net/old</loc><priority>0.0</priority></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url><loc>https://website.net/about</loc><priority>1.0</priority></url>',
+				'<url><loc>https://website.net/old</loc><priority>0.0</priority></url>'
+			]));
 		});
 	});
 
@@ -194,7 +216,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				urls:      [],
 				routes:    [{ path: '/' }, { path: '/about' }],
 			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
 
@@ -205,7 +227,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				urls:      [],
 				routes:    [{ path: '/' }, { path: '/complicated/path/here', loc: '/about' }],
 			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
 
@@ -215,9 +237,10 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				defaults:  {},
 				urls:      [],
 				routes:    [{ path: '/' }, { path: '/about' }, { path: '/page/' }],
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url><url><loc>https://website.net/page</loc></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>',
+				'<url><loc>https://website.net/page</loc></url>'
+			]));
 		});
 
 		it("adds trailing slashes if the 'trailingSlash' option is set", () => {
@@ -227,9 +250,10 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				urls:      [],
 				routes:    [{ path: '/' }, { path: '/about' }, { path: '/page/' }],
 				trailingSlash: true,
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/</loc></url><url><loc>https://website.net/about/</loc></url><url><loc>https://website.net/page/</loc></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url><loc>https://website.net/</loc></url><url><loc>https://website.net/about/</loc></url>',
+				'<url><loc>https://website.net/page/</loc></url>'
+			]));
 		});
 
 		it("takes per-route meta tags into account", () => {
@@ -243,9 +267,14 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 					lastmod:     '2020-01-01',
 					priority:    0.3,
 				}]
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/about</loc><lastmod>2020-01-01</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url>',
+					'<loc>https://website.net/about</loc>',
+					'<lastmod>2020-01-01</lastmod>',
+					'<changefreq>monthly</changefreq>',
+					'<priority>0.3</priority>',
+				'</url>'
+			]));
 
 			expect(generateSitemapXML({
 				baseURL:   'https://website.net',
@@ -259,9 +288,14 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 						priority:    0.3,
 					}
 				}]
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/about</loc><lastmod>2020-01-01</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url>',
+					'<loc>https://website.net/about</loc>',
+					'<lastmod>2020-01-01</lastmod>',
+					'<changefreq>monthly</changefreq>',
+					'<priority>0.3</priority>',
+				'</url>'
+			]));
 		});
 
 		it("takes default meta tags into account", () => {
@@ -276,9 +310,14 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				routes:    [{
 					path: '/about',
 				}]
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/about</loc><lastmod>2020-01-01</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url>',
+					'<loc>https://website.net/about</loc>',
+					'<lastmod>2020-01-01</lastmod>',
+					'<changefreq>monthly</changefreq>',
+					'<priority>0.3</priority>',
+				'</url>'
+			]));
 		});
 
 		it("prioritizes per-route meta tags over global defaults", () => {
@@ -295,9 +334,14 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 					lastmod:     '2020-01-01',
 					priority:    0.3,
 				}]
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/about</loc><lastmod>2020-01-01</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url>',
+					'<loc>https://website.net/about</loc>',
+					'<lastmod>2020-01-01</lastmod>',
+					'<changefreq>monthly</changefreq>',
+					'<priority>0.3</priority>',
+				'</url>'
+			]));
 		});
 
 		it("generates an URL for each slug", () => {
@@ -312,9 +356,10 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 						'3-tricks-to-better-fold-your-socks',
 					]
 				}]
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/article/my-first-article</loc></url><url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url><loc>https://website.net/article/my-first-article</loc></url>',
+				'<url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc></url>'
+			]));
 
 			expect(generateSitemapXML({
 				baseURL:   'https://website.net',
@@ -329,9 +374,10 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 						]
 					}
 				}]
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/article/my-first-article</loc></url><url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url><loc>https://website.net/article/my-first-article</loc></url>',
+				'<url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc></url>'
+			]));
 		});
 
 		it("takes slug-specific meta tags into account", () => {
@@ -351,9 +397,15 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 						}
 					]
 				}]
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/article/my-first-article</loc></url><url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc><lastmod>2018-06-24</lastmod><changefreq>never</changefreq><priority>0.8</priority></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url><loc>https://website.net/article/my-first-article</loc></url>',
+				'<url>',
+					'<loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc>',
+					'<lastmod>2018-06-24</lastmod>',
+					'<changefreq>never</changefreq>',
+					'<priority>0.8</priority>',
+				'</url>'
+			]));
 		});
 
 		it("prioritizes slug-specific meta tags over route meta tags and global defaults", () => {
@@ -377,9 +429,14 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 						}
 					]
 				}]
-			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc><lastmod>2018-06-24</lastmod><changefreq>never</changefreq><priority>0.8</priority></url>`
-			));
+			})).to.equal(wrapURLs([
+				'<url>',
+					'<loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc>',
+					'<lastmod>2018-06-24</lastmod>',
+					'<changefreq>never</changefreq>',
+					'<priority>0.8</priority>',
+				'</url>'
+			]));
 		});
 
 		it("ignores routes with the 'ignoreRoute' option set to 'true'", () => {
@@ -389,7 +446,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				urls:      [],
 				routes:    [{ path: '/' }, { path: '/about' }, { path: '/ignore/me', ignoreRoute: true }],
 			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
 
@@ -400,7 +457,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				urls:      [],
 				routes:    [{ path: '/' }, { path: '/about' }, { path: '*', name: '404' }],
 			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
 
@@ -411,7 +468,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				urls:      [],
 				routes:    [{ path: '/' }, { path: '/about' }, { path: '/user/:id' }],
 			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
 	});
@@ -434,7 +491,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				routes:    [{ path: '/about' }],
 				urls:      [{ loc:  '/' }],
 			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
 
@@ -445,7 +502,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				routes:    [{ path: '/' }, { path: '/about' }],
 				urls:      [{ loc:  '/' }],
 			})).to.equal(wrapURLs(
-				`<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>`
+				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
 	});
