@@ -385,6 +385,26 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
+		it("removes duplicate slugs", () => {
+			expect(generateSitemapXML({
+				baseURL:   'https://website.net',
+				defaults:  {},
+				urls:      [],
+				routes:    [{
+					path:  '/article/:title',
+					slugs: [
+						'my-first-article',
+						'3-tricks-to-better-fold-your-socks',
+						'my-first-article',
+						'3-tricks-to-better-fold-your-socks',
+					]
+				}]
+			})).to.equal(wrapURLs([
+				'<url><loc>https://website.net/article/my-first-article</loc></url>',
+				'<url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc></url>',
+			]));
+		});
+
 		it("takes slug-specific meta tags into account", () => {
 			expect(generateSitemapXML({
 				baseURL:   'https://website.net',

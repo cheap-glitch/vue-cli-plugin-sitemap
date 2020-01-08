@@ -92,13 +92,11 @@ function generateURLsFromRoutes(_routes)
 		const param = _route.path.match(/:\w+/)[0];
 
 		// Build the array of URLs
-		const urls = url.slugs.map(function(__slug)
+		const urls = [...new Set(url.slugs)].map(function(__slug)
 		{
 			// If the slug is an object (slug + additional meta tags)
 			if (Object.prototype.toString.call(__slug) === '[object Object]')
-			{
 				return { loc: path.replace(param, __slug.slug), ...url, ...__slug };
-			}
 
 			// Else if the slug is just a simple value
 			return { loc: path.replace(param, __slug), ...url }
