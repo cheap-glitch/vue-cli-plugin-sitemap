@@ -113,7 +113,7 @@ module.exports = {
 
 The recommended way to provide data to the plugin is to pass the array of routes
 used with `vue-router`. Below is an  example of a simple setup that demonstrates
-the usage of all the possible options:
+usage of all the possible options:
 
 ```javascript
 // src/routes.js
