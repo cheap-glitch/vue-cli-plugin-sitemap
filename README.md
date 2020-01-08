@@ -159,7 +159,8 @@ const routes = [
 		],
 	},
 	{
-		path: 'users/:id',
+		path:    'users/:id',
+		lastmod: 1578503451000,
 
 		// Slugs can also be provided via an asynchronous function
 		slugs: async () => [...await someAsyncCallToADatabase()]
