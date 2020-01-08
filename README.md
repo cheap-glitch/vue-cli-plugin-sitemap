@@ -112,7 +112,8 @@ module.exports = {
 ### Generating from routes
 
 The recommended way to provide data to the plugin is to pass the array of routes
-used with `vue-router`. For example, a basic setup could look like this:
+used with `vue-router`. Below is an  example of a simple setup that demonstrates
+the usage of all the possible options:
 
 ```javascript
 // src/routes.js
@@ -156,6 +157,12 @@ const routes = [
 				lastmod:   '2020-01-01',
 			}
 		],
+	},
+	{
+		path: 'users/:id',
+
+		// Slugs can also be provided via an asynchronous function
+		slugs: async () => [...await someAsyncCallToADatabase()]
 	},
 	{
 		path: '/some/very-long/or/complicated/path',

@@ -3,12 +3,12 @@
  * src/sitemap.js
  */
 
-function generateSitemapXML(_options)
+async function generateSitemapXML(_options)
 {
 	// If a base URL is specified, make sure it ends with a slash
 	const baseURL = _options.baseURL ? `${_options.baseURL.replace(/\/+$/, '')}/` : '';
 
-	const urls = [..._options.urls, ...generateURLsFromRoutes(_options.routes)]
+	const urls = [..._options.urls, ...await generateURLsFromRoutes(_options.routes)]
 		// Generate the location of each URL
 		.map(_url => ({ ..._url, loc: escapeUrl(baseURL + _url.loc.replace(/^\//, '')).replace(/\/$/, '') + (_options.trailingSlash ? '/' : '') }))
 		// Remove duplicate URLs (static URLs have preference over routes)
@@ -55,55 +55,72 @@ function escapeUrl(_url)
 		.replace('>',   '&gt;');
 }
 
-function generateURLsFromRoutes(_routes)
+async function generateURLsFromRoutes(_routes)
 {
-	return _routes.reduce(function(_urls, _route)
+	let urls = [];
+
+	for (const _route of _routes)
 	{
+		// Merge the properties located directly in the
+		// route object and those in the 'sitemap' sub-property
 		const url = { ..._route, ..._route.sitemap };
 
-		if (url.ignoreRoute) return _urls;
+		if (url.ignoreRoute) continue;
 
 		/**
 		 * Static URLs
 		 */
-		if ('loc' in url) return [..._urls, url];
+		if ('loc' in url)
+		{
+			urls.push(url);
+			continue;
+		}
 
 		/**
 		 * Static routes
 		 */
 
 		// Ignore the "catch-all" 404 route
-		if (_route.path == '*') return _urls;
+		if (_route.path == '*') continue;
 
 		// Remove a potential slash at the beginning of the path
 		const path = _route.path.replace(/^\/+/, '');
 
 		// For static routes, simply prepend the base URL to the path
-		if (!_route.path.includes(':')) return [..._urls, { loc: path, ...url }];
+		if (!_route.path.includes(':'))
+		{
+			urls.push({ loc: path, ...url });
+			continue;
+		}
 
 		/**
 		 * Dynamic routes
 		 */
 
 		// Ignore dynamic routes if no slugs are provided
-		if (!url.slugs) return _urls;
+		if (!url.slugs) continue;
 
 		// Get the name of the dynamic parameter
 		const param = _route.path.match(/:\w+/)[0];
 
+		// If the 'slug' property is a generator, execute it
+		const slugs = await (typeof url.slugs == 'function' ? url.slugs.call() : url.slugs);
+
 		// Build the array of URLs
-		const urls = [...new Set(url.slugs)].map(function(__slug)
-		{
-			// If the slug is an object (slug + additional meta tags)
-			if (Object.prototype.toString.call(__slug) === '[object Object]')
-				return { loc: path.replace(param, __slug.slug), ...url, ...__slug };
+		urls = urls.concat(
+			[...new Set(slugs)].map(function(__slug)
+			{
+				// If the slug is an object (slug + additional meta tags)
+				if (Object.prototype.toString.call(__slug) === '[object Object]')
+					return { loc: path.replace(param, __slug.slug), ...url, ...__slug };
 
-			// Else if the slug is just a simple value
-			return { loc: path.replace(param, __slug), ...url }
-		});
+				// Else if the slug is just a simple value
+				return { loc: path.replace(param, __slug), ...url }
+			})
+		);
+	}
 
-		return [..._urls, ...urls];
-	}, []);
+	return urls;
 }
 
 module.exports = generateSitemapXML;

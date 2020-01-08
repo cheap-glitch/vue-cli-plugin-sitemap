@@ -24,7 +24,7 @@ const fs                 = require('fs');
 const validateOptions    = require('./src/validation');
 const generateSitemapXML = require('./src/sitemap');
 
-module.exports = function(_api, _options)
+module.exports = async function(_api, _options)
 {
 	/**
 	 * Add a new command to generate the sitemap
@@ -36,14 +36,14 @@ module.exports = function(_api, _options)
 			options:      { '--pretty': 'Prettify the XML to make the sitemap more human-readable' },
 			description:  'Generate the sitemap',
 		},
-		function(__args)
+		async function(__args)
 		{
 			const options = { ..._options.pluginOptions.sitemap };
 
 			if (__args.pretty)
 				options.pretty = true;
 
-			writeSitemap(options);
+			await writeSitemap(options);
 		}
 	);
 
@@ -59,11 +59,11 @@ module.exports = function(_api, _options)
 		// Don't generate the sitemap if not in production and the option 'productionOnly' is set
 		if (_options.pluginOptions.sitemap.productionOnly && process.env.NODE_ENV !== 'production') return;
 
-		writeSitemap(_options.pluginOptions.sitemap, ('outputDir' in _options) ? _options.outputDir : 'dist');
+		await writeSitemap(_options.pluginOptions.sitemap, ('outputDir' in _options) ? _options.outputDir : 'dist');
 	};
 }
 
-function writeSitemap(_options, _outputDir = '.')
+async function writeSitemap(_options, _outputDir = '.')
 {
 	// Validate the config and set the default values
 	const error = validateOptions(_options);
@@ -77,7 +77,7 @@ function writeSitemap(_options, _outputDir = '.')
 	try {
 		fs.writeFileSync(
 			`${_outputDir}/sitemap.xml`,
-			generateSitemapXML(_options),
+			await generateSitemapXML(_options),
 		);
 	}
 	catch (error) {

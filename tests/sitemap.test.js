@@ -22,8 +22,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 	 */
 	describe("from an array of URLs", () => {
 
-		it("generates a simple sitemap from full URLs", () => {
-			expect(generateSitemapXML({
+		it("generates a simple sitemap from full URLs", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   '',
 				defaults:  {},
 				routes:    [],
@@ -33,8 +33,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
-		it("generates a simple sitemap from partial URLs and a base URL", () => {
-			expect(generateSitemapXML({
+		it("generates a simple sitemap from partial URLs and a base URL", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				routes:    [],
@@ -44,8 +44,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
-		it("removes trailing slashes", () => {
-			expect(generateSitemapXML({
+		it("removes trailing slashes", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				routes:    [],
@@ -56,8 +56,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
-		it("adds trailing slashes if the 'trailingSlash' option is set", () => {
-			expect(generateSitemapXML({
+		it("adds trailing slashes if the 'trailingSlash' option is set", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				routes:    [],
@@ -69,8 +69,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
-		it("encodes URIs properly", () => {
-			expect(generateSitemapXML({
+		it("encodes URIs properly", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				routes:    [],
@@ -79,7 +79,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				'<url><loc>https://website.net/search?color=%22always%22&amp;reverse-order</loc></url>'
 			));
 
-			expect(generateSitemapXML({
+			expect(await generateSitemapXML({
 				baseURL:   'https://éléphant.net',
 				defaults:  {},
 				routes:    [],
@@ -89,8 +89,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
-		it("takes per-URL meta tags into account", () => {
-			expect(generateSitemapXML({
+		it("takes per-URL meta tags into account", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   '',
 				defaults:  {},
 				routes:    [],
@@ -110,8 +110,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
-		it("takes default meta tags into account", () => {
-			expect(generateSitemapXML({
+		it("takes default meta tags into account", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   '',
 				defaults:  {
 					changefreq:  'monthly',
@@ -132,8 +132,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
-		it("prioritizes per-URL meta tags over global defaults", () => {
-			expect(generateSitemapXML({
+		it("prioritizes per-URL meta tags over global defaults", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   '',
 				defaults:  {
 					changefreq:  'never',
@@ -156,7 +156,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
-		it("handles dates in various formats", () => {
+		it("handles dates in various formats", async () => {
 			const data = {
 				urls: [
 					{
@@ -174,15 +174,15 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				]
 			};
 			validateOptions(data);
-			expect(generateSitemapXML(data)).to.equal(wrapURLs([
+			expect(await generateSitemapXML(data)).to.equal(wrapURLs([
 				'<url><loc>https://website.net/about</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>',
 				'<url><loc>https://website.net/info</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>',
 				'<url><loc>https://website.net/page</loc><lastmod>2020-01-08T12:17:06.000Z</lastmod></url>',
 			]));
 		});
 
-		it("writes whole-number priorities with a decimal", () => {
-			expect(generateSitemapXML({
+		it("writes whole-number priorities with a decimal", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   '',
 				defaults:  {},
 				routes:    [],
@@ -214,8 +214,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 	 */
 	describe("from an array of routes", () => {
 
-		it("generates a sitemap from simple routes", () => {
-			expect(generateSitemapXML({
+		it("generates a sitemap from simple routes", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				urls:      [],
@@ -225,8 +225,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
-		it("handles routes with a 'loc' property", () => {
-			expect(generateSitemapXML({
+		it("handles routes with a 'loc' property", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				urls:      [],
@@ -236,8 +236,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
-		it("removes trailing slashes", () => {
-			expect(generateSitemapXML({
+		it("removes trailing slashes", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				urls:      [],
@@ -248,8 +248,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
-		it("adds trailing slashes if the 'trailingSlash' option is set", () => {
-			expect(generateSitemapXML({
+		it("adds trailing slashes if the 'trailingSlash' option is set", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				urls:      [],
@@ -261,8 +261,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
-		it("takes per-route meta tags into account", () => {
-			expect(generateSitemapXML({
+		it("takes per-route meta tags into account", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				urls:      [],
@@ -281,7 +281,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				'</url>',
 			]));
 
-			expect(generateSitemapXML({
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				urls:      [],
@@ -303,8 +303,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
-		it("takes default meta tags into account", () => {
-			expect(generateSitemapXML({
+		it("takes default meta tags into account", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {
 					changefreq:  'monthly',
@@ -325,8 +325,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
-		it("prioritizes per-route meta tags over global defaults", () => {
-			expect(generateSitemapXML({
+		it("prioritizes per-route meta tags over global defaults", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {
 					changefreq:  'never',
@@ -349,8 +349,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
-		it("generates an URL for each slug", () => {
-			expect(generateSitemapXML({
+		it("generates an URL for each slug", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				urls:      [],
@@ -366,7 +366,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				'<url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc></url>',
 			]));
 
-			expect(generateSitemapXML({
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				urls:      [],
@@ -385,8 +385,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
-		it("removes duplicate slugs", () => {
-			expect(generateSitemapXML({
+		it("removes duplicate slugs", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				urls:      [],
@@ -405,8 +405,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
-		it("takes slug-specific meta tags into account", () => {
-			expect(generateSitemapXML({
+		it("takes slug-specific meta tags into account", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				urls:      [],
@@ -433,8 +433,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
-		it("prioritizes slug-specific meta tags over route meta tags and global defaults", () => {
-			expect(generateSitemapXML({
+		it("prioritizes slug-specific meta tags over route meta tags and global defaults", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {
 					priority:    0.1,
@@ -464,8 +464,40 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
-		it("ignores routes with the 'ignoreRoute' option set to 'true'", () => {
-			expect(generateSitemapXML({
+		it("accepts a synchronous generator for the slugs", async () => {
+			expect(await generateSitemapXML({
+				baseURL:   'https://website.net',
+				defaults:  {},
+				urls:      [],
+				routes:    [{
+					path:  '/user/:id',
+					slugs: () => [...new Array(3).keys()],
+				}]
+			})).to.equal(wrapURLs([
+				'<url><loc>https://website.net/user/0</loc></url>',
+				'<url><loc>https://website.net/user/1</loc></url>',
+				'<url><loc>https://website.net/user/2</loc></url>',
+			]));
+		});
+
+		it("accepts an asynchronous generator for the slugs", async () => {
+			expect(await generateSitemapXML({
+				baseURL:   'https://website.net',
+				defaults:  {},
+				urls:      [],
+				routes:    [{
+					path:  '/user/:id',
+					slugs: () => new Promise(resolve => setTimeout(() => resolve([...new Array(3).keys()]), 500)),
+				}]
+			})).to.equal(wrapURLs([
+				'<url><loc>https://website.net/user/0</loc></url>',
+				'<url><loc>https://website.net/user/1</loc></url>',
+				'<url><loc>https://website.net/user/2</loc></url>',
+			]));
+		});
+
+		it("ignores routes with the 'ignoreRoute' option set to 'true'", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				urls:      [],
@@ -475,8 +507,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
-		it("ignores the catch-all route", () => {
-			expect(generateSitemapXML({
+		it("ignores the catch-all route", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				urls:      [],
@@ -486,8 +518,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
-		it("ignores dynamic routes with no slugs", () => {
-			expect(generateSitemapXML({
+		it("ignores dynamic routes with no slugs", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				urls:      [],
@@ -509,8 +541,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 	 */
 	describe("from both routes and URLs", () => {
 
-		it("generates a simple sitemap", () => {
-			expect(generateSitemapXML({
+		it("generates a simple sitemap", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				routes:    [{ path: '/about' }],
@@ -520,8 +552,8 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 
-		it("discards duplicate URLs", () => {
-			expect(generateSitemapXML({
+		it("discards duplicate URLs", async () => {
+			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
 				defaults:  {},
 				routes:    [{ path: '/' }, { path: '/about' }],
