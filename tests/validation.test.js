@@ -73,6 +73,12 @@ describe("validation of the options returns an error when:", () => {
 			expect(validate({ defaults: { lastmod: '2019-12-28T21:17:34' } })).to.be.null;
 		});
 
+		it("'lastmod' is an invalid timestamp", () => {
+			expect(validate({ defaults: { lastmod: 99999999999999999 } })).not.to.be.null;
+
+			expect(validate({ defaults: { lastmod: 1578485452000 } })).to.be.null;
+		});
+
 		it("'changefreq' is not a valid value", () => {
 			expect(validate({ defaults: { changefreq: 25 } })).not.to.be.null;
 			expect(validate({ defaults: { changefreq: 'often' } })).not.to.be.null;

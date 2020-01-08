@@ -41,7 +41,7 @@ const W3CDatePattern = `^${YYYY}(?:-${MM}(?:-${DD}(?:T${hh}:${mm}(?::${ss}(?:\\.
  */
 const URLMetaTags = {
 	lastmod: {
-		type:        ['object', 'string'],
+		type:        ['object', 'string', 'number'],
 		W3CDate:     true,
 	},
 	changefreq: {
@@ -123,9 +123,16 @@ function validateW3CDate(_data, _dataPath, _parentData, _parentDataPropName)
 		return validateW3CDate(new Date(_data), _dataPath, _parentData, _parentDataPropName);
 	}
 
+	// If the data is a numeric timestamp
+	if (typeof _data == 'number')
+	{
+		// Create a Date object with the data and validate it
+		return validateW3CDate(new Date(_data), _dataPath, _parentData, _parentDataPropName);
+	}
+
 	validateW3CDate.errors = [{
 		...errorBase,
-		message: 'date must either be a valid Date object or a string following the W3C date format'
+		message: 'date must either be a valid Date object, a string following the W3C date format or a valid numeric timestamp'
 	}];
 
 	return false;
@@ -153,7 +160,7 @@ module.exports = function validateOptions(_options)
 	// Add a keyword to validate the dates
 	validator.addKeyword('W3CDate', {
 		validate:  validateW3CDate,
-		type:      ['object', 'string'],
+		type:      ['object', 'string', 'number'],
 		schema:    false,
 		modifying: true,
 	});

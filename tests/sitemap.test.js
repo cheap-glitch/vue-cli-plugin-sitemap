@@ -52,7 +52,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				urls:      [{ loc: '/' }, { loc: '/about' }, { loc: '/page/' }],
 			})).to.equal(wrapURLs([
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>',
-				'<url><loc>https://website.net/page</loc></url>'
+				'<url><loc>https://website.net/page</loc></url>',
 			]));
 		});
 
@@ -65,7 +65,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				trailingSlash: true,
 			})).to.equal(wrapURLs([
 				'<url><loc>https://website.net/</loc></url><url><loc>https://website.net/about/</loc></url>',
-				'<url><loc>https://website.net/page/</loc></url>'
+				'<url><loc>https://website.net/page/</loc></url>',
 			]));
 		});
 
@@ -106,7 +106,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 					'<lastmod>2020-01-01</lastmod>',
 					'<changefreq>monthly</changefreq>',
 					'<priority>0.3</priority>',
-				'</url>'
+				'</url>',
 			]));
 		});
 
@@ -128,7 +128,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 					'<lastmod>2020-01-01</lastmod>',
 					'<changefreq>monthly</changefreq>',
 					'<priority>0.3</priority>',
-				'</url>'
+				'</url>',
 			]));
 		});
 
@@ -152,7 +152,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 					'<lastmod>2020-01-01</lastmod>',
 					'<changefreq>monthly</changefreq>',
 					'<priority>0.3</priority>',
-				'</url>'
+				'</url>',
 			]));
 		});
 
@@ -167,12 +167,17 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 						loc:      'https://website.net/info',
 						lastmod:  new Date('December 17, 1995 03:24:00'),
 					},
+					{
+						loc:      'https://website.net/page',
+						lastmod:  1578485826000,
+					},
 				]
 			};
 			validateOptions(data);
 			expect(generateSitemapXML(data)).to.equal(wrapURLs([
 				'<url><loc>https://website.net/about</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>',
-				'<url><loc>https://website.net/info</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>'
+				'<url><loc>https://website.net/info</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>',
+				'<url><loc>https://website.net/page</loc><lastmod>2020-01-08T12:17:06.000Z</lastmod></url>',
 			]));
 		});
 
@@ -193,7 +198,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				]
 			})).to.equal(wrapURLs([
 				'<url><loc>https://website.net/about</loc><priority>1.0</priority></url>',
-				'<url><loc>https://website.net/old</loc><priority>0.0</priority></url>'
+				'<url><loc>https://website.net/old</loc><priority>0.0</priority></url>',
 			]));
 		});
 	});
@@ -239,7 +244,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				routes:    [{ path: '/' }, { path: '/about' }, { path: '/page/' }],
 			})).to.equal(wrapURLs([
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>',
-				'<url><loc>https://website.net/page</loc></url>'
+				'<url><loc>https://website.net/page</loc></url>',
 			]));
 		});
 
@@ -252,7 +257,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				trailingSlash: true,
 			})).to.equal(wrapURLs([
 				'<url><loc>https://website.net/</loc></url><url><loc>https://website.net/about/</loc></url>',
-				'<url><loc>https://website.net/page/</loc></url>'
+				'<url><loc>https://website.net/page/</loc></url>',
 			]));
 		});
 
@@ -273,7 +278,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 					'<lastmod>2020-01-01</lastmod>',
 					'<changefreq>monthly</changefreq>',
 					'<priority>0.3</priority>',
-				'</url>'
+				'</url>',
 			]));
 
 			expect(generateSitemapXML({
@@ -294,7 +299,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 					'<lastmod>2020-01-01</lastmod>',
 					'<changefreq>monthly</changefreq>',
 					'<priority>0.3</priority>',
-				'</url>'
+				'</url>',
 			]));
 		});
 
@@ -316,7 +321,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 					'<lastmod>2020-01-01</lastmod>',
 					'<changefreq>monthly</changefreq>',
 					'<priority>0.3</priority>',
-				'</url>'
+				'</url>',
 			]));
 		});
 
@@ -340,7 +345,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 					'<lastmod>2020-01-01</lastmod>',
 					'<changefreq>monthly</changefreq>',
 					'<priority>0.3</priority>',
-				'</url>'
+				'</url>',
 			]));
 		});
 
@@ -358,7 +363,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				}]
 			})).to.equal(wrapURLs([
 				'<url><loc>https://website.net/article/my-first-article</loc></url>',
-				'<url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc></url>'
+				'<url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc></url>',
 			]));
 
 			expect(generateSitemapXML({
@@ -376,7 +381,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				}]
 			})).to.equal(wrapURLs([
 				'<url><loc>https://website.net/article/my-first-article</loc></url>',
-				'<url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc></url>'
+				'<url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc></url>',
 			]));
 		});
 
@@ -404,7 +409,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 					'<lastmod>2018-06-24</lastmod>',
 					'<changefreq>never</changefreq>',
 					'<priority>0.8</priority>',
-				'</url>'
+				'</url>',
 			]));
 		});
 
@@ -435,7 +440,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 					'<lastmod>2018-06-24</lastmod>',
 					'<changefreq>never</changefreq>',
 					'<priority>0.8</priority>',
-				'</url>'
+				'</url>',
 			]));
 		});
 
