@@ -141,7 +141,7 @@ const routes = [
 		}
 	},
 	{
-		path:    'articles/:title',
+		path:    '/articles/:title',
 		lastmod: new Date('December 17, 1995'),
 
 		// Dynamic routes need explicit slugs to generate URLs
@@ -159,7 +159,7 @@ const routes = [
 		],
 	},
 	{
-		path:    'users/:id',
+		path:    '/user/:id',
 		lastmod: 1578503451000,
 
 		// Slugs can also be provided via an asynchronous function
@@ -177,7 +177,7 @@ const routes = [
 		name: '404',
 	},
 	{
-		path: '/ignore/me',
+		path: '/admin/protected-page',
 
 		// Explicitly ignore this route
 		ignoreRoute: true,
