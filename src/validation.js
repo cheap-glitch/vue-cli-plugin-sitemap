@@ -168,11 +168,18 @@ const optionsValidator = ajv.compile({
 		{ properties: { routes: { minItems: 1 } } },
 	],
 
-	// If some routes are passed, require the 'baseURL' property
-	if:   { properties: { routes:  { minItems:  1 } } },
-	then: { properties: { baseURL: { minLength: 1 } } },
+	// Set the validation schema of the URL location according to the 'baseURL' option:
+	//  - if set, require the locations to be simple strings and NOT resembling URIs
+	//  - if unset, require the locations to be full URIs
+	if:     { properties: { baseURL: { minLength: 1 } } },
+	then:   { properties: { urls: { items: { properties: { loc: { not: { anyOf: [{ pattern: '^https?:\\/\\/' }, { pattern: '\\.' }] } } } } } } },
+	else:   { properties: { urls: { items: { properties: { loc: {        allOf: [{ format: 'uri' }, { pattern: '^https?:\\/\\/' }]    } } } } } },
 
 	properties: {
+
+		// If some routes are passed, require the 'baseURL' property
+		if:     { properties: { routes:  { minItems:  1 } } },
+		then:   { properties: { baseURL: { minLength: 1 } } },
 
 		/**
 		 * Global options
@@ -254,20 +261,7 @@ const optionsValidator = ajv.compile({
 				type: 'object',
 
 				properties: {
-					loc: {
-						type: 'string',
-
-						// Set the validation schema of the URL location according to the 'baseURL' option:
-						//  - if set, require the locations to be simple strings and NOT resembling URIs
-						//  - if unset, require the locations to be full URIs
-						if:    { properties: { baseURL: { minLength: 1 } } },
-						then:  { properties: { urls: { items: { properties: {
-						           loc: { not: { anyOf: [{ pattern: '^https?:\\/\\/' }, { pattern: '\\.' }] } }
-						       } } } } },
-						else:  { properties: { urls: { items: { properties: {
-						           loc: { allOf: [{ format: 'uri' }, { pattern: '^https?:\\/\\/' }] }
-						       } } } } },
-					},
+					loc: { type: 'string' },
 					...URLMetaTagsSchema
 				},
 				required:              ['loc'],
@@ -279,6 +273,7 @@ const optionsValidator = ajv.compile({
 });
 
 module.exports = {
+	ajv,
 	slugsValidator,
 	optionsValidator,
 }

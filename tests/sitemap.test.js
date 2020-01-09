@@ -3,9 +3,9 @@
  * tests/sitemap.test.js
  */
 
-const { expect }         = require('chai');
-const validateOptions    = require('../src/validation');
-const generateSitemapXML = require('../src/sitemap');
+const { expect }           = require('chai');
+const generateSitemapXML   = require('../src/sitemap');
+const { optionsValidator } = require('../src/validation');
 
 // Wrap some <url> elements in the same XML elements as the sitemap
 const wrapURLs = _xml => '<?xml version="1.0" encoding="UTF-8"?>'
@@ -173,7 +173,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 					},
 				]
 			};
-			validateOptions(data);
+			optionsValidator(data);
 			expect(await generateSitemapXML(data)).to.equal(wrapURLs([
 				'<url><loc>https://website.net/about</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>',
 				'<url><loc>https://website.net/info</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>',
