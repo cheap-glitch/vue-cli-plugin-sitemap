@@ -20,9 +20,9 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-const fs                 = require('fs');
-const validateOptions    = require('./src/validation');
-const generateSitemapXML = require('./src/sitemap');
+const fs                   = require('fs');
+const generateSitemapXML   = require('./src/sitemap');
+const { optionsValidator } = require('./src/validation');
 
 module.exports = async function(_api, _options)
 {
@@ -66,7 +66,7 @@ module.exports = async function(_api, _options)
 async function writeSitemap(_options, _outputDir = '.')
 {
 	// Validate the config and set the default values
-	const error = validateOptions(_options);
+	const error = optionsValidator(_options);
 	if (error !== null)
 	{
 		console.error(`[vue-cli-plugin-sitemap]: ${error.replace(/^data/, 'options')}`);

@@ -37,9 +37,11 @@ const TZD  = `(?:Z|[+-]${hh}:${mm})`;
 const W3CDatePattern = `^${YYYY}(?:-${MM}(?:-${DD}(?:T${hh}:${mm}(?::${ss}(?:\\.${s})?)?${TZD})?)?)?$`;
 
 /**
- * Schema for the URL meta tags
+ * Schemas
+ * -----------------------------------------------------------------------------
  */
-const URLMetaTags = {
+
+const URLMetaTagsSchema = {
 	lastmod: {
 		type:        ['object', 'string', 'number'],
 		W3CDate:     true,
@@ -56,29 +58,28 @@ const URLMetaTags = {
 	},
 }
 
-/**
- * Additional schema for the route-specific properties
- */
-const RouteSpecificProps = {
+const slugsSchema = {
+	type:  'array',
+	items: {
+		type: ['object', 'number', 'string'],
+
+		properties: {
+			slug: {
+				type: ['number', 'string']
+			},
+			...URLMetaTagsSchema,
+		},
+		required:              ['slug'],
+		additionalProperties:  false
+	}
+}
+
+const routePropsSchema = {
 	ignoreRoute: {
 		type:    'boolean',
 		default: false,
 	},
-	slugs: {
-		type:  'array',
-		items: {
-			type: ['object', 'number', 'string'],
-
-			properties: {
-				slug: {
-					type: ['number', 'string']
-				},
-				...URLMetaTags,
-			},
-			required:              ['slug'],
-			additionalProperties:  false
-		}
-	},
+	slugs: slugsSchema,
 }
 
 /**
@@ -139,140 +140,145 @@ function validateW3CDate(_data, _dataPath, _parentData, _parentDataPropName)
 }
 
 /**
- * Main validation function
+ * Validators
+ * -----------------------------------------------------------------------------
  */
-module.exports = function validateOptions(_options)
-{
-	const validator = new AJV({
-		useDefaults:          true,
-		multipleOfPrecision:  3,
-	});
 
-	/**
-	 * Set the validation schema of the URL location according to the 'baseURL' option:
-	 *  - if set, require the locations to be simple strings and NOT resembling URIs
-	 *  - if unset, require the locations to be full URIs
-	 */
-	const URLLocationSchema = (_options && typeof _options == 'object' && 'baseURL' in _options)
-	                        ? { not: { anyOf: [{ pattern: '^https?:\\/\\/' }, { pattern: '\\.' }] } }
-	                        : { allOf: [{ format: 'uri' }, { pattern: '^https?:\\/\\/' }] }
+const ajv = new AJV({
+	useDefaults:          true,
+	multipleOfPrecision:  3,
+});
 
-	// Add a keyword to validate the dates
-	validator.addKeyword('W3CDate', {
-		validate:  validateW3CDate,
-		type:      ['object', 'string', 'number'],
-		schema:    false,
-		modifying: true,
-	});
+// Add a keyword to validate the dates
+ajv.addKeyword('W3CDate', {
+	validate:  validateW3CDate,
+	type:      ['object', 'string', 'number'],
+	schema:    false,
+	modifying: true,
+});
 
-	const schema = {
-		type: 'object',
+// Compile the validators
+const slugsValidator   = ajv.compile(slugsSchema);
+const optionsValidator = ajv.compile({
+	type: 'object',
 
-		// Require at least on URL or one route
-		anyOf: [
-			{ properties: { urls:   { minItems: 1 } } },
-			{ properties: { routes: { minItems: 1 } } },
-		],
+	// Require at least on URL or one route
+	anyOf: [
+		{ properties: { urls:   { minItems: 1 } } },
+		{ properties: { routes: { minItems: 1 } } },
+	],
 
-		// If some routes are passed, require the 'baseURL' property
-		if:   { properties: { routes:  { minItems:  1 } } },
-		then: { properties: { baseURL: { minLength: 1 } } },
+	// If some routes are passed, require the 'baseURL' property
+	if:   { properties: { routes:  { minItems:  1 } } },
+	then: { properties: { baseURL: { minLength: 1 } } },
 
-		properties: {
+	properties: {
 
-			/**
-			 * Global options
-			 * -------------------------------------------------------------
-			 */
-			productionOnly: {
-				type:     'boolean',
-				default:  false,
-			},
-			baseURL: {
-				type:     'string',
-				default:  '',
-
-				anyOf: [
-					{
-						minLength:  0,
-						maxLength:  0,
-					},
-					{
-						format:     'uri',
-						pattern:    '\\.[a-z]+$',
-					}
-				]
-			},
-			trailingSlash: {
-				type:     'boolean',
-				default:  false,
-			},
-			pretty: {
-				type:     'boolean',
-				default:  false,
-			},
-			// Default URL meta tags
-			defaults: {
-				type:                  'object',
-				properties:            URLMetaTags,
-				additionalProperties:  false,
-				default:               {},
-			},
-
-			/**
-			 * Routes
-			 * -------------------------------------------------------------
-			 */
-			routes: {
-				type:    'array',
-				default: [],
-
-				items: {
-					type: 'object',
-
-					properties: {
-						sitemap: {
-							type: 'object',
-
-							properties: {
-								...RouteSpecificProps,
-								...URLMetaTags
-							},
-							additionalProperties: false
-						},
-						...RouteSpecificProps,
-						...URLMetaTags
-					},
-					required:              ['path'],
-					additionalProperties:  true
-				}
-			},
-
-			/**
-			 * URLs
-			 * -------------------------------------------------------------
-			 */
-			urls: {
-				type:    'array',
-				default: [],
-
-				items: {
-					type: 'object',
-
-					properties: {
-						loc: {
-							type: 'string',
-							...URLLocationSchema
-						},
-						...URLMetaTags
-					},
-					required:              ['loc'],
-					additionalProperties:  false,
-				}
-			},
+		/**
+		 * Global options
+		 * -------------------------------------------------------------
+		 */
+		productionOnly: {
+			type:     'boolean',
+			default:  false,
 		},
-		additionalProperties: false,
-	};
+		baseURL: {
+			type:     'string',
+			default:  '',
 
-	return !validator.validate(schema, _options) ? validator.errorsText() : null;
+			anyOf: [
+				{
+					minLength:  0,
+					maxLength:  0,
+				},
+				{
+					format:     'uri',
+					pattern:    '\\.[a-z]+$',
+				}
+			]
+		},
+		trailingSlash: {
+			type:     'boolean',
+			default:  false,
+		},
+		pretty: {
+			type:     'boolean',
+			default:  false,
+		},
+		// Default URL meta tags
+		defaults: {
+			type:                  'object',
+			properties:            URLMetaTagsSchema,
+			additionalProperties:  false,
+			default:               {},
+		},
+
+		/**
+		 * Routes
+		 * -------------------------------------------------------------
+		 */
+		routes: {
+			type:    'array',
+			default: [],
+
+			items: {
+				type: 'object',
+
+				properties: {
+					sitemap: {
+						type: 'object',
+
+						properties: {
+							...routePropsSchema,
+							...URLMetaTagsSchema
+						},
+						additionalProperties: false
+					},
+					...routePropsSchema,
+					...URLMetaTagsSchema
+				},
+				required:              ['path'],
+				additionalProperties:  true
+			}
+		},
+
+		/**
+		 * URLs
+		 * -------------------------------------------------------------
+		 */
+		urls: {
+			type:    'array',
+			default: [],
+
+			items: {
+				type: 'object',
+
+				properties: {
+					loc: {
+						type: 'string',
+
+						// Set the validation schema of the URL location according to the 'baseURL' option:
+						//  - if set, require the locations to be simple strings and NOT resembling URIs
+						//  - if unset, require the locations to be full URIs
+						if:    { properties: { baseURL: { minLength: 1 } } },
+						then:  { properties: { urls: { items: { properties: {
+						           loc: { not: { anyOf: [{ pattern: '^https?:\\/\\/' }, { pattern: '\\.' }] } }
+						       } } } } },
+						else:  { properties: { urls: { items: { properties: {
+						           loc: { allOf: [{ format: 'uri' }, { pattern: '^https?:\\/\\/' }] }
+						       } } } } },
+					},
+					...URLMetaTagsSchema
+				},
+				required:              ['loc'],
+				additionalProperties:  false,
+			}
+		},
+	},
+	additionalProperties: false,
+});
+
+module.exports = {
+	slugsValidator,
+	optionsValidator,
 }
