@@ -68,7 +68,7 @@ async function writeSitemap(_options, _outputDir = '.')
 	// Validate the config and set the default values
 	if (!optionsValidator(_options))
 	{
-		console.error(`[vue-cli-plugin-sitemap]: ${ajv.errorsText().replace(/^data/, 'options')}`);
+		console.error(`[vue-cli-plugin-sitemap]: ${ajv.errorsText(optionsValidator.errors).replace(/^data/, 'options')}`);
 		return;
 	}
 

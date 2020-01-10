@@ -109,7 +109,8 @@ async function generateURLsFromRoutes(_routes)
 		const slugs = await (typeof url.slugs == 'function' ? url.slugs.call() : url.slugs);
 
 		// Check the validity of the slugs
-		if (!slugsValidator(slugs)) throw `[vue-cli-plugin-sitemap]: ${ajv.errorsText().replace(/^data/, 'slugs')}`;
+		if (!slugsValidator(slugs))
+			throw new Error(`[vue-cli-plugin-sitemap]: ${ajv.errorsText(slugsValidator.errors).replace(/^data/, 'slugs')}`);
 
 		// Build the array of URLs
 		urls = urls.concat(

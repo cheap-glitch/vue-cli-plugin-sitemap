@@ -487,7 +487,7 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 				urls:      [],
 				routes:    [{
 					path:  '/user/:id',
-					slugs: () => new Promise(resolve => setTimeout(() => resolve([...new Array(3).keys()]), 500)),
+					slugs: () => new Promise(resolve => setTimeout(() => resolve([...new Array(3).keys()]), 20)),
 				}]
 			})).to.equal(wrapURLs([
 				'<url><loc>https://website.net/user/0</loc></url>',
