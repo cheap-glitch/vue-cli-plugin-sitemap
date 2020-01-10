@@ -3,6 +3,8 @@
  * src/sitemap.js
  */
 
+const { ajv, slugsValidator } = require('./validation');
+
 async function generateSitemapXML(_options)
 {
 	// If a base URL is specified, make sure it ends with a slash
@@ -105,6 +107,9 @@ async function generateURLsFromRoutes(_routes)
 
 		// If the 'slug' property is a generator, execute it
 		const slugs = await (typeof url.slugs == 'function' ? url.slugs.call() : url.slugs);
+
+		// Check the validity of the slugs
+		if (!slugsValidator(slugs)) throw `[vue-cli-plugin-sitemap]: ${ajv.errorsText().replace(/^data/, 'slugs')}`;
 
 		// Build the array of URLs
 		urls = urls.concat(
