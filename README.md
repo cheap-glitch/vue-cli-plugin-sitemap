@@ -3,6 +3,15 @@
 ![latest release badge](https://badgen.net/github/release/cheap-glitch/vue-cli-plugin-sitemap?color=green)
 [![codecov badge](https://codecov.io/gh/cheap-glitch/vue-cli-plugin-fontawesome/branch/master/graph/badge.svg)](https://codecov.io/gh/cheap-glitch/vue-cli-plugin-fontawesome)
 
+ 1. [Installation](#installation)
+ 2. [Usage](#usage)
+ 3. [Configuration](#configuration)
+   * [URL meta tags](#url-meta-tags)
+   * [Global settings](#global-settings)
+   * [Generating from routes](#generating-from-routes)
+   * [Generating from static URLs](#generating-from-static-urls)
+ 4. [License](#license)
+
 **vue-cli-plugin-sitemap** generates sitemaps  for your webapps. You  can use it
 on its own or integrate it in the definition of your routes. Features:
  * generate sitemaps from an array of routes
@@ -51,7 +60,7 @@ npm run sitemap
 
 #### Options
 
-When running the plugin  on the command line, it fill follow  the options set in
+When running the plugin  on the command line, it will follow  the options set in
 `vue.config.js`. If needed, you can overwrite those with some CLI flags:
  * `-p` or `--pretty`: produce a human-readable output
  * `-o <dir>` or `--output-dir <dir>`: specify a directory in which the sitemap will be written
