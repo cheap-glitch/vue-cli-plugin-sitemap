@@ -5,22 +5,48 @@
 
 const { ajv, slugsValidator } = require('./validation');
 
-async function generateSitemapXML(_options)
+async function generateSitemap(_options)
 {
 	// If a base URL is specified, make sure it ends with a slash
 	const baseURL = _options.baseURL ? `${_options.baseURL.replace(/\/+$/, '')}/` : '';
 
+	// Generate the URLs
 	const urls = [..._options.urls, ...await generateURLsFromRoutes(_options.routes)]
 		// Generate the location of each URL
 		.map(_url => ({ ..._url, loc: escapeUrl(baseURL + _url.loc.replace(/^\//, '')).replace(/\/$/, '') + (_options.trailingSlash ? '/' : '') }))
 		// Remove duplicate URLs (static URLs have preference over routes)
 		.filter((_url, _index, _urls) => !('path' in _url) || _urls.every((__url, __index) => (_url.loc != __url.loc || _index == __index)));
 
+	// If there is more than 50,000 URLs, split them
+	// @TODO
+
+	// Generate the sitemaps
+	// @TODO
+
+	// If needed, generate the sitemap index
+	// @TODO
+}
+
+async function generateSitemapIndexXML(_options)
+{
+	const sitemaps = [];
+
+	const index =
+	          '<?xml version="1.0" encoding="UTF-8"?>\n'
+	        + '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+	        +     `${sitemaps.map(__sitemap => '').join('')}`;
+	        + '</sitemapindex>';
+
+	return _options.pretty ? index : index.replace(/\t|\n/g, '');
+}
+
+async function generateSitemapXML(_urls, _options)
+{
 	const sitemap =
-	       '<?xml version="1.0" encoding="UTF-8"?>\n'
-	     + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-	     +     `${urls.map(__url => generateURLTag(__url, _options)).join('')}`
-	     + '</urlset>';
+	          '<?xml version="1.0" encoding="UTF-8"?>\n'
+	        + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+	        +     `${_urls.map(__url => generateURLTag(__url, _options)).join('')}`
+	        + '</urlset>';
 
 	return _options.pretty ? sitemap : sitemap.replace(/\t|\n/g, '');
 }
@@ -129,4 +155,4 @@ async function generateURLsFromRoutes(_routes)
 	return urls;
 }
 
-module.exports = generateSitemapXML;
+module.exports = generateSitemap;
