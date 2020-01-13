@@ -101,7 +101,7 @@ module.exports = {
 			productionOnly: true,
 
 			// Define the output directory (default is global 'outputDir')
-			// NOTE: the official specification strongly recommend placing
+			// Note: the official specification strongly recommend placing
 			//       the sitemap at the root of the website
 			outputDir: '/temp/sitemap',
 
@@ -117,8 +117,9 @@ module.exports = {
 			// If it is provided, all URLs must be partial (e.g. '/page/subpage')
 			// and not start with the domain name
 			//
-			// Note that this is required if some routes are provided, because
-			// every URL in the sitemap must be a full URL that includes the protocol and domain
+			// Note: this is required if some routes are provided, because
+			//       every URL in the sitemap must be a full URL that includes
+			//       the protocol and domain
 			baseURL: 'https://webapp.com',
 
 			// Default meta tags for every URL
