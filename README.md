@@ -3,14 +3,14 @@
 ![latest release badge](https://badgen.net/github/release/cheap-glitch/vue-cli-plugin-sitemap?color=green)
 [![codecov badge](https://codecov.io/gh/cheap-glitch/vue-cli-plugin-fontawesome/branch/master/graph/badge.svg)](https://codecov.io/gh/cheap-glitch/vue-cli-plugin-fontawesome)
 
- 1. [Installation](#installation)
- 2. [Usage](#usage)
- 3. [Configuration](#configuration)
+ * [Installation](#installation)
+ * [Usage](#usage)
+ * [Configuration](#configuration)
    * [URL meta tags](#url-meta-tags)
    * [Global settings](#global-settings)
    * [Generating from routes](#generating-from-routes)
    * [Generating from static URLs](#generating-from-static-urls)
- 4. [License](#license)
+ * [License](#license)
 
 **vue-cli-plugin-sitemap** generates sitemaps  for your webapps. You  can use it
 on its own or integrate it in the definition of your routes. Features:
