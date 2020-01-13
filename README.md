@@ -80,6 +80,11 @@ module.exports = {
 			// Only generate for production builds (default: 'false')
 			productionOnly: true,
 
+			// Define the output directory (default is global 'outputDir')
+			// NOTE: the official specification strongly recommend placing
+			//       the sitemap at the root of the website
+			outputDir: '/temp/sitemap',
+
 			// If set to 'true', add a trailing slash at the end of every URL
 			// Remove it if set to 'false' (the default)
 			trailingSlash: false,
