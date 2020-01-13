@@ -52,8 +52,7 @@ The sitemap will be automatically generated upon building your app.
 ### CLI
 
 To  examine the  output  without triggering  the whole  build  process, run  the
-following  command,  which  will  generate  a sitemap  in  the  current  working
-directory:
+following command to generate a sitemap in the current working directory:
 ```
 npm run sitemap
 ```
@@ -62,12 +61,12 @@ npm run sitemap
 
 When running the plugin  on the command line, it will follow  the options set in
 `vue.config.js`. If needed, you can overwrite those with some CLI flags:
- * `-p` or `--pretty`: produce a human-readable output
- * `-o <dir>` or `--output-dir <dir>`: specify a directory in which the sitemap will be written
+ * `-p`, `--pretty`: produce a human-readable output
+ * `-o <dir>`, `--output-dir <dir>`: specify a directory in which the sitemap will be written
 
 > Note: when calling the CLI through npm  scripts, don't forget to add `--` before
 > specifying the  options to  ensure that  npm won't capture  them, e.g.  `npm run
-> sitemap -p -o dist`.
+> sitemap -- -p -o dist/`.
 
 ## Configuration
 
@@ -160,7 +159,7 @@ const routes = [
 
 		// The 'component' property will be ignored by the plugin,
 		// so asynchronous loading is not a problem
-		component: () => import(/* webpackChunkName: "page-about" */ `@/components/PageAbout`),
+		component: () => import(/* webpackChunkName: "page-about" */ '@/components/PageAbout'),
 
 		// Or to avoid cluttering the route infos,
 		// you can put them in a 'sitemap' property
