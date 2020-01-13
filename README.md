@@ -36,17 +36,29 @@ files will be modified.
 
 ## Usage
 
-The sitemap  will be  generated upon  building your app.  To examine  the output
-without triggering  the whole  build process, run  the following  command, which
-will generate a sitemap in the current working directory:
+### Build integration
+
+The sitemap will be automatically generated upon building your app.
+
+### CLI
+
+To  examine the  output  without triggering  the whole  build  process, run  the
+following  command,  which  will  generate  a sitemap  in  the  current  working
+directory:
 ```
 npm run sitemap
 ```
 
-Use the `--pretty` option to obtain a more readable output:
-```
-npm run sitemap -- --pretty
-```
+#### Options
+
+When running the plugin  on the command line, it fill follow  the options set in
+`vue.config.js`. If needed, you can overwrite those with some CLI flags:
+ * `-p` or `--pretty`: produce a human-readable output
+ * `-o <dir>` or `--output-dir <dir>`: specify a directory in which the sitemap will be written
+
+> Note: when calling the CLI through npm  scripts, don't forget to add `--` before
+> specifying the  options to  ensure that  npm won't capture  them, e.g.  `npm run
+> sitemap -p -o dist`.
 
 ## Configuration
 
