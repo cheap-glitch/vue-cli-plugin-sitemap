@@ -146,17 +146,21 @@ usage of all the possible options:
 
 const routes = [
 	{
-		path: '/',
-		name: 'home',
+		path:       '/',
+		name:       'home',
+		component:  PageHome,
 
 		// You can add the meta properties directly into the route object
 		lastmod:  '2026-01-01',
 		priority: 1.0,
 	},
 	{
-		path:       '/about',
-		name:       'about',
-		component:  PageAbout,
+		path:  '/about',
+		name:  'about',
+
+		// The 'component' property will be ignored by the plugin,
+		// so asynchronous loading is not a problem
+		component: () => import(/* webpackChunkName: "page-about" */ `@/components/PageAbout`),
 
 		// Or to avoid cluttering the route infos,
 		// you can put them in a 'sitemap' property
