@@ -47,7 +47,7 @@ module.exports = async function(_api, _options)
 			if (__args.pretty || __args.p)
 				options.pretty = true;
 
-			await writeSitemap(options, __args.outputDir || __args.o || options.outputDir || '.');
+			await writeSitemap(options, __args['output-dir'] || __args.o || options.outputDir || '.');
 		}
 	);
 
@@ -88,5 +88,5 @@ async function writeSitemap(_options, _outputDir)
 		return;
 	}
 
-	console.log(`Generated and written sitemap at '${_outputDir}/sitemap.xml'`);
+	console.log(`Generated and written sitemap at '${_outputDir.replace(/\/$/, '')}/sitemap.xml'`);
 }
