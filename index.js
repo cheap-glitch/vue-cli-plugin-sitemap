@@ -33,17 +33,21 @@ module.exports = async function(_api, _options)
 		'sitemap',
 		{
 			usage:        'vue-cli-service sitemap [options]',
-			options:      { '--pretty': 'Prettify the XML to make the sitemap more human-readable' },
 			description:  'Generate the sitemap',
+
+			options: {
+				'-p, --pretty':                  'Prettify the XML to make the sitemap more human-readable',
+				'-o [dir], --output-dir [dir]':  'Output the sitemap to the specified path instead of the current working directory',
+			},
 		},
 		async function(__args)
 		{
 			const options = { ..._options.pluginOptions.sitemap };
 
-			if (__args.pretty)
+			if (__args.pretty || __args.p)
 				options.pretty = true;
 
-			await writeSitemap(options);
+			await writeSitemap(options, __args.outputDir || __args.o || options.outputDir || '.');
 		}
 	);
 
@@ -59,11 +63,11 @@ module.exports = async function(_api, _options)
 		// Don't generate the sitemap if not in production and the option 'productionOnly' is set
 		if (_options.pluginOptions.sitemap.productionOnly && process.env.NODE_ENV !== 'production') return;
 
-		await writeSitemap(_options.pluginOptions.sitemap, ('outputDir' in _options) ? _options.outputDir : 'dist');
+		await writeSitemap(_options.pluginOptions.sitemap, _options.pluginOptions.sitemap.outputDir || _options.outputDir || 'dist');
 	};
 }
 
-async function writeSitemap(_options, _outputDir = '.')
+async function writeSitemap(_options, _outputDir)
 {
 	// Validate the config and set the default values
 	if (!optionsValidator(_options))

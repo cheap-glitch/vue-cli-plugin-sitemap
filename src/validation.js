@@ -189,6 +189,9 @@ const optionsValidator = ajv.compile({
 			type:     'boolean',
 			default:  false,
 		},
+		outputDir: {
+			type:     'string',
+		},
 		baseURL: {
 			type:     'string',
 			default:  '',

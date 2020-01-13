@@ -28,6 +28,13 @@ describe("validation of the options returns an error when:", () => {
 	 * Global options
 	 * ---------------------------------------------------------------------
 	 */
+	it("'outputDir' is not a string", () => {
+		expect(validate({ outputDir: true })).to.be.false;
+		expect(validate({ outputDir: 10 })).to.be.false;
+
+		expect(validate({ outputDir: './sitemap' })).to.be.true;
+	});
+
 	it("'baseURL' is not a proper URI", () => {
 		expect(validate({ baseURL: 'not an URI' })).to.be.false;
 		expect(validate({ baseURL: 'somedomain.wtf' })).to.be.false;
