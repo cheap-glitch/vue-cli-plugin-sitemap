@@ -1,7 +1,7 @@
 # vue-cli-plugin-sitemap
 ![license badge](https://badgen.net/badge/license/ISC/green)
 ![latest release badge](https://badgen.net/github/release/cheap-glitch/vue-cli-plugin-sitemap?color=green)
-[![codecov badge](https://codecov.io/gh/cheap-glitch/vue-cli-plugin-fontawesome/branch/master/graph/badge.svg)](https://codecov.io/gh/cheap-glitch/vue-cli-plugin-fontawesome)
+[![codecov badge](https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap/branch/master/graph/badge.svg)](https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap)
 
  * [Installation](#installation)
  * [Usage](#usage)

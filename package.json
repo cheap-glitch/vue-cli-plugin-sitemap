@@ -29,7 +29,7 @@
     "lint": "eslint *.js src/*.js tests/*.js",
     "test": "mocha tests/*.test.js",
     "coverage": "nyc npm test",
-    "report-coverage": "nyc report --reporter=text-lcov | codecov --pipe"
+    "report-coverage": "npm run coverage && nyc report --reporter=text-lcov | codecov --pipe"
   },
   "dependencies": {
     "ajv": "^6.10.2"
