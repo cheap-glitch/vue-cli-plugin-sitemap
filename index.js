@@ -21,7 +21,7 @@
  */
 
 const fs                        = require('fs');
-const generateSitemap           = require('./src/sitemap');
+const generateSitemapXML        = require('./src/sitemap');
 const { ajv, optionsValidator } = require('./src/validation');
 
 module.exports = async function(_api, _options)
@@ -80,7 +80,7 @@ async function writeSitemap(_options, _outputDir)
 	try {
 		fs.writeFileSync(
 			`${_outputDir}/sitemap.xml`,
-			await generateSitemap(_options),
+			await generateSitemapXML(_options),
 		);
 	}
 	catch (error) {
