@@ -3,9 +3,14 @@
  * tests/sitemap.test.js
  */
 
-const { expect }           = require('chai');
+const chai                 = require("chai");
+const expect               = chai.expect;
+const chaiAsPromised       = require("chai-as-promised");
+
 const generateSitemapXML   = require('../src/sitemap');
 const { optionsValidator } = require('../src/validation');
+
+chai.use(chaiAsPromised);
 
 // Wrap some <url> elements in the same XML elements as the sitemap
 const wrapURLs = _xml => '<?xml version="1.0" encoding="UTF-8"?>'
@@ -202,7 +207,6 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 	});
-
 	/**
 	 * }}}
 	 */
@@ -496,6 +500,18 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			]));
 		});
 
+		it("throws an error if the asynchronously generated slugs are invalid", async () => {
+			expect(Promise.resolve(generateSitemapXML({
+				baseURL:   'https://website.net',
+				defaults:  {},
+				urls:      [],
+				routes:    [{
+					path:  '/user/:id',
+					slugs: () => new Promise(resolve => setTimeout(() => resolve([true, 11, 12]), 20)),
+				}]
+			}))).to.be.rejected;
+		});
+
 		it("ignores routes with the 'ignoreRoute' option set to 'true'", async () => {
 			expect(await generateSitemapXML({
 				baseURL:   'https://website.net',
@@ -529,7 +545,6 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 	});
-
 	/**
 	 * }}}
 	 */
@@ -563,7 +578,24 @@ describe("vue-cli-plugin-sitemap sitemap generation", () => {
 			));
 		});
 	});
+	/**
+	 * }}}
+	 */
 
+	/**
+	 * Pretty format
+	 * {{{
+	 * ---------------------------------------------------------------------
+	 */
+	it("keeps tabs and line breaks when option 'pretty' is specified", async () => {
+		expect(await generateSitemapXML({
+			pretty:    true,
+			baseURL:   'https://website.net',
+			defaults:  {},
+			routes:    [{ path: '/about' }],
+			urls:      [{ loc:  '/' }],
+		})).to.include('\t', '\n');
+	});
 	/**
 	 * }}}
 	 */
