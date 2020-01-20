@@ -32,7 +32,7 @@
     "report-coverage": "npm run coverage && nyc report --reporter=text-lcov | codecov --pipe"
   },
   "dependencies": {
-    "ajv": "^6.10.2"
+    "ajv": "^6.11.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",

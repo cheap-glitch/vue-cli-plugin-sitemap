@@ -37,8 +37,8 @@ function generateURLTag(_url, _options)
 		// Fix the bug of whole-number priorities
 		if (__tag == 'priority')
 		{
-			if (value === 0) value = '0.0';
-			if (value === 1) value = '1.0';
+			if (value == 0) value = '0.0';
+			if (value == 1) value = '1.0';
 		}
 
 		return `\t\t<${__tag}>${value}</${__tag}>\n`;
@@ -117,7 +117,7 @@ async function generateURLsFromRoutes(_routes)
 			[...new Set(slugs)].map(function(__slug)
 			{
 				// If the slug is an object (slug + additional meta tags)
-				if (Object.prototype.toString.call(__slug) === '[object Object]')
+				if (Object.prototype.toString.call(__slug) == '[object Object]')
 					return { loc: path.replace(param, __slug.slug), ...url, ...__slug };
 
 				// Else if the slug is just a simple value

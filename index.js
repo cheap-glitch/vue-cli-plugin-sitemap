@@ -37,7 +37,7 @@ module.exports = async function(_api, _options)
 
 			options: {
 				'-p, --pretty':                  'Prettify the XML to make the sitemap more human-readable',
-				'-o <dir>, --output-dir <dir>':  'Output the sitemap to the specified path instead of the current working directory',
+				'-o [dir], --output-dir [dir]':  'Output the sitemap to the specified path instead of the current working directory',
 			},
 		},
 		async function(__args)
@@ -71,22 +71,13 @@ async function writeSitemap(_options, _outputDir)
 {
 	// Validate the config and set the default values
 	if (!optionsValidator(_options))
-	{
-		console.error(`[vue-cli-plugin-sitemap]: ${ajv.errorsText(optionsValidator.errors).replace(/^data/, 'options')}`);
-		return;
-	}
+		throw new Error(`[vue-cli-plugin-sitemap]: ${ajv.errorsText(optionsValidator.errors).replace(/^data/, 'options')}`);
 
 	// Generate the sitemap and write it to the disk
-	try {
-		fs.writeFileSync(
-			`${_outputDir}/sitemap.xml`,
-			await generateSitemapXML(_options),
-		);
-	}
-	catch (error) {
-		console.log(error);
-		return;
-	}
+	fs.writeFileSync(
+		`${_outputDir}/sitemap.xml`,
+		await generateSitemapXML(_options),
+	);
 
-	console.log(`Generated and written sitemap at '${_outputDir.replace(/\/$/, '')}/sitemap.xml'`);
+	console.info(`Generated and written sitemap at '${_outputDir.replace(/\/$/, '')}/sitemap.xml'`);
 }

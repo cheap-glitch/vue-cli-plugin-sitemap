@@ -93,7 +93,7 @@ function validateW3CDate(_data, _dataPath, _parentData, _parentDataPropName)
 	};
 
 	// If the provided data is a Date object
-	if (Object.prototype.toString.call(_data) === "[object Date]")
+	if (Object.prototype.toString.call(_data) == "[object Date]")
 	{
 		// Check the Date object is valid
 		if (isNaN(_data.getTime()))
