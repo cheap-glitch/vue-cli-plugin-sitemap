@@ -2,7 +2,7 @@
 /**
  * vue-cli-plugin-sitemap
  *
- * A Vue CLI plugin to generate simple or complex sitemaps easily.
+ * A Vue CLI plugin to generate simple or complex sitemaps effortlessly.
  *
  * Copyright (c) 2019-present, cheap glitch
  *

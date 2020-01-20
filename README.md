@@ -10,6 +10,7 @@
    * [Global settings](#global-settings)
    * [Generating from routes](#generating-from-routes)
    * [Generating from static URLs](#generating-from-static-urls)
+ * [Changelog](#changelog)
  * [License](#license)
 
 **vue-cli-plugin-sitemap** generates sitemaps  for your webapps. You  can use it
@@ -92,47 +93,42 @@ that must be provided for routes-based sitemaps.
 ```javascript
 // vue.config.js
 
-module.exports = {
-	pluginOptions: {
-		// […]
+// The config object should be placed inside 'pluginOptions'
+sitemap: {
 
-		sitemap: {
-			// Only generate for production builds (default: 'false')
-			productionOnly: true,
+	// Only generate for production builds (default: 'false')
+	productionOnly: true,
 
-			// Define the output directory (default is global 'outputDir')
-			// Note: the official specification strongly recommend placing
-			//       the sitemap at the root of the website
-			outputDir: '/temp/sitemap',
+	// Define the output directory (default is global 'outputDir')
+	// Note: the official specification strongly recommend placing
+	//       the sitemap at the root of the website
+	outputDir: '/temp/sitemap',
 
-			// If set to 'true', add a trailing slash at the end of every URL
-			// Remove it if set to 'false' (the default)
-			trailingSlash: false,
+	// If set to 'true', add a trailing slash at the end of every URL
+	// Remove it if set to 'false' (the default)
+	trailingSlash: false,
 
-			// Insert line breaks and indent the tags to make the generated
-			// file more readable (default: 'false')
-			pretty: true,
+	// Insert line breaks and indent the tags to make the generated
+	// file more readable (default: 'false')
+	pretty: true,
 
-			// Define an URL which will serve as a prefix for every URL in the sitemap
-			// If it is provided, all URLs must be partial (e.g. '/page/subpage')
-			// and not start with the domain name
-			//
-			// Note: this is required if some routes are provided, because
-			//       every URL in the sitemap must be a full URL that includes
-			//       the protocol and domain
-			baseURL: 'https://webapp.com',
+	// Define an URL which will serve as a prefix for every URL in the sitemap
+	// If it is provided, all URLs must be partial (e.g. '/page/subpage')
+	// and not start with the domain name
+	//
+	// Note: this is required if some routes are provided, because
+	//       every URL in the sitemap must be a full URL that includes
+	//       the protocol and domain
+	baseURL: 'https://webapp.com',
 
-			// Default meta tags for every URL
-			// These will be overridden by URL-specific tags
-			defaults: {
-				lastmod:    '2020-01-01',
-				changefreq: 'weekly',
-				priority:   1.0,
-			},
-		}
-	}
+	// Default meta tags for every URL
+	// These will be overridden by URL-specific tags
+	defaults: {
+		lastmod:    '2020-01-01',
+		changefreq: 'weekly',
+		priority:   1.0,
+	},
 }
-
 ```
 
 ### Generating from routes
@@ -160,7 +156,7 @@ const routes = [
 
 		// The 'component' property will be ignored by the plugin,
 		// so asynchronous loading is not a problem
-		component: () => import(/* webpackChunkName: "page-about" */ '@/components/PageAbout'),
+		component: () => import(/* webpackChunkName: "about" */ 'AboutPage'),
 
 		// Or to avoid cluttering the route infos,
 		// you can put them in a 'sitemap' property
@@ -286,6 +282,10 @@ sitemap: {
 If both routes and  URLs are provided, they will be merged  together in a single
 sitemap. In  the case  of duplicated  locations, static  URLs will  prevail over
 their matching routes.
+
+## Changelog
+
+You can consult the full changelog [here](https://github.com/cheap-glitch/vue-cli-plugin-sitemap/releases).
 
 ## License
 
