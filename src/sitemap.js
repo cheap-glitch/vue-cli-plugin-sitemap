@@ -5,7 +5,13 @@
 
 const { ajv, slugsValidator } = require('./validation');
 
-async function generateSitemapXML(_options)
+const MAX_NB_URLS = 50000;
+
+/**
+ * Generate one or more sitemaps, and an accompanying sitemap index if needed
+ * Return an object of text blobs to save to different files ([filename]: [contents])
+ */
+async function generateSitemap(_options)
 {
 	// If a base URL is specified, make sure it ends with a slash
 	const baseURL = _options.baseURL ? `${_options.baseURL.replace(/\/+$/, '')}/` : '';
@@ -16,6 +22,51 @@ async function generateSitemapXML(_options)
 		// Remove duplicate URLs (static URLs have preference over routes)
 		.filter((_url, _index, _urls) => !('path' in _url) || _urls.every((__url, __index) => (_url.loc != __url.loc || _index == __index)));
 
+	let blobs    = {};
+	let sitemaps = [urls];
+
+	// If there is more than 50,000 URLs, split them into several sitemaps
+	if (urls.length > MAX_NB_URLS)
+	{
+		sitemaps = [];
+		const nb_sitemaps = Math.ceil(urls.length / MAX_NB_URLS);
+
+		// Split the URLs into batches of 50,000
+		for (let i=0; i<nb_sitemaps; i++)
+			sitemaps.push(urls.slice(i*MAX_NB_URLS, (i+1)*MAX_NB_URLS));
+
+		// Generate the sitemap index
+		blob['sitemap-index'] = generateSitemapIndexXML(_options);
+	}
+
+	// Generate the sitemaps
+	await Promise.all(sitemaps.forEach(async function(__urls, __index, __sitemaps)
+	{
+		const filename  = (__sitemaps.length > 1)
+		                ? `sitemap-${__index.toString().padStart(__sitemap.length.toString().length, '0')}`
+		                : 'sitemap'
+
+		blobs[filename] = await generateSitemapXML(__urls, _options);
+	}));
+
+	return blobs;
+}
+
+async function generateSitemapIndexXML(_options)
+{
+	const sitemaps = [];
+
+	const index =
+	          '<?xml version="1.0" encoding="UTF-8"?>\n'
+	        + '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+	        +     `${sitemaps.map(__sitemap => '').join('')}`;
+	        + '</sitemapindex>';
+
+	return _options.pretty ? index : index.replace(/\t|\n/g, '');
+}
+
+async function generateSitemapXML(_urls, _options)
+{
 	const sitemap =
 	       '<?xml version="1.0" encoding="UTF-8"?>\n'
 	     + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
