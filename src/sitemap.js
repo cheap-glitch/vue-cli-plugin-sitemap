@@ -5,6 +5,12 @@
 
 const { ajv, slugsValidator } = require('./validation');
 
+const MAX_NB_URLS = 50000;
+
+/**
+ * Generate one or more sitemaps, and an accompanying sitemap index if needed
+ * Return an object of text blobs to save to different files ([filename]: [contents])
+ */
 async function generateSitemap(_options)
 {
 	// If a base URL is specified, make sure it ends with a slash
@@ -17,14 +23,34 @@ async function generateSitemap(_options)
 		// Remove duplicate URLs (static URLs have preference over routes)
 		.filter((_url, _index, _urls) => !('path' in _url) || _urls.every((__url, __index) => (_url.loc != __url.loc || _index == __index)));
 
-	// If there is more than 50,000 URLs, split them
-	// @TODO
+	let blobs    = {};
+	let sitemaps = [urls];
+
+	// If there is more than 50,000 URLs, split them into several sitemaps
+	if (urls.length > MAX_NB_URLS)
+	{
+		sitemaps = [];
+		const nb_sitemaps = Math.ceil(urls.length / MAX_NB_URLS);
+
+		// Split the URLs into batches of 50,000
+		for (let i=0; i<nb_sitemaps; i++)
+			sitemaps.push(urls.slice(i*MAX_NB_URLS, (i+1)*MAX_NB_URLS));
+
+		// Generate the sitemap index
+		blob['sitemap-index'] = generateSitemapIndexXML(_options);
+	}
 
 	// Generate the sitemaps
-	// @TODO
+	await Promise.all(sitemaps.forEach(async function(__urls, __index, __sitemaps)
+	{
+		const filename  = (__sitemaps.length > 1)
+		                ? `sitemap-${__index.toString().padStart(__sitemap.length.toString().length, '0')}`
+		                : 'sitemap'
 
-	// If needed, generate the sitemap index
-	// @TODO
+		blobs[filename] = await generateSitemapXML(__urls, _options);
+	}));
+
+	return blobs;
 }
 
 async function generateSitemapIndexXML(_options)
