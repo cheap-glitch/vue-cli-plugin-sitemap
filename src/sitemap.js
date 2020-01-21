@@ -36,14 +36,14 @@ async function generateSitemap(_options)
 			sitemaps.push(urls.slice(i*MAX_NB_URLS, (i+1)*MAX_NB_URLS));
 
 		// Generate the sitemap index
-		blob['sitemap-index'] = generateSitemapIndexXML(_options);
+		blobs['sitemap-index'] = generateSitemapIndexXML(nb_sitemaps, _options);
 	}
 
 	// Generate the sitemaps
 	await Promise.all(sitemaps.forEach(async function(__urls, __index, __sitemaps)
 	{
 		const filename  = (__sitemaps.length > 1)
-		                ? `sitemap-${__index.toString().padStart(__sitemap.length.toString().length, '0')}`
+		                ? `sitemap-${__index.toString().padStart(__sitemaps.length.toString().length, '0')}`
 		                : 'sitemap'
 
 		blobs[filename] = await generateSitemapXML(__urls, _options);
@@ -52,26 +52,32 @@ async function generateSitemap(_options)
 	return blobs;
 }
 
-async function generateSitemapIndexXML(_options)
+async function generateSitemapIndexXML(_nbSitemaps, _options)
 {
-	const sitemaps = [];
+	const sitemaps = [...new Array(_nbSitemaps).keys()]
+		.map(function(__index)
+		{
+			const filename = `sitemap-${__index.toString().padStart(_nbSitemaps.toString().length, '0')}.xml`;
 
-	const index =
-	          '<?xml version="1.0" encoding="UTF-8"?>\n'
-	        + '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-	        +     `${sitemaps.map(__sitemap => '').join('')}`;
-	        + '</sitemapindex>';
+			return '<sitemap>\n'
+			     +     `\t<loc>${_options.baseURL.replace(/\/$/, '')}/${filename}</loc>\n`
+			     + '</sitemap>'
+		});
+
+	const index = '<?xml version="1.0" encoding="UTF-8"?>\n'
+	            + '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+	            +     sitemaps.join('\n')
+	            + '</sitemapindex>';
 
 	return _options.pretty ? index : index.replace(/\t|\n/g, '');
 }
 
 async function generateSitemapXML(_urls, _options)
 {
-	const sitemap =
-	       '<?xml version="1.0" encoding="UTF-8"?>\n'
-	     + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-	     +     `${urls.map(__url => generateURLTag(__url, _options)).join('')}`
-	     + '</urlset>';
+	const sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n'
+	              + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+	              +     `${_urls.map(__url => generateURLTag(__url, _options)).join('')}`
+	              + '</urlset>';
 
 	return _options.pretty ? sitemap : sitemap.replace(/\t|\n/g, '');
 }
