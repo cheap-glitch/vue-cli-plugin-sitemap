@@ -1,0 +1,5 @@
+{
+	"bail":        true,
+	"diff":        true,
+	"inline-diff": true
+}

@@ -24,12 +24,12 @@ const fs                        = require('fs');
 const generateSitemapXML        = require('./src/sitemap');
 const { ajv, optionsValidator } = require('./src/validation');
 
-module.exports = async function(_api, _options)
+module.exports = async function(api, options)
 {
 	/**
 	 * Add a new command to generate the sitemap
 	 */
-	_api.registerCommand(
+	api.registerCommand(
 		'sitemap',
 		{
 			usage:        'vue-cli-service sitemap [options]',
@@ -40,44 +40,44 @@ module.exports = async function(_api, _options)
 				'-o [dir], --output-dir [dir]':  'Output the sitemap to the specified path instead of the current working directory',
 			},
 		},
-		async function(__args)
+		async function(args)
 		{
-			const options = { ..._options.pluginOptions.sitemap };
+			const options = { ...options.pluginOptions.sitemap };
 
-			if (__args.pretty || __args.p)
+			if (args.pretty || args.p)
 				options.pretty = true;
 
-			await writeSitemap(options, __args['output-dir'] || __args.o || options.outputDir || '.');
+			await writeSitemap(options, args['output-dir'] || args.o || options.outputDir || '.');
 		}
 	);
 
 	/**
 	 * Modify the 'build' command to generate the sitemap automatically
 	 */
-	const { build } = _api.service.commands;
+	const { build } = api.service.commands;
 	const buildFn   = build.fn;
-	build.fn = async function(...__args)
+	build.fn = async function(...args)
 	{
-		await buildFn(...__args);
+		await buildFn(...args);
 
 		// Don't generate the sitemap if not in production and the option 'productionOnly' is set
-		if (_options.pluginOptions.sitemap.productionOnly && process.env.NODE_ENV !== 'production') return;
+		if (options.pluginOptions.sitemap.productionOnly && process.env.NODE_ENV !== 'production') return;
 
-		await writeSitemap(_options.pluginOptions.sitemap, _options.pluginOptions.sitemap.outputDir || _options.outputDir || 'dist');
+		await writeSitemap(options.pluginOptions.sitemap, options.pluginOptions.sitemap.outputDir || options.outputDir || 'dist');
 	};
 }
 
-async function writeSitemap(_options, _outputDir)
+async function writeSitemap(options, outputDir)
 {
 	// Validate the config and set the default values
-	if (!optionsValidator(_options))
+	if (!optionsValidator(options))
 		throw new Error(`[vue-cli-plugin-sitemap]: ${ajv.errorsText(optionsValidator.errors).replace(/^data/, 'options')}`);
 
 	// Generate the sitemap and write it to the disk
 	fs.writeFileSync(
-		`${_outputDir}/sitemap.xml`,
-		await generateSitemapXML(_options),
+		`${outputDir}/sitemap.xml`,
+		await generateSitemapXML(options),
 	);
 
-	console.info(`Generated and written sitemap at '${_outputDir.replace(/\/$/, '')}/sitemap.xml'`);
+	console.info(`Generated and written sitemap at '${outputDir.replace(/\/$/, '')}/sitemap.xml'`);
 }

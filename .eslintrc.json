@@ -1,10 +1,5 @@
 {
-	"extends": "eslint:recommended",
-
-	"env": {
-		"es6":  true,
-		"node": true
-	},
+	"root": true,
 
 	"parserOptions": {
 		"sourceType": "module",
@@ -15,8 +10,23 @@
 		"smarter-tabs"
 	],
 
+	"env": {
+		"es6":      true,
+		"node":     true,
+		"browser":  true
+	},
+
+	"extends": "eslint:recommended",
+
 	"rules": {
-		"no-mixed-spaces-and-tabs":   ["warn", "smart-tabs"],
-		"smarter-tabs/smarter-tabs":  "warn"
-	}
+		"no-mixed-spaces-and-tabs":  ["warn", "smart-tabs"],
+		"smarter-tabs/smarter-tabs": "warn"
+	},
+
+	"overrides": [{
+		"files": ["test/*.test.js", "tests/unit/*.spec.js"],
+		"env": {
+			"mocha": true
+		}
+	}]
 }

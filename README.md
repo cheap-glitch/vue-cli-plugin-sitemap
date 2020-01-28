@@ -4,12 +4,8 @@
 [![codecov badge](https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap/branch/master/graph/badge.svg)](https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap)
 
  * [Installation](#installation)
- * [Usage](#usage)
- * [Configuration](#configuration)
-   * [URL meta tags](#url-meta-tags)
-   * [Global settings](#global-settings)
-   * [Generating from routes](#generating-from-routes)
-   * [Generating from static URLs](#generating-from-static-urls)
+ * [Setup](#setup)
+ * [Options](#options)
  * [Changelog](#changelog)
  * [License](#license)
 
@@ -21,7 +17,6 @@ on its own or integrate it in the definition of your routes. Features:
  * optionally prettify the output
 
 #### What are sitemaps?
-
 From [sitemaps.org](https://www.sitemaps.org):
 > Sitemaps are an easy way for webmasters  to inform search engines about pages on
 > their sites that are available for crawling.  In its simplest form, a sitemap is
@@ -36,7 +31,6 @@ From [sitemaps.org](https://www.sitemaps.org):
 > for web crawlers to do a better job of crawling your site.
 
 ## Installation
-
 ```
 vue add sitemap
 ```
@@ -44,49 +38,52 @@ vue add sitemap
 The plugin will  add a script called `sitemap` to  your `package.json`. No other
 files will be modified.
 
-## Usage
+## Setup
 
-### Build integration
+### Use with `vue-router`
+The recommended  way to  provide data  to the plugin  is to  pass it  the router
+object used by the webapp. Below is an example of a very simple setup:
 
-The sitemap will be automatically generated upon building your app.
+@TODO
 
-### CLI
+```javascript
+// vue.config.js
 
-To  examine the  output  without triggering  the whole  build  process, run  the
-following command to generate a sitemap in the current working directory:
+const router = require('./src/routes');
+
+module.exports = {
+	pluginOptions: {
+		// […]
+
+		sitemap: {
+			router,
+		}
+	}
+}
 ```
-npm run sitemap
+
+### Use as a standalone plugin
+You can also directly provide some handwritten URLs to the plugin:
+```javascript
+// vue.config.js
+
+sitemap: {
+	// […]
+
+	urls: [
+		'https://website.com/'
+		'https://website.com/about',
+	]
+}
 ```
 
-#### Options
+If both routes and  URLs are provided, they will be merged  together in a single
+sitemap.  In the  case of  duplicated locations,  URLs will  prevail over  their
+matching routes.
 
-When running the plugin  on the command line, it will follow  the options set in
-`vue.config.js`. If needed, you can overwrite those with some CLI flags:
- * `-p`, `--pretty`: produce a human-readable output
- * `-o <dir>`, `--output-dir <dir>`: specify a directory in which the sitemap will be written
-
-> Note: when calling the CLI through npm  scripts, don't forget to add `--` before
-> specifying the  options to  ensure that  npm won't capture  them, e.g.  `npm run
-> sitemap -- -p -o dist/`.
-
-## Configuration
-
-### URL meta tags
-
-In the sitemap format,  each URL can be associated with  some optional meta tags
-to help the crawlers navigate the pages and prioritize the critical URLs:
-
-  Meta tag   |                                                   Accepted values                                                         | Default value if absent
------------- | ------------------------------------------------------------------------------------------------------------------------- | -----------------------
-`lastmod`    | a date string in the [W3C format](https://www.w3.org/TR/NOTE-datetime), a JavaScript timestamp string, or a `Date` object | Ø
-`changefreq` | `"always"`, `"hourly"`, `"daily"`, `"weekly"`, `"monthly"`, `"yearly"`, `"never"`                                         | Ø
-`priority`   | a multiple of `0.1` between `0.0` and `1.0`                                                                               | `0.5`
-
-For  more  information  on  those  meta  tags,  you  can  consult  the  [official
-specification](https://www.sitemaps.org/protocol.html#xmlTagDefinitions).
+## Options
 
 ### Global settings
-
 All the  global settings are optional  and can be omitted,  except for `baseURL`
 that must be provided for routes-based sitemaps.
 
@@ -131,41 +128,53 @@ sitemap: {
 }
 ```
 
-### Generating from routes
+### URL meta tags
+In the sitemap format,  each URL can be associated with  some optional meta tags
+to help the crawlers navigate the pages and prioritize the critical URLs:
 
-The recommended way to provide data to the plugin is to pass the array of routes
-used with `vue-router`. Below is an  example of a simple setup that demonstrates
-usage of all the possible options:
+  Meta tag   |                                       Accepted values for the equivalent property                                         | Default value if absent
+------------ | ------------------------------------------------------------------------------------------------------------------------- | -----------------------
+`lastmod`    | a date string in the [W3C format](https://www.w3.org/TR/NOTE-datetime), a JavaScript timestamp string, or a `Date` object | Ø
+`changefreq` | `"always"`, `"hourly"`, `"daily"`, `"weekly"`, `"monthly"`, `"yearly"`, `"never"`                                         | Ø
+`priority`   | a multiple of `0.1` between `0.0` and `1.0`                                                                               | `0.5`
 
+For  more  information  on  those  meta  tags,  you  can  consult  the  [official
+specification](https://www.sitemaps.org/protocol.html#xmlTagDefinitions).
+
+Example with a route object:
 ```javascript
-// src/routes.js
+{
+	path:       'https://website.com/about'
+	component:  () => import(/* webpackChunkName: "about-page" */ 'AboutPage'),
 
-const routes = [
-	{
-		path:       '/',
-		name:       'home',
-		component:  PageHome,
-
-		// You can add the meta properties directly into the route object
-		lastmod:  '2026-01-01',
-		priority: 1.0,
-	},
-	{
-		path:  '/about',
-		name:  'about',
-
-		// The 'component' property will be ignored by the plugin,
-		// so asynchronous loading is not a problem
-		component: () => import(/* webpackChunkName: "about" */ 'AboutPage'),
-
-		// Or to avoid cluttering the route infos,
-		// you can put them in a 'sitemap' property
+	meta: {
 		sitemap: {
-			changefreq:  'daily',
+			lastmod:    'December 22, 2019',
 			priority:    0.8,
-			lastmod:     'December 17, 1995',
+			changefreq: 'daily',
 		}
-	},
+	}
+}
+```
+
+Example with a handwritten URL:
+```javascript
+sitemap: {
+	urls: [
+		{
+			loc:        'https://website.com/about'
+			lastmod:    'December 22, 2019',
+			priority:    0.8,
+			changefreq: 'daily',
+		},
+	]
+}
+```
+
+### Route-specific options
+@TODO ↓
+```javascript
+[
 	{
 		path:    '/articles/:title',
 		lastmod: new Date('December 17, 1995'),
@@ -176,7 +185,7 @@ const routes = [
 			'my-amazing-article',
 			'a-life-changing-method-for-folding-socks',
 
-			// Slugs can have their own meta properties
+			// Slugs can have their own meta tags
 			{
 				slug:      'a-very-important-article',
 				priority:  1.0,
@@ -187,7 +196,6 @@ const routes = [
 	{
 		path:    '/user/:id',
 		lastmod: 1578503451000,
-
 		// Slugs can also be provided via an asynchronous function
 		slugs: async () => [...await someAsyncCallToADatabase()]
 	},
@@ -208,85 +216,28 @@ const routes = [
 		// Explicitly ignore this route
 		ignoreRoute: true,
 	},
-];
-
-module.exports = routes;
+]
 ```
 
-```javascript
-// src/main.js
-
-import Vue    from 'vue'
-import Router from 'vue-router'
-
-import App    from './App.vue'
-import routes from '@/routes'
-
-Vue.use(Router);
-new Vue({
-	render: h => h(App),
-
-	router: new Router({
-		mode: 'history',
-		base: process.env.BASE_URL,
-		routes,
-	})
-}).$mount('#app');
-
+## CLI
+To  examine the  output  without triggering  the whole  build  process, run  the
+following command to generate a sitemap in the current working directory:
+```
+npm run sitemap
 ```
 
-```javascript
-// vue.config.js
+#### CLI Options
+When running the plugin  on the command line, it will follow  the options set in
+`vue.config.js`. If needed, you can overwrite those with some CLI flags:
+ * `-p`, `--pretty`: produce a human-readable output
+ * `-o <dir>`, `--output-dir <dir>`: specify a directory in which the sitemap will be written
 
-const routes = require('./src/routes');
-
-module.exports = {
-	pluginOptions: {
-		// […]
-
-		sitemap: {
-			routes,
-		}
-	}
-}
-
-```
-
-### Generating from static URLs
-
-You can also directly provide some static URLs to the plugin:
-```javascript
-sitemap: {
-	// […]
-
-	urls: [
-		{
-			// The only required property is 'loc'
-			loc: 'https://website.com/'
-		},
-		{
-			loc: 'https://website.com/about',
-
-			// These meta tags will only apply to this specific URL
-			changefreq: 'never',
-			priority:   1.0,
-		},
-		{
-			// If you provided 'baseURL', locations must be partial URLs
-			loc: '/article/lorem-ipsum-dolor-sit-amet',
-		},
-	]
-}
-```
-
-If both routes and  URLs are provided, they will be merged  together in a single
-sitemap. In  the case  of duplicated  locations, static  URLs will  prevail over
-their matching routes.
+> Note: when calling the CLI through npm  scripts, don't forget to add `--` before
+> specifying the  options to  ensure that  npm won't capture  them, e.g.  `npm run
+> sitemap -- -p -o dist/`.
 
 ## Changelog
-
 You can consult the full changelog [here](https://github.com/cheap-glitch/vue-cli-plugin-sitemap/releases).
 
 ## License
-
 This software is distributed under the ISC license.

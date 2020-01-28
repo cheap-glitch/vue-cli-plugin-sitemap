@@ -4,8 +4,7 @@
 #
 
 /node_modules/
-/test-app/
 
-# Code coverage & reports
+# Code coverage
 /.codecov.yml
 /.nyc_output/
