@@ -4,15 +4,12 @@
  */
 
 const { expect }           = require('chai');
-const { optionsValidator, ajv } = require('../src/validation');
+const { optionsValidator } = require('../src/validation');
 
 // Wrap the options to test in a minimal valid option object
 const validate = options => optionsValidator({ baseURL: 'https://url.com', routes: [{ path: '/' }], ...options});
 
-optionsValidator({ baseURL: 'https://domain.com', urls: [{ loc: '/about' }] });
-console.error('ERROR', ajv.errorsText(optionsValidator.errors));
-
-describe("validation of the options returns an error when:", () => {
+describe("the validation of the options returns an error when:", () => {
 
 	/**
 	 * Meta

@@ -18,7 +18,10 @@ async function generateSitemaps(options)
 
 	const urls = [...options.urls, ...await generateURLsFromRoutes(options.routes)]
 		// Generate the location of each URL
-		.map(url => ({ ...url, loc: escapeUrl(baseURL + url.loc.replace(/^\//, '')).replace(/\/$/, '') + (options.trailingSlash ? '/' : '') }))
+		.map(url => ({...url,
+			loc: escapeUrl(baseURL + (typeof url == 'string' ? url : url.loc).replace(/^\//, '')).replace(/\/$/, '')
+			   + (options.trailingSlash ? '/' : '')
+		}))
 		// Remove duplicate URLs (static URLs have preference over routes)
 		.filter((url, index, urls) => !('path' in url) || urls.every((url, index) => (url.loc != url.loc || index == index)));
 
@@ -46,7 +49,7 @@ async function generateSitemaps(options)
 		                ? `sitemap-${index.toString().padStart(sitemaps.length.toString().length, '0')}`
 		                : 'sitemap'
 
-		blobs[filename] = await generateSitemapXML(urls, options);
+		blobs[filename] = generateSitemapXML(urls, options);
 	}));
 
 	return blobs;
@@ -70,7 +73,7 @@ async function generateSitemapIndexXML(nbSitemaps, options)
 	     + '</sitemapindex>';
 }
 
-async function generateSitemapXML(urls, options)
+function generateSitemapXML(urls, options)
 {
 	return '<?xml version="1.0" encoding="UTF-8"?>\n'
 	     + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
