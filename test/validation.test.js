@@ -4,10 +4,13 @@
  */
 
 const { expect }           = require('chai');
-const { optionsValidator } = require('../src/validation');
+const { optionsValidator, ajv } = require('../src/validation');
 
 // Wrap the options to test in a minimal valid option object
 const validate = options => optionsValidator({ baseURL: 'https://url.com', routes: [{ path: '/' }], ...options});
+
+optionsValidator({ baseURL: 'https://domain.com', urls: [{ loc: '/about' }] });
+console.error('ERROR', ajv.errorsText(optionsValidator.errors));
 
 describe("validation of the options returns an error when:", () => {
 
@@ -169,6 +172,7 @@ describe("validation of the options returns an error when:", () => {
 			expect(optionsValidator({ urls: {} })).to.be.false;
 			expect(optionsValidator({ urls: 'https://mywebsite.com' })).to.be.false;
 
+			expect(optionsValidator({ urls: ['https://www.site.org'] })).to.be.true;
 			expect(optionsValidator({ urls: [{ loc: 'https://www.site.org' }] })).to.be.true;
 		});
 
@@ -177,19 +181,25 @@ describe("validation of the options returns an error when:", () => {
 			expect(optionsValidator({ urls: [{ lastmod: '2020-01-01' }]})).to.be.false;
 			expect(optionsValidator({ urls: [{ loc: 'about' }, { changefreq: 'always' }]})).to.be.false;
 
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com' }]})).to.be.true;
+			expect(optionsValidator({ urls: ['https://website.com', { loc: 'https://website.com/about' }]})).to.be.true;
 		});
 
 		it("the locations are full URIs even though a base URL is provided", () => {
+			expect(optionsValidator({ baseURL: 'https://domain.com', urls: ['https://domain.com/about'] })).to.be.false;
 			expect(optionsValidator({ baseURL: 'https://domain.com', urls: [{ loc: 'https://domain.com/about' }] })).to.be.false;
+			expect(optionsValidator({ baseURL: 'https://www.awesome-stuff.net', urls: ['https://www.awesome-stuff.net/about'] })).to.be.false;
 			expect(optionsValidator({ baseURL: 'https://www.awesome-stuff.net', urls: [{ loc: 'https://www.awesome-stuff.net/about' }] })).to.be.false;
 
+			expect(optionsValidator({ baseURL: 'https://domain.com', urls: ['/about'] })).to.be.true;
 			expect(optionsValidator({ baseURL: 'https://domain.com', urls: [{ loc: '/about' }] })).to.be.true;
+			expect(optionsValidator({ baseURL: 'https://www.awesome-stuff.net', urls: ['about'] })).to.be.true;
 			expect(optionsValidator({ baseURL: 'https://www.awesome-stuff.net', urls: [{ loc: 'about' }] })).to.be.true;
 		});
 
 		it("the locations are partial URIs even though no base URL is provided", () => {
+			expect(optionsValidator({ urls: ['/about'] })).to.be.false;
 			expect(optionsValidator({ urls: [{ loc: '/about' }] })).to.be.false;
+			expect(optionsValidator({ urls: ['about'] })).to.be.false;
 			expect(optionsValidator({ urls: [{ loc: 'about' }] })).to.be.false;
 		});
 

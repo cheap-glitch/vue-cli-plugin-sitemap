@@ -34,14 +34,19 @@ const mm   = '[0-5]\\d';
 const ss   = '[0-5]\\d';
 const s    = '\\d+';
 const TZD  = `(?:Z|[+-]${hh}:${mm})`;
-const W3CDatePattern = `^${YYYY}(?:-${MM}(?:-${DD}(?:T${hh}:${mm}(?::${ss}(?:\\.${s})?)?${TZD})?)?)?$`;
+const w3cDatePattern = `^${YYYY}(?:-${MM}(?:-${DD}(?:T${hh}:${mm}(?::${ss}(?:\\.${s})?)?${TZD})?)?)?$`;
 
 /**
  * Schemas
  * -----------------------------------------------------------------------------
  */
 
-const URLMetaTagsSchema = {
+const urlLocSchemas = {
+	'withBaseURL':    { not: { allOf: [{ type: 'string'}, { anyOf: [{ pattern: '^https?:\\/\\/' }, { pattern: '\\.' }] }] } },
+	'withoutBaseURL': { allOf: [{ format: 'uri' }, { pattern: '^https?:\\/\\/' }] },
+}
+
+const urlMetaTagsSchema = {
 	lastmod: {
 		type:        ['object', 'string', 'number'],
 		W3CDate:     true,
@@ -67,7 +72,7 @@ const slugsSchema = {
 			slug: {
 				type: ['number', 'string']
 			},
-			...URLMetaTagsSchema,
+			...urlMetaTagsSchema,
 		},
 		required:              ['slug'],
 		additionalProperties:  false
@@ -116,7 +121,7 @@ function validateW3CDate(data, dataPath, parentData, parentDataPropName)
 	if (typeof data == 'string')
 	{
 		// Check that it matches the W3C date format
-		const W3CDateFormat = new RegExp(W3CDatePattern);
+		const W3CDateFormat = new RegExp(w3cDatePattern);
 		if (W3CDateFormat.test(data))
 			return true;
 
@@ -172,8 +177,8 @@ const optionsValidator = ajv.compile({
 	//  - if set, require the locations to be simple strings and NOT resembling URIs
 	//  - if unset, require the locations to be full URIs
 	if:     { properties: { baseURL: { minLength: 1 } } },
-	then:   { properties: { urls: { items: { properties: { loc: { not: { anyOf: [{ pattern: '^https?:\\/\\/' }, { pattern: '\\.' }] } } } } } } },
-	else:   { properties: { urls: { items: { properties: { loc: {        allOf: [{ format: 'uri' }, { pattern: '^https?:\\/\\/' }]    } } } } } },
+	then:   { properties: { urls: { items: { ...urlLocSchemas['withBaseURL'],    properties: { loc: urlLocSchemas['withBaseURL']    } } } } },
+	else:   { properties: { urls: { items: { ...urlLocSchemas['withoutBaseURL'], properties: { loc: urlLocSchemas['withoutBaseURL'] } } } } },
 
 	properties: {
 
@@ -218,7 +223,7 @@ const optionsValidator = ajv.compile({
 		// Default URL meta tags
 		defaults: {
 			type:                  'object',
-			properties:            URLMetaTagsSchema,
+			properties:            urlMetaTagsSchema,
 			additionalProperties:  false,
 			default:               {},
 		},
@@ -240,12 +245,12 @@ const optionsValidator = ajv.compile({
 
 						properties: {
 							...routePropsSchema,
-							...URLMetaTagsSchema
+							...urlMetaTagsSchema
 						},
 						additionalProperties: false
 					},
 					...routePropsSchema,
-					...URLMetaTagsSchema
+					...urlMetaTagsSchema
 				},
 				required:              ['path'],
 				additionalProperties:  true
@@ -261,11 +266,11 @@ const optionsValidator = ajv.compile({
 			default: [],
 
 			items: {
-				type: 'object',
+				type: ['string', 'object'],
 
 				properties: {
 					loc: { type: 'string' },
-					...URLMetaTagsSchema
+					...urlMetaTagsSchema
 				},
 				required:              ['loc'],
 				additionalProperties:  false,
