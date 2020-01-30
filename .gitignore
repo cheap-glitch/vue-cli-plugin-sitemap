@@ -3,7 +3,9 @@
 # .gitignore
 #
 
+# NPM
 /node_modules/
+npm-debug.log
 
 # Code coverage
 /.codecov.yml

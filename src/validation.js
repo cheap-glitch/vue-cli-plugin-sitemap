@@ -74,17 +74,9 @@ const slugsSchema = {
 			},
 			...urlMetaTagsSchema,
 		},
-		required:              ['slug'],
+		required: ['slug'],
 		additionalProperties:  false
 	}
-}
-
-const routePropsSchema = {
-	ignoreRoute: {
-		type:    'boolean',
-		default: false,
-	},
-	slugs: slugsSchema,
 }
 
 /**
@@ -240,19 +232,31 @@ const optionsValidator = ajv.compile({
 				type: 'object',
 
 				properties: {
-					sitemap: {
+					path: {
+						type: 'string',
+					},
+					meta: {
 						type: 'object',
 
 						properties: {
-							...routePropsSchema,
-							...urlMetaTagsSchema
+							sitemap: {
+								type: 'object',
+
+								properties: {
+									slugs: slugsSchema,
+									ignoreRoute: {
+										type:   'boolean',
+										default: false,
+									},
+									...urlMetaTagsSchema
+								},
+								additionalProperties: false
+							}
 						},
-						additionalProperties: false
-					},
-					...routePropsSchema,
-					...urlMetaTagsSchema
+						additionalProperties: true
+					}
 				},
-				required:              ['path'],
+				required: ['path'],
 				additionalProperties:  true
 			}
 		},
@@ -272,7 +276,7 @@ const optionsValidator = ajv.compile({
 					loc: { type: 'string' },
 					...urlMetaTagsSchema
 				},
-				required:              ['loc'],
+				required: ['loc'],
 				additionalProperties:  false,
 			}
 		},

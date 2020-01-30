@@ -119,74 +119,47 @@ function escapeUrl(url)
 
 async function generateURLsFromRoutes(routes)
 {
-	let urls = [];
-
-	for (const route of routes)
+	const urls = await Promise.all(routes.map(async function(route)
 	{
-		// Merge the properties located directly in the
-		// route object and those in the 'sitemap' sub-property
-		const url = { ...route, ...route.sitemap };
-
-		if (url.ignoreRoute) continue;
-
-		/**
-		 * Static URLs
-		 */
-		if ('loc' in url)
-		{
-			urls.push(url);
-			continue;
-		}
-
-		/**
-		 * Static routes
-		 */
-
-		// Ignore the "catch-all" 404 route
-		if (route.path == '*') continue;
-
-		// Remove a potential slash at the beginning of the path
 		const path = route.path.replace(/^\/+/, '');
+		const meta = route.meta.sitemap;
 
-		// For static routes, simply prepend the base URL to the path
-		if (!route.path.includes(':'))
-		{
-			urls.push({ loc: path, ...url });
-			continue;
-		}
+		if (meta.ignoreRoute || route.path === '*') return null;
 
-		/**
-		 * Dynamic routes
-		 */
+		 // Static URLs
+		if ('loc' in meta) return meta;
+
+		// Static routes
+		if (!path.includes(':'))
+			return { loc: path, ...meta };
 
 		// Ignore dynamic routes if no slugs are provided
-		if (!url.slugs) continue;
+		if (!meta.slugs) return null;
 
 		// Get the name of the dynamic parameter
-		const param = route.path.match(/:\w+/)[0];
+		const param = path.match(/:\w+/)[0];
 
 		// If the 'slug' property is a generator, execute it
-		const slugs = await (typeof url.slugs == 'function' ? url.slugs.call() : url.slugs);
+		const slugs = await (typeof meta.slugs == 'function' ? meta.slugs.call() : meta.slugs);
 
 		// Check the validity of the slugs
 		if (!slugsValidator(slugs))
 			throw new Error(`[vue-cli-plugin-sitemap]: ${ajv.errorsText(slugsValidator.errors).replace(/^data/, 'slugs')}`);
 
 		// Build the array of URLs
-		urls = urls.concat(
-			[...new Set(slugs)].map(function(slug)
-			{
-				// If the slug is an object (slug + additional meta tags)
-				if (Object.prototype.toString.call(slug) == '[object Object]')
-					return { loc: path.replace(param, slug.slug), ...url, ...slug };
+		return [...new Set(slugs)].map(slug =>
+		{
+			// If the slug is an object (slug + additional meta tags)
+			if (Object.prototype.toString.call(slug) == '[object Object]')
+				return { loc: path.replace(param, slug.slug), ...meta, ...slug };
 
-				// Else if the slug is just a simple value
-				return { loc: path.replace(param, slug), ...url }
-			})
-		);
-	}
+			// Else if the slug is just a simple value
+			return { loc: path.replace(param, slug), ...meta }
+		});
+	}));
 
-	return urls;
+	// Filter and flatten the array before returning it
+	return urls.filter(url => url !== null).flat();
 }
 
 module.exports = generateSitemaps;
