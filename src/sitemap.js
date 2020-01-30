@@ -80,6 +80,10 @@ async function generateSitemapXML(urls, options)
 
 function generateURLTag(url, options)
 {
+	if (typeof url == 'string')
+		url = { loc: url };
+
+	// Create a tag for each meta property
 	const metaTags = ['lastmod', 'changefreq', 'priority'].map(function(tag)
 	{
 		if (tag in url == false && tag in options.defaults == false)

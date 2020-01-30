@@ -18,7 +18,7 @@ const wrapURLs = xml => '<?xml version="1.0" encoding="UTF-8"?>'
                           + (Array.isArray(xml) ? xml.join('') : xml)
                       + '</urlset>';
 
-describe("vue-cli-plugin-sitemap sitemap generation", () => {
+describe("#generateSitemapXML", () => {
 
 	/**
 	 * URLs
