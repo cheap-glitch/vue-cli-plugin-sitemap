@@ -85,7 +85,7 @@ const routePropsSchema = {
 /**
  * Custom validation function for the 'W3CDate' keyword
  */
-function validateW3CDate(_data, _dataPath, _parentData, _parentDataPropName)
+function validateW3CDate(data, dataPath, parentData, parentDataPropName)
 {
 	const errorBase = {
 		keyword: 'W3CDate',
@@ -93,10 +93,10 @@ function validateW3CDate(_data, _dataPath, _parentData, _parentDataPropName)
 	};
 
 	// If the provided data is a Date object
-	if (Object.prototype.toString.call(_data) == "[object Date]")
+	if (Object.prototype.toString.call(data) == "[object Date]")
 	{
 		// Check the Date object is valid
-		if (isNaN(_data.getTime()))
+		if (isNaN(data.getTime()))
 		{
 			validateW3CDate.errors = [{
 				...errorBase,
@@ -107,28 +107,28 @@ function validateW3CDate(_data, _dataPath, _parentData, _parentDataPropName)
 		}
 
 		// Export the date in a W3C-approved format
-		_parentData[_parentDataPropName] = _data.toISOString();
+		parentData[parentDataPropName] = data.toISOString();
 
 		return true;
 	}
 
 	// If the data is a string
-	if (typeof _data == 'string')
+	if (typeof data == 'string')
 	{
 		// Check that it matches the W3C date format
 		const W3CDateFormat = new RegExp(W3CDatePattern);
-		if (W3CDateFormat.test(_data))
+		if (W3CDateFormat.test(data))
 			return true;
 
 		// Else, create a Date object with the data and validate it
-		return validateW3CDate(new Date(_data), _dataPath, _parentData, _parentDataPropName);
+		return validateW3CDate(new Date(data), dataPath, parentData, parentDataPropName);
 	}
 
 	// If the data is a numeric timestamp
-	if (typeof _data == 'number')
+	if (typeof data == 'number')
 	{
 		// Create a Date object with the data and validate it
-		return validateW3CDate(new Date(_data), _dataPath, _parentData, _parentDataPropName);
+		return validateW3CDate(new Date(data), dataPath, parentData, parentDataPropName);
 	}
 
 	validateW3CDate.errors = [{

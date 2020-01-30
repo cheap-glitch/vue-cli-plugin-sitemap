@@ -7,7 +7,7 @@ const { expect }           = require('chai');
 const { optionsValidator } = require('../src/validation');
 
 // Wrap the options to test in a minimal valid option object
-const validate = _options => optionsValidator({ baseURL: 'https://url.com', routes: [{ path: '/' }], ..._options});
+const validate = options => optionsValidator({ baseURL: 'https://url.com', routes: [{ path: '/' }], ...options});
 
 describe("validation of the options returns an error when:", () => {
 

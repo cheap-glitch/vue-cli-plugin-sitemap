@@ -26,10 +26,10 @@
     "test": "test"
   },
   "scripts": {
-    "lint": "eslint '**/*.js'",
-    "test": "mocha",
     "coverage": "nyc npm test",
-    "report-coverage": "npm run coverage && nyc report --reporter=text-lcov | codecov --pipe"
+    "lint": "eslint '**/*.js'",
+    "report-coverage": "npm run coverage && nyc report --reporter=text-lcov | codecov --pipe",
+    "test": "mocha"
   },
   "dependencies": {
     "ajv": "^6.11.0"

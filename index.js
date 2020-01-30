@@ -21,7 +21,7 @@
  */
 
 const fs                        = require('fs');
-const generateSitemapXML        = require('./src/sitemap');
+const generateSitemaps          = require('./src/sitemap');
 const { ajv, optionsValidator } = require('./src/validation');
 
 module.exports = async function(api, options)
@@ -42,12 +42,12 @@ module.exports = async function(api, options)
 		},
 		async function(args)
 		{
-			const options = { ...options.pluginOptions.sitemap };
+			const cliOptions = { ...options.pluginOptions.sitemap };
 
 			if (args.pretty || args.p)
-				options.pretty = true;
+				cliOptions.pretty = true;
 
-			await writeSitemap(options, args['output-dir'] || args.o || options.outputDir || '.');
+			await writeSitemap(cliOptions, args['output-dir'] || args.o || options.pluginOptions.sitemap.outputDir || '.');
 		}
 	);
 
@@ -73,11 +73,11 @@ async function writeSitemap(options, outputDir)
 	if (!optionsValidator(options))
 		throw new Error(`[vue-cli-plugin-sitemap]: ${ajv.errorsText(optionsValidator.errors).replace(/^data/, 'options')}`);
 
-	// Generate the sitemap and write it to the disk
-	fs.writeFileSync(
-		`${outputDir}/sitemap.xml`,
-		await generateSitemapXML(options),
-	);
-
-	console.info(`Generated and written sitemap at '${outputDir.replace(/\/$/, '')}/sitemap.xml'`);
+	// Generatethe sitemaps and write them to the filesystem
+	const sitemaps = await generateSitemaps(options);
+	Object.keys(sitemaps).forEach(function(filename)
+	{
+		fs.writeFileSync(`${outputDir}/${filename}.xml`, options.pretty ? sitemaps[filename] : sitemaps[filename].replace(/\t+|\n/g, ''));
+		console.info(`Generated and written sitemap at '${outputDir.replace(/\/$/, '')}/${filename}.xml'`);
+	});
 }

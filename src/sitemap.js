@@ -11,16 +11,16 @@ const MAX_NB_URLS = 50000;
  * Generate one or more sitemaps, and an accompanying sitemap index if needed
  * Return an object of text blobs to save to different files ([filename]: [contents])
  */
-async function generateSitemap(_options)
+async function generateSitemaps(options)
 {
 	// If a base URL is specified, make sure it ends with a slash
-	const baseURL = _options.baseURL ? `${_options.baseURL.replace(/\/+$/, '')}/` : '';
+	const baseURL = options.baseURL ? `${options.baseURL.replace(/\/+$/, '')}/` : '';
 
-	const urls = [..._options.urls, ...await generateURLsFromRoutes(_options.routes)]
+	const urls = [...options.urls, ...await generateURLsFromRoutes(options.routes)]
 		// Generate the location of each URL
-		.map(_url => ({ ..._url, loc: escapeUrl(baseURL + _url.loc.replace(/^\//, '')).replace(/\/$/, '') + (_options.trailingSlash ? '/' : '') }))
+		.map(url => ({ ...url, loc: escapeUrl(baseURL + url.loc.replace(/^\//, '')).replace(/\/$/, '') + (options.trailingSlash ? '/' : '') }))
 		// Remove duplicate URLs (static URLs have preference over routes)
-		.filter((_url, _index, _urls) => !('path' in _url) || _urls.every((__url, __index) => (_url.loc != __url.loc || _index == __index)));
+		.filter((url, index, urls) => !('path' in url) || urls.every((url, index) => (url.loc != url.loc || index == index)));
 
 	let blobs    = {};
 	let sitemaps = [urls];
@@ -36,77 +36,73 @@ async function generateSitemap(_options)
 			sitemaps.push(urls.slice(i*MAX_NB_URLS, (i+1)*MAX_NB_URLS));
 
 		// Generate the sitemap index
-		blobs['sitemap-index'] = generateSitemapIndexXML(nb_sitemaps, _options);
+		blobs['sitemap-index'] = await generateSitemapIndexXML(nb_sitemaps, options);
 	}
 
 	// Generate the sitemaps
-	await Promise.all(sitemaps.forEach(async function(__urls, __index, __sitemaps)
+	await Promise.all(sitemaps.map(async function(urls, index, sitemaps)
 	{
-		const filename  = (__sitemaps.length > 1)
-		                ? `sitemap-${__index.toString().padStart(__sitemaps.length.toString().length, '0')}`
+		const filename  = (sitemaps.length > 1)
+		                ? `sitemap-${index.toString().padStart(sitemaps.length.toString().length, '0')}`
 		                : 'sitemap'
 
-		blobs[filename] = await generateSitemapXML(__urls, _options);
+		blobs[filename] = await generateSitemapXML(urls, options);
 	}));
 
 	return blobs;
 }
 
-async function generateSitemapIndexXML(_nbSitemaps, _options)
+async function generateSitemapIndexXML(nbSitemaps, options)
 {
-	const sitemaps = [...new Array(_nbSitemaps).keys()]
-		.map(function(__index)
+	const sitemaps = [...new Array(nbSitemaps).keys()]
+		.map(function(index)
 		{
-			const filename = `sitemap-${__index.toString().padStart(_nbSitemaps.toString().length, '0')}.xml`;
+			const filename = `sitemap-${index.toString().padStart(nbSitemaps.toString().length, '0')}.xml`;
 
-			return '<sitemap>\n'
-			     +     `\t<loc>${_options.baseURL.replace(/\/$/, '')}/${filename}</loc>\n`
-			     + '</sitemap>'
+			return '\t<sitemap>\n'
+			     +     `\t\t<loc>${options.baseURL.replace(/\/$/, '')}/${filename}</loc>\n`
+			     + '\t</sitemap>\n'
 		});
 
-	const index = '<?xml version="1.0" encoding="UTF-8"?>\n'
-	            + '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-	            +     sitemaps.join('\n')
-	            + '</sitemapindex>';
-
-	return _options.pretty ? index : index.replace(/\t|\n/g, '');
+	return '<?xml version="1.0" encoding="UTF-8"?>\n'
+	     + '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+	     +     sitemaps.join('')
+	     + '</sitemapindex>';
 }
 
-async function generateSitemapXML(_urls, _options)
+async function generateSitemapXML(urls, options)
 {
-	const sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n'
-	              + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-	              +     `${_urls.map(__url => generateURLTag(__url, _options)).join('')}`
-	              + '</urlset>';
-
-	return _options.pretty ? sitemap : sitemap.replace(/\t|\n/g, '');
+	return '<?xml version="1.0" encoding="UTF-8"?>\n'
+	     + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+	     +     `${urls.map(url => generateURLTag(url, options)).join('')}`
+	     + '</urlset>';
 }
 
-function generateURLTag(_url, _options)
+function generateURLTag(url, options)
 {
-	const metaTags = ['lastmod', 'changefreq', 'priority'].map(function(__tag)
+	const metaTags = ['lastmod', 'changefreq', 'priority'].map(function(tag)
 	{
-		if (__tag in _url == false && __tag in _options.defaults == false)
+		if (tag in url == false && tag in options.defaults == false)
 			return '';
 
-		let value = (__tag in _url) ? _url[__tag] : _options.defaults[__tag];
+		let value = (tag in url) ? url[tag] : options.defaults[tag];
 
 		// Fix the bug of whole-number priorities
-		if (__tag == 'priority')
+		if (tag == 'priority')
 		{
 			if (value == 0) value = '0.0';
 			if (value == 1) value = '1.0';
 		}
 
-		return `\t\t<${__tag}>${value}</${__tag}>\n`;
+		return `\t\t<${tag}>${value}</${tag}>\n`;
 	});
 
-	return `\t<url>\n\t\t<loc>${_url.loc}</loc>\n${metaTags.join('')}\t</url>\n`;
+	return `\t<url>\n\t\t<loc>${url.loc}</loc>\n${metaTags.join('')}\t</url>\n`;
 }
 
-function escapeUrl(_url)
+function escapeUrl(url)
 {
-	return encodeURI(_url)
+	return encodeURI(url)
 		.replace('&',  '&amp;')
 		.replace("'", '&apos;')
 		.replace('"', '&quot;')
@@ -114,15 +110,15 @@ function escapeUrl(_url)
 		.replace('>',   '&gt;');
 }
 
-async function generateURLsFromRoutes(_routes)
+async function generateURLsFromRoutes(routes)
 {
 	let urls = [];
 
-	for (const _route of _routes)
+	for (const route of routes)
 	{
 		// Merge the properties located directly in the
 		// route object and those in the 'sitemap' sub-property
-		const url = { ..._route, ..._route.sitemap };
+		const url = { ...route, ...route.sitemap };
 
 		if (url.ignoreRoute) continue;
 
@@ -140,13 +136,13 @@ async function generateURLsFromRoutes(_routes)
 		 */
 
 		// Ignore the "catch-all" 404 route
-		if (_route.path == '*') continue;
+		if (route.path == '*') continue;
 
 		// Remove a potential slash at the beginning of the path
-		const path = _route.path.replace(/^\/+/, '');
+		const path = route.path.replace(/^\/+/, '');
 
 		// For static routes, simply prepend the base URL to the path
-		if (!_route.path.includes(':'))
+		if (!route.path.includes(':'))
 		{
 			urls.push({ loc: path, ...url });
 			continue;
@@ -160,7 +156,7 @@ async function generateURLsFromRoutes(_routes)
 		if (!url.slugs) continue;
 
 		// Get the name of the dynamic parameter
-		const param = _route.path.match(/:\w+/)[0];
+		const param = route.path.match(/:\w+/)[0];
 
 		// If the 'slug' property is a generator, execute it
 		const slugs = await (typeof url.slugs == 'function' ? url.slugs.call() : url.slugs);
@@ -171,14 +167,14 @@ async function generateURLsFromRoutes(_routes)
 
 		// Build the array of URLs
 		urls = urls.concat(
-			[...new Set(slugs)].map(function(__slug)
+			[...new Set(slugs)].map(function(slug)
 			{
 				// If the slug is an object (slug + additional meta tags)
-				if (Object.prototype.toString.call(__slug) == '[object Object]')
-					return { loc: path.replace(param, __slug.slug), ...url, ...__slug };
+				if (Object.prototype.toString.call(slug) == '[object Object]')
+					return { loc: path.replace(param, slug.slug), ...url, ...slug };
 
 				// Else if the slug is just a simple value
-				return { loc: path.replace(param, __slug), ...url }
+				return { loc: path.replace(param, slug), ...url }
 			})
 		);
 	}
@@ -186,4 +182,4 @@ async function generateURLsFromRoutes(_routes)
 	return urls;
 }
 
-module.exports = generateSitemapXML;
+module.exports = generateSitemaps;
