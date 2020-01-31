@@ -148,13 +148,18 @@ describe("the validation of the options returns an error when:", () => {
 		});
 
 		it("a route has invalid slugs", () => {
-			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: {}   } } }] })).to.be.false;
+			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: {} } } }] })).to.be.false;
 			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{}] } } }] })).to.be.false;
 			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{ changefreq: 'yearly', priority: 1.0 }] } } }] })).to.be.false;
 			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: [false, 'title'] } } }] })).to.be.false;
+			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: 'title' } } } }] })).to.be.false;
+			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: [null] } } } }] })).to.be.false;
+			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: {} } } } }] })).to.be.false;
 
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: ['ok', 'pseudo']          } } }] })).to.be.true;
+			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: ['ok', 'pseudo'] } } }] })).to.be.true;
 			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: ['ok', { slug: 'pseudo'}] } } }] })).to.be.true;
+			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: { pseudo: ['ok'] } } } }] })).to.be.true;
+			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: { pseudo: [{ slug: 'ok' }] } } } }] })).to.be.true;
 		});
 
 		it("a route has slugs with invalid meta tags", () => {
