@@ -64,16 +64,15 @@ const urlMetaTagsSchema = {
 }
 
 const slugsItemsSchema = {
-	type: ['object', 'number', 'string'],
+	type: ['object', 'string', 'number'],
 
-	properties: {
-		slug: {
-			type: ['number', 'string']
-		},
-		...urlMetaTagsSchema,
-	},
-	required: ['slug'],
-	additionalProperties:  false
+	properties: urlMetaTagsSchema,
+	patternProperties: {
+		// Any property that is not a meta info
+		'^(?!(lastmod|changefreq|priority)$).*$': {
+			type: ['string', 'number'],
+		}
+	}
 }
 
 /**
@@ -155,18 +154,7 @@ ajv.addKeyword('W3CDate', {
 });
 
 // Compile the validators
-const slugsValidator = ajv.compile({
-	type: ['array', 'object'],
-
-	items: slugsItemsSchema,
-
-	patternProperties: { '^': {
-		type: 'array',
-
-		items: slugsItemsSchema,
-	} },
-	minProperties: 1
-});
+const slugsValidator   = ajv.compile({ type: 'array', items: slugsItemsSchema });
 const optionsValidator = ajv.compile({
 	type: 'object',
 
@@ -256,22 +244,11 @@ const optionsValidator = ajv.compile({
 								properties: {
 									slugs: {
 										anyOf: [
-											{ type:        ['object', 'array'] },
-											{ typeof:      'function'          },
-											{ instanceof:  'Promise'           },
+											{ typeof: 'function' },
+											{ instanceof: ['Array', 'Promise'] },
 										],
 
 										items: slugsItemsSchema,
-
-										patternProperties: { '^': {
-											anyOf: [
-												{ type:        'array'     },
-												{ typeof:      'function'  },
-												{ instanceof:  'Promise'   },
-											],
-											items: slugsItemsSchema
-										} },
-										minProperties: 1
 									},
 									ignoreRoute: {
 										type:   'boolean',

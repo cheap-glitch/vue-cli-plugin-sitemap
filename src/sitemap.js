@@ -118,40 +118,43 @@ async function generateURLsFromRoutes(routes)
 {
 	const urls = await Promise.all(routes.map(async function(route)
 	{
-		const path = route.path.replace(/^\/+/, '');
-		const meta = route.meta ? (route.meta.sitemap || {}) : {};
+		let   path   = route.path.replace(/^\/+/, '');
+		const meta   = route.meta ? (route.meta.sitemap || {}) : {};
+		const params = path.match(/:\w+/g);
 
 		if (meta.ignoreRoute || route.path === '*') return null;
 
-		 // Static URLs
+		/**
+		 * Static routes
+		 */
 		if ('loc' in meta) return meta;
+		if (!params)       return { loc: path, ...meta };
 
-		// Static routes
-		if (!path.includes(':'))
-			return { loc: path, ...meta };
+		/**
+		 * Dynamic routes
+		 */
+		if (!meta.slugs) throwError(`need slugs to generate URLs from dynamic route '${route.path}'`);
 
-		// Ignore dynamic routes if no slugs are provided
-		if (!meta.slugs) return null;
-
-		// Get the name of the dynamic parameter
-		const param = path.match(/:\w+/)[0];
-
-		// If the 'slug' property is a generator, execute it
-		const slugs = await (typeof meta.slugs == 'function' ? meta.slugs.call() : meta.slugs);
-
-		// Check the validity of the slugs
+		let slugs = await (typeof meta.slugs == 'function' ? meta.slugs.call() : meta.slugs);
 		if (!slugsValidator(slugs))
-			throw new Error(`[vue-cli-plugin-sitemap]: ${ajv.errorsText(slugsValidator.errors).replace(/^data/, 'slugs')}`);
+			throwError(ajv.errorsText(slugsValidator.errors).replace(/^data/, 'slugs'));
 
 		// Build the array of URLs
 		return [...new Set(slugs)].map(slug =>
 		{
-			// If the slug is an object (slug + additional meta tags)
-			if (Object.prototype.toString.call(slug) == '[object Object]')
-				return { loc: path.replace(param, slug.slug), ...meta, ...slug };
+			// Wrap the slug in an object if needed
+			if (typeof slug != 'object') slug = { [params[0]]: slug };
 
-			// Else if the slug is just a simple value
-			return { loc: path.replace(param, slug), ...meta }
+			// Replace each parameter by its corresponding value
+			params.forEach(function(param)
+			{
+				if (param in slug === false)
+					throwError(`need slug for param '${param}' of route '${route.path}'`);
+
+				path = path.replace(param, slug[param]);
+			});
+
+			return { loc: path, ...slug };
 		});
 	}));
 
@@ -159,4 +162,12 @@ async function generateURLsFromRoutes(routes)
 	return urls.filter(url => url !== null).flat();
 }
 
-module.exports = generateSitemaps;
+function throwError(message)
+{
+	throw new Error(`[vue-cli-plugin-sitemap]: ${message}`);
+}
+
+module.exports = {
+	throwError,
+	generateSitemaps,
+}

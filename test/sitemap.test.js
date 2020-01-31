@@ -7,7 +7,7 @@ const chai                 = require("chai");
 const expect               = chai.expect;
 const chaiAsPromised       = require("chai-as-promised");
 
-const generateSitemaps     = require('../src/sitemap');
+const { generateSitemaps } = require('../src/sitemap');
 const { optionsValidator } = require('../src/validation');
 
 chai.use(chaiAsPromised);
@@ -480,13 +480,11 @@ describe("single sitemap generation", () => {
 			));
 		});
 
-		it("ignores dynamic routes with no slugs", async () => {
-			expect(await generate({
+		it("throw an error when dynamic routes are not given slugs", async () => {
+			expect(Promise.resolve(generate({
 				baseURL:   'https://website.net',
 				routes:    [{ path: '/' }, { path: '/about' }, { path: '/user/:id' }],
-			})).to.deep.equal(wrapSitemapXML(
-				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
-			));
+			}))).to.be.rejected;
 		});
 	});
 	/**
