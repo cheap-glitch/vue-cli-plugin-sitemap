@@ -148,25 +148,31 @@ describe("the validation of the options returns an error when:", () => {
 		});
 
 		it("a route has invalid slugs", () => {
+			// Property 'slugs' is object
 			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: {} } } }] })).to.be.false;
+			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: 'title' } } } }] })).to.be.false;
+			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: {} } } } }] })).to.be.false;
+			// Non-string/number value
+			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: [false, 'title'] } } }] })).to.be.false;
+			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: null } } } }] })).to.be.false;
+			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: {} } } } }] })).to.be.false;
+			// No value for slug
 			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{}] } } }] })).to.be.false;
 			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{ changefreq: 'yearly', priority: 1.0 }] } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: [false, 'title'] } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: 'title' } } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: [null] } } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: {} } } } }] })).to.be.false;
 
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: ['ok', 'pseudo'] } } }] })).to.be.true;
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: ['ok', { slug: 'pseudo'}] } } }] })).to.be.true;
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'ok' }] } } }] })).to.be.true;
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'ok', priority: 0.2 }] } } } ] })).to.be.true;
+			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: ['ok', 'pseudo'] } } }] })).to.be.true;
+			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: ['ok', { pseudo: 'pseudo'}] } } }] })).to.be.true;
+			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{ pseudo: 'ok' }] } } }] })).to.be.true;
+			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{ pseudo: 'ok', priority: 0.2 }] } } } ] })).to.be.true;
+			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: () => ['ok'] } } } ] })).to.be.true;
+			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: async () => ['ok'] } } } ] })).to.be.true;
 		});
 
 		it("a route has slugs with invalid meta tags", () => {
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ slug: 'pseudo', priority: 22              }] } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ slug: 'pseudo', priority: 'high'          }] } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ slug: 'pseudo', lastmod: 'a while ago'    }] } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ slug: 'pseudo', changefreq: 'a whole lot' }] } } }] })).to.be.false;
+			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'pseudo', priority: 22              }] } } }] })).to.be.false;
+			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'pseudo', priority: 'high'          }] } } }] })).to.be.false;
+			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'pseudo', lastmod: 'a while ago'    }] } } }] })).to.be.false;
+			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'pseudo', changefreq: 'a whole lot' }] } } }] })).to.be.false;
 		});
 	});
 
