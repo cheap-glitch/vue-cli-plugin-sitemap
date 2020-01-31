@@ -155,7 +155,18 @@ ajv.addKeyword('W3CDate', {
 });
 
 // Compile the validators
-const slugsValidator   = ajv.compile({ type: 'array', items: slugsItemsSchema });
+const slugsValidator = ajv.compile({
+	type: ['array', 'object'],
+
+	items: slugsItemsSchema,
+
+	patternProperties: { '^': {
+		type: 'array',
+
+		items: slugsItemsSchema,
+	} },
+	minProperties: 1
+});
 const optionsValidator = ajv.compile({
 	type: 'object',
 
@@ -245,10 +256,22 @@ const optionsValidator = ajv.compile({
 								properties: {
 									slugs: {
 										anyOf: [
-											{ typeof:     'function' },
-											{ instanceof: ['Array', 'Function', 'Promise'] },
+											{ type:        ['object', 'array'] },
+											{ typeof:      'function'          },
+											{ instanceof:  'Promise'           },
 										],
+
 										items: slugsItemsSchema,
+
+										patternProperties: { '^': {
+											anyOf: [
+												{ type:        'array'     },
+												{ typeof:      'function'  },
+												{ instanceof:  'Promise'   },
+											],
+											items: slugsItemsSchema
+										} },
+										minProperties: 1
 									},
 									ignoreRoute: {
 										type:   'boolean',
