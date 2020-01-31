@@ -72,7 +72,9 @@ const slugsItemsSchema = {
 		'^(?!(lastmod|changefreq|priority)$).*$': {
 			type: ['string', 'number'],
 		}
-	}
+	},
+	// Require at least one property that is not a meta info
+	patternRequired: ['^(?!(lastmod|changefreq|priority)$).+$'],
 }
 
 /**
@@ -143,7 +145,7 @@ const ajv = new AJV({
 });
 
 // Add extra keywords
-require('ajv-keywords')(ajv, ['typeof', 'instanceof']);
+require('ajv-keywords')(ajv, ['typeof', 'instanceof', 'patternRequired']);
 
 // Add a keyword to validate the dates
 ajv.addKeyword('W3CDate', {
@@ -244,7 +246,7 @@ const optionsValidator = ajv.compile({
 								properties: {
 									slugs: {
 										anyOf: [
-											{ typeof: 'function' },
+											{ typeof:      'function'          },
 											{ instanceof: ['Array', 'Promise'] },
 										],
 

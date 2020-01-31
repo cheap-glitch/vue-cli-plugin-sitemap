@@ -158,8 +158,8 @@ describe("the validation of the options returns an error when:", () => {
 
 			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: ['ok', 'pseudo'] } } }] })).to.be.true;
 			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: ['ok', { slug: 'pseudo'}] } } }] })).to.be.true;
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: { pseudo: ['ok'] } } } }] })).to.be.true;
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: { pseudo: [{ slug: 'ok' }] } } } }] })).to.be.true;
+			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'ok' }] } } }] })).to.be.true;
+			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'ok', priority: 0.2 }] } } } ] })).to.be.true;
 		});
 
 		it("a route has slugs with invalid meta tags", () => {
