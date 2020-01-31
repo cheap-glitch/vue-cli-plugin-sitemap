@@ -118,7 +118,7 @@ async function generateURLsFromRoutes(routes)
 {
 	const urls = await Promise.all(routes.map(async function(route)
 	{
-		let   path   = route.path.replace(/^\/+/, '');
+		const path   = route.path.replace(/^\/+/, '');
 		const meta   = route.meta ? (route.meta.sitemap || {}) : {};
 		const params = path.match(/:\w+/g);
 
@@ -140,21 +140,24 @@ async function generateURLsFromRoutes(routes)
 			throwError(ajv.errorsText(slugsValidator.errors).replace(/^data/, 'slugs'));
 
 		// Build the array of URLs
-		return [...new Set(slugs)].map(slug =>
+		return slugs.map(function(slug)
 		{
 			// Wrap the slug in an object if needed
-			if (typeof slug != 'object') slug = { [params[0]]: slug };
+			if (typeof slug != 'object') slug = { [params[0].slice(1)]: slug };
 
 			// Replace each parameter by its corresponding value
+			let urlPath = path;
 			params.forEach(function(param)
 			{
-				if (param in slug === false)
-					throwError(`need slug for param '${param}' of route '${route.path}'`);
+				const paramName = param.slice(1);
 
-				path = path.replace(param, slug[param]);
+				if (paramName in slug === false)
+					throwError(`need slug for param '${paramName} of route '${route.path}'`);
+
+				urlPath = urlPath.replace(param, slug[paramName]);
 			});
 
-			return { loc: path, ...slug };
+			return { loc: urlPath, ...slug };
 		});
 	}));
 

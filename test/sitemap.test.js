@@ -366,7 +366,7 @@ describe("single sitemap generation", () => {
 							slugs: [
 								'my-first-article',
 								{
-									slug:        '3-tricks-to-better-fold-your-socks',
+									title:       '3-tricks-to-better-fold-your-socks',
 									changefreq:  'never',
 									lastmod:     '2018-06-24',
 									priority:    0.8,
@@ -399,7 +399,7 @@ describe("single sitemap generation", () => {
 						sitemap: {
 							lastmod: '2020-01-01',
 							slugs: [{
-								slug:        '3-tricks-to-better-fold-your-socks',
+								title:       '3-tricks-to-better-fold-your-socks',
 								changefreq:  'never',
 								lastmod:     '2018-06-24',
 								priority:    0.8,
@@ -422,12 +422,12 @@ describe("single sitemap generation", () => {
 				baseURL:   'https://website.net',
 				routes:    [{
 					path: '/user/:id',
-					meta: { sitemap: { slugs: () => [...new Array(3).keys()] } },
+					meta: { sitemap: { slugs: () => [1, 2, 3] } },
 				}]
 			})).to.deep.equal(wrapSitemapXML([
-				'<url><loc>https://website.net/user/0</loc></url>',
 				'<url><loc>https://website.net/user/1</loc></url>',
 				'<url><loc>https://website.net/user/2</loc></url>',
+				'<url><loc>https://website.net/user/3</loc></url>',
 			]));
 		});
 
@@ -436,12 +436,12 @@ describe("single sitemap generation", () => {
 				baseURL:   'https://website.net',
 				routes:    [{
 					path: '/user/:id',
-					meta: { sitemap: { slugs: async () => [...new Array(3).keys()] } },
+					meta: { sitemap: { slugs: async () => [1, 2, 3] } },
 				}]
 			})).to.deep.equal(wrapSitemapXML([
-				'<url><loc>https://website.net/user/0</loc></url>',
 				'<url><loc>https://website.net/user/1</loc></url>',
 				'<url><loc>https://website.net/user/2</loc></url>',
+				'<url><loc>https://website.net/user/3</loc></url>',
 			]));
 		});
 
