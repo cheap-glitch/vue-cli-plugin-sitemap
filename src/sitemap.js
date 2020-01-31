@@ -152,7 +152,7 @@ async function generateURLsFromRoutes(routes)
 				const paramName = param.slice(1);
 
 				if (paramName in slug === false)
-					throwError(`need slug for param '${paramName} of route '${route.path}'`);
+					throwError(`need slug for param '${paramName}' of route '${route.path}'`);
 
 				urlPath = urlPath.replace(param, slug[paramName]);
 			});

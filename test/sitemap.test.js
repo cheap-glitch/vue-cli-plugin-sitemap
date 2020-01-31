@@ -214,7 +214,7 @@ describe("single sitemap generation", () => {
 		it("handles routes with a 'loc' property", async () => {
 			expect(await generate({
 				baseURL:   'https://website.net',
-				routes:    [{ path: '/' }, { path: '/complicated/path/here', meta: { sitemap: {loc: '/about' } } }],
+				routes:    [{ path: '/' }, { path: '/complicated/path/here', meta: { sitemap: { loc: '/about' } } }],
 			})).to.deep.equal(wrapSitemapXML(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
@@ -310,7 +310,7 @@ describe("single sitemap generation", () => {
 			]));
 		});
 
-		it("generates an url for each slug", async () => {
+		it("generates an URL for each slug", async () => {
 			expect(await generate({
 				baseURL:   'https://website.net',
 				routes:    [{
@@ -330,6 +330,34 @@ describe("single sitemap generation", () => {
 			]));
 		});
 
+		it("works for multiple parameters", async () => {
+			expect(await generate({
+				baseURL:   'https://website.net',
+				routes:    [{
+					path: '/article/:category/:id/:title',
+					meta: {
+						sitemap: {
+							slugs: [
+								{
+									id:        1,
+									category:  'blog',
+									title:     'my-first-article',
+								},
+								{
+									id:        14,
+									category:  'lifehacks',
+									title:     '3-tricks-to-better-fold-your-socks',
+								},
+							]
+						}
+					}
+				}]
+			})).to.deep.equal(wrapSitemapXML([
+				'<url><loc>https://website.net/article/blog/1/my-first-article</loc></url>',
+				'<url><loc>https://website.net/article/lifehacks/14/3-tricks-to-better-fold-your-socks</loc></url>',
+			]));
+		});
+
 		it("removes duplicate slugs", async () => {
 			expect(await generate({
 				baseURL:   'https://website.net',
@@ -341,8 +369,8 @@ describe("single sitemap generation", () => {
 						sitemap: {
 							slugs: [
 								'my-first-article',
-								'3-tricks-to-better-fold-your-socks',
 								'my-first-article',
+								'3-tricks-to-better-fold-your-socks',
 								'3-tricks-to-better-fold-your-socks',
 							]
 						}
@@ -379,6 +407,40 @@ describe("single sitemap generation", () => {
 				'<url><loc>https://website.net/article/my-first-article</loc></url>',
 				'<url>',
 					'<loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc>',
+					'<lastmod>2018-06-24</lastmod>',
+					'<changefreq>never</changefreq>',
+					'<priority>0.8</priority>',
+				'</url>',
+			]));
+			expect(await generate({
+				baseURL:   'https://website.net',
+				defaults:  {},
+				urls:      [],
+				routes:    [{
+					path: '/article/:category/:title',
+					meta: {
+						sitemap: {
+							slugs: [
+								{
+									title:       'my-first-article',
+									category:    'blog',
+								},
+								{
+									title:       '3-tricks-to-better-fold-your-socks',
+									category:    'lifehacks',
+
+									changefreq:  'never',
+									lastmod:     '2018-06-24',
+									priority:    0.8,
+								},
+							]
+						}
+					}
+				}]
+			})).to.deep.equal(wrapSitemapXML([
+				'<url><loc>https://website.net/article/blog/my-first-article</loc></url>',
+				'<url>',
+					'<loc>https://website.net/article/lifehacks/3-tricks-to-better-fold-your-socks</loc>',
 					'<lastmod>2018-06-24</lastmod>',
 					'<changefreq>never</changefreq>',
 					'<priority>0.8</priority>',
@@ -445,23 +507,6 @@ describe("single sitemap generation", () => {
 			]));
 		});
 
-		it("throws an error if the asynchronously generated slugs are invalid", async () => {
-			expect(Promise.resolve(generate({
-				baseURL:   'https://website.net',
-				routes:    [{
-					path: '/user/:id',
-					meta: { sitemap: { slugs: async () => 5 } },
-				}]
-			}))).to.be.rejected;
-			expect(Promise.resolve(generate({
-				baseURL:   'https://website.net',
-				routes:    [{
-					path: '/user/:id',
-					meta: { sitemap: { slugs: async () => [null] } },
-				}]
-			}))).to.be.rejected;
-		});
-
 		it("ignores routes with the 'ignoreRoute' option set to 'true'", async () => {
 			expect(await generate({
 				baseURL:   'https://website.net',
@@ -480,10 +525,44 @@ describe("single sitemap generation", () => {
 			));
 		});
 
-		it("throw an error when dynamic routes are not given slugs", async () => {
+		it("throws an error when dynamic routes are not given slugs", async () => {
 			expect(Promise.resolve(generate({
 				baseURL:   'https://website.net',
 				routes:    [{ path: '/' }, { path: '/about' }, { path: '/user/:id' }],
+			}))).to.be.rejected;
+		});
+
+		it("throws an error if the asynchronously generated slugs are invalid", async () => {
+			expect(Promise.resolve(generate({
+				baseURL:   'https://website.net',
+				routes:    [{
+					path: '/user/:id',
+					meta: { sitemap: { slugs: async () => 5 } },
+				}]
+			}))).to.be.rejected;
+			expect(Promise.resolve(generate({
+				baseURL:   'https://website.net',
+				routes:    [{
+					path: '/user/:id',
+					meta: { sitemap: { slugs: async () => [null] } },
+				}]
+			}))).to.be.rejected;
+		});
+
+		it("throws an error if the parameter of a dynamic route doesn't have an associated slug", async () => {
+			expect(Promise.resolve(generate({
+				baseURL:   'https://website.net',
+				routes:    [{
+					path: '/user/:id',
+					meta: { sitemap: { slugs: [{ title: 5 }] } },
+				}]
+			}))).to.be.rejected;
+			expect(Promise.resolve(generate({
+				baseURL:   'https://website.net',
+				routes:    [{
+					path: '/article/:title/:id',
+					meta: { sitemap: { slugs: [{ id: 5 }] } },
+				}]
 			}))).to.be.rejected;
 		});
 	});
