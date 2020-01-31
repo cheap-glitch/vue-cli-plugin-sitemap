@@ -519,6 +519,16 @@ describe("single sitemap generation", () => {
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
+
+		it("prioritizes handwritten URLs over routes", async () => {
+			expect(await generate({
+				baseURL:   'https://website.net',
+				urls:      ['/'],
+				routes:    [{ path: '/', meta: { sitemap: { changefreq: 'always' } } }, { path: '/about' }],
+			})).to.deep.equal(wrapSitemapXML(
+				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
+			));
+		});
 	});
 	/**
 	 * }}}
