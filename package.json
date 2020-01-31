@@ -32,7 +32,8 @@
     "test": "mocha"
   },
   "dependencies": {
-    "ajv": "^6.11.0"
+    "ajv": "^6.11.0",
+    "ajv-keywords": "^3.4.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",

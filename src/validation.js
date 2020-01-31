@@ -63,20 +63,17 @@ const urlMetaTagsSchema = {
 	},
 }
 
-const slugsSchema = {
-	type:  'array',
-	items: {
-		type: ['object', 'number', 'string'],
+const slugsItemsSchema = {
+	type: ['object', 'number', 'string'],
 
-		properties: {
-			slug: {
-				type: ['number', 'string']
-			},
-			...urlMetaTagsSchema,
+	properties: {
+		slug: {
+			type: ['number', 'string']
 		},
-		required: ['slug'],
-		additionalProperties:  false
-	}
+		...urlMetaTagsSchema,
+	},
+	required: ['slug'],
+	additionalProperties:  false
 }
 
 /**
@@ -146,6 +143,9 @@ const ajv = new AJV({
 	multipleOfPrecision:  3,
 });
 
+// Add extra keywords
+require('ajv-keywords')(ajv, ['typeof', 'instanceof']);
+
 // Add a keyword to validate the dates
 ajv.addKeyword('W3CDate', {
 	validate:  validateW3CDate,
@@ -155,7 +155,7 @@ ajv.addKeyword('W3CDate', {
 });
 
 // Compile the validators
-const slugsValidator   = ajv.compile(slugsSchema);
+const slugsValidator   = ajv.compile({ type: 'array', items: slugsItemsSchema });
 const optionsValidator = ajv.compile({
 	type: 'object',
 
@@ -243,7 +243,13 @@ const optionsValidator = ajv.compile({
 								type: 'object',
 
 								properties: {
-									slugs: slugsSchema,
+									slugs: {
+										anyOf: [
+											{ typeof:     'function' },
+											{ instanceof: ['Array', 'Function', 'Promise'] },
+										],
+										items: slugsItemsSchema,
+									},
 									ignoreRoute: {
 										type:   'boolean',
 										default: false,

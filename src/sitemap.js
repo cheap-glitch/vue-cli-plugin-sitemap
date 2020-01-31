@@ -16,14 +16,11 @@ async function generateSitemaps(options)
 	// If a base URL is specified, make sure it ends with a slash
 	const baseURL = options.baseURL ? `${options.baseURL.replace(/\/+$/, '')}/` : '';
 
-	const urls = [...options.urls, ...await generateURLsFromRoutes(options.routes)]
+	const urls = [...options.urls.map(url => (typeof url == 'string') ? { loc: url } : url), ...await generateURLsFromRoutes(options.routes)]
 		// Generate the location of each URL
-		.map(url => ({...url,
-			loc: escapeUrl(baseURL + (typeof url == 'string' ? url : url.loc).replace(/^\//, '')).replace(/\/$/, '')
-			   + (options.trailingSlash ? '/' : '')
-		}))
-		// Remove duplicate URLs (static URLs have preference over routes)
-		.filter((url, index, urls) => !('path' in url) || urls.every((url, index) => (url.loc != url.loc || index == index)));
+		.map(url => ({...url, loc: escapeUrl(baseURL + url.loc.replace(/^\//, '')).replace(/\/$/, '') + (options.trailingSlash ? '/' : '') }))
+		// Remove duplicate URLs (handwritten URLs have preference over routes)
+		.reduce((list, url) => list.every(_url => url.loc != _url.loc) ? [...list, url] : list, []);
 
 	let blobs    = {};
 	let sitemaps = [urls];
@@ -122,7 +119,7 @@ async function generateURLsFromRoutes(routes)
 	const urls = await Promise.all(routes.map(async function(route)
 	{
 		const path = route.path.replace(/^\/+/, '');
-		const meta = route.meta.sitemap;
+		const meta = route.meta ? (route.meta.sitemap || {}) : {};
 
 		if (meta.ignoreRoute || route.path === '*') return null;
 
