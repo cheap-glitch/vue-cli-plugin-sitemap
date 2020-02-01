@@ -24,13 +24,13 @@ describe("single sitemap generation", () => {
 		it("generates a simple sitemap from full URLs", async () => {
 			expect(await generate({
 				urls: ['https://website.net', 'https://website.net/about'],
-			})).to.deep.equal(wrapSitemapXML(
+			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 
 			expect(await generate({
 				urls: [{ loc: 'https://website.net' }, { loc: 'https://website.net/about' }],
-			})).to.deep.equal(wrapSitemapXML(
+			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
@@ -39,14 +39,14 @@ describe("single sitemap generation", () => {
 			expect(await generate({
 				baseURL:   'https://website.net',
 				urls:      ['/', '/about'],
-			})).to.deep.equal(wrapSitemapXML(
+			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 
 			expect(await generate({
 				baseURL:   'https://website.net',
 				urls:      [{ loc: '/' }, { loc: '/about' }],
-			})).to.deep.equal(wrapSitemapXML(
+			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
@@ -55,7 +55,7 @@ describe("single sitemap generation", () => {
 			expect(await generate({
 				baseURL:   'https://website.net',
 				urls:      ['/', '/about', '/page'],
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>',
 				'<url><loc>https://website.net/page</loc></url>',
 			]));
@@ -66,7 +66,7 @@ describe("single sitemap generation", () => {
 				trailingSlash: true,
 				baseURL:   'https://website.net',
 				urls:      ['/', '/about', '/page'],
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net/</loc></url><url><loc>https://website.net/about/</loc></url>',
 				'<url><loc>https://website.net/page/</loc></url>',
 			]));
@@ -76,7 +76,7 @@ describe("single sitemap generation", () => {
 			expect(await generate({
 				baseURL:   'https://website.net',
 				urls:      ['/search?color="always"&reverse-order'],
-			})).to.deep.equal(wrapSitemapXML(
+			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net/search?color=%22always%22&amp;reverse-order</loc></url>'
 			));
 
@@ -85,7 +85,7 @@ describe("single sitemap generation", () => {
 				defaults:  {},
 				routes:    [],
 				urls:      ['/about'],
-			})).to.deep.equal(wrapSitemapXML(
+			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://%C3%A9l%C3%A9phant.net/about</loc></url>'
 			));
 		});
@@ -98,7 +98,7 @@ describe("single sitemap generation", () => {
 					lastmod:     '2020-01-01',
 					priority:    0.3,
 				}]
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url>',
 					'<loc>https://website.net/about</loc>',
 					'<lastmod>2020-01-01</lastmod>',
@@ -116,7 +116,7 @@ describe("single sitemap generation", () => {
 					priority:    0.3,
 				},
 				urls: ['https://website.net/about'],
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url>',
 					'<loc>https://website.net/about</loc>',
 					'<lastmod>2020-01-01</lastmod>',
@@ -138,7 +138,7 @@ describe("single sitemap generation", () => {
 					lastmod:     '2020-01-01',
 					priority:    0.3,
 				}]
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url>',
 					'<loc>https://website.net/about</loc>',
 					'<lastmod>2020-01-01</lastmod>',
@@ -166,7 +166,7 @@ describe("single sitemap generation", () => {
 				]
 			};
 			optionsValidator(data);
-			expect(await generate(data)).to.deep.equal(wrapSitemapXML([
+			expect(await generate(data)).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net/about</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>',
 				'<url><loc>https://website.net/info</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>',
 				'<url><loc>https://website.net/page</loc><lastmod>2020-01-08T12:17:06.000Z</lastmod></url>',
@@ -185,7 +185,7 @@ describe("single sitemap generation", () => {
 						priority:    0.0,
 					},
 				]
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net/about</loc><priority>1.0</priority></url>',
 				'<url><loc>https://website.net/old</loc><priority>0.0</priority></url>',
 			]));
@@ -206,7 +206,7 @@ describe("single sitemap generation", () => {
 			expect(await generate({
 				baseURL:   'https://website.net',
 				routes:    [{ path: '/' }, { path: '/about' }],
-			})).to.deep.equal(wrapSitemapXML(
+			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
@@ -215,7 +215,7 @@ describe("single sitemap generation", () => {
 			expect(await generate({
 				baseURL:   'https://website.net',
 				routes:    [{ path: '/' }, { path: '/complicated/path/here', meta: { sitemap: { loc: '/about' } } }],
-			})).to.deep.equal(wrapSitemapXML(
+			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
@@ -224,7 +224,7 @@ describe("single sitemap generation", () => {
 			expect(await generate({
 				baseURL:   'https://website.net',
 				routes:    [{ path: '/' }, { path: '/about' }, { path: '/page/' }],
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>',
 				'<url><loc>https://website.net/page</loc></url>',
 			]));
@@ -235,7 +235,7 @@ describe("single sitemap generation", () => {
 				baseURL:   'https://website.net',
 				routes:    [{ path: '/' }, { path: '/about' }, { path: '/page/' }],
 				trailingSlash: true,
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net/</loc></url><url><loc>https://website.net/about/</loc></url>',
 				'<url><loc>https://website.net/page/</loc></url>',
 			]));
@@ -254,7 +254,7 @@ describe("single sitemap generation", () => {
 						}
 					}
 				}]
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url>',
 					'<loc>https://website.net/about</loc>',
 					'<lastmod>2020-01-01</lastmod>',
@@ -273,7 +273,7 @@ describe("single sitemap generation", () => {
 					priority:    0.3,
 				},
 				routes:    [{ path: '/about' }]
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url>',
 					'<loc>https://website.net/about</loc>',
 					'<lastmod>2020-01-01</lastmod>',
@@ -300,7 +300,7 @@ describe("single sitemap generation", () => {
 						}
 					}
 				}]
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url>',
 					'<loc>https://website.net/about</loc>',
 					'<lastmod>2020-01-01</lastmod>',
@@ -324,7 +324,7 @@ describe("single sitemap generation", () => {
 						}
 					}
 				}]
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net/article/my-first-article</loc></url>',
 				'<url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc></url>',
 			]));
@@ -352,7 +352,7 @@ describe("single sitemap generation", () => {
 						}
 					}
 				}]
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net/article/blog/1/my-first-article</loc></url>',
 				'<url><loc>https://website.net/article/lifehacks/14/3-tricks-to-better-fold-your-socks</loc></url>',
 			]));
@@ -376,7 +376,7 @@ describe("single sitemap generation", () => {
 						}
 					}
 				}]
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net/article/my-first-article</loc></url>',
 				'<url><loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc></url>',
 			]));
@@ -403,7 +403,7 @@ describe("single sitemap generation", () => {
 						}
 					}
 				}]
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net/article/my-first-article</loc></url>',
 				'<url>',
 					'<loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc>',
@@ -437,7 +437,7 @@ describe("single sitemap generation", () => {
 						}
 					}
 				}]
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net/article/blog/my-first-article</loc></url>',
 				'<url>',
 					'<loc>https://website.net/article/lifehacks/3-tricks-to-better-fold-your-socks</loc>',
@@ -469,7 +469,7 @@ describe("single sitemap generation", () => {
 						}
 					}
 				}]
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url>',
 					'<loc>https://website.net/article/3-tricks-to-better-fold-your-socks</loc>',
 					'<lastmod>2018-06-24</lastmod>',
@@ -486,7 +486,7 @@ describe("single sitemap generation", () => {
 					path: '/user/:id',
 					meta: { sitemap: { slugs: () => [1, 2, 3] } },
 				}]
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net/user/1</loc></url>',
 				'<url><loc>https://website.net/user/2</loc></url>',
 				'<url><loc>https://website.net/user/3</loc></url>',
@@ -500,7 +500,7 @@ describe("single sitemap generation", () => {
 					path: '/user/:id',
 					meta: { sitemap: { slugs: async () => [1, 2, 3] } },
 				}]
-			})).to.deep.equal(wrapSitemapXML([
+			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net/user/1</loc></url>',
 				'<url><loc>https://website.net/user/2</loc></url>',
 				'<url><loc>https://website.net/user/3</loc></url>',
@@ -511,7 +511,7 @@ describe("single sitemap generation", () => {
 			expect(await generate({
 				baseURL:   'https://website.net',
 				routes:    [{ path: '/' }, { path: '/about' }, { path: '/ignore/me', meta: { sitemap: { ignoreRoute: true } } }],
-			})).to.deep.equal(wrapSitemapXML(
+			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
@@ -520,7 +520,7 @@ describe("single sitemap generation", () => {
 			expect(await generate({
 				baseURL:   'https://website.net',
 				routes:    [{ path: '/' }, { path: '/about' }, { path: '*', name: '404' }],
-			})).to.deep.equal(wrapSitemapXML(
+			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
@@ -582,7 +582,7 @@ describe("single sitemap generation", () => {
 				baseURL:   'https://website.net',
 				urls:      ['/'],
 				routes:    [{ path: '/about' }],
-			})).to.deep.equal(wrapSitemapXML(
+			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
@@ -592,7 +592,7 @@ describe("single sitemap generation", () => {
 				baseURL:   'https://website.net',
 				urls:      ['/'],
 				routes:    [{ path: '/' }, { path: '/about' }],
-			})).to.deep.equal(wrapSitemapXML(
+			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
@@ -602,7 +602,7 @@ describe("single sitemap generation", () => {
 				baseURL:   'https://website.net',
 				urls:      ['/'],
 				routes:    [{ path: '/', meta: { sitemap: { changefreq: 'always' } } }, { path: '/about' }],
-			})).to.deep.equal(wrapSitemapXML(
+			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
@@ -628,6 +628,22 @@ describe("single sitemap generation", () => {
 	 */
 });
 
+describe("multiple sitemaps generation", () => {
+
+	it("generates several sitemaps and a sitemap index if the total number of URLs exceeds 50,000", async () => {
+		expect(await generate({
+			urls: [...Array(50001).keys()].map(n => `https://website.com/${n+1}`)
+		})).to.deep.equal({
+			'sitemap-part-1': wrapSitemapXML([...Array(50000).keys()].map(n => `<url><loc>https://website.com/${n+1}</loc></url>`)),
+			'sitemap-part-2': wrapSitemapXML('<url><loc>https://website.com/50001</loc></url>'),
+			'sitemap-index':  wrapSitemapIndexXML([
+				'<sitemap><loc>/sitemap-part-1.xml</loc></sitemap>',
+				'<sitemap><loc>/sitemap-part-2.xml</loc></sitemap>',
+			]),
+		});
+	});
+});
+
 /**
  * Call 'generateSitemaps' with some default options
  * Also take care of the removing of the formatting characters
@@ -650,16 +666,32 @@ async function generate(options, pretty = false)
 }
 
 /**
- * Wrap some XML inside an object to imitate
+ * Wrap a sitemap inside an object to mimic
  * the output of 'generateSitemaps' with a single sitemap
+ */
+function wrapSitemap(sitemap)
+{
+	return { sitemap: wrapSitemapXML(sitemap) };
+}
+
+/**
+ * Wrap some XML inside the markup of a sitemap
  */
 function wrapSitemapXML(xml)
 {
-	return {
-		// Wrap some <url> elements with the same XML as the sitemap
-		'sitemap': '<?xml version="1.0" encoding="UTF-8"?>'
-		         + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-		             + (Array.isArray(xml) ? xml.join('') : xml)
-		         + '</urlset>'
-	}
+	return '<?xml version="1.0" encoding="UTF-8"?>'
+	     + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+	         + (Array.isArray(xml) ? xml.join('') : xml)
+	     + '</urlset>';
+}
+
+/**
+ * Wrap some XML inside the markup of a sitemap index
+ */
+function wrapSitemapIndexXML(xml)
+{
+	return '<?xml version="1.0" encoding="UTF-8"?>'
+	     + '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+	         + (Array.isArray(xml) ? xml.join('') : xml)
+	     + '</sitemapindex>';
 }

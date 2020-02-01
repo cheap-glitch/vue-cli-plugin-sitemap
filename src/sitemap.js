@@ -16,11 +16,14 @@ async function generateSitemaps(options)
 	// If a base URL is specified, make sure it ends with a slash
 	const baseURL = options.baseURL ? `${options.baseURL.replace(/\/+$/, '')}/` : '';
 
+	const seen = {};
 	const urls = [...options.urls.map(url => (typeof url == 'string') ? { loc: url } : url), ...await generateURLsFromRoutes(options.routes)]
+
 		// Generate the location of each URL
 		.map(url => ({...url, loc: escapeUrl(baseURL + url.loc.replace(/^\//, '')).replace(/\/$/, '') + (options.trailingSlash ? '/' : '') }))
+
 		// Remove duplicate URLs (handwritten URLs have preference over routes)
-		.reduce((list, url) => list.every(_url => url.loc != _url.loc) ? [...list, url] : list, []);
+		.filter(url => Object.prototype.hasOwnProperty.call(seen, url.loc) ? false : (seen[url.loc] = true));
 
 	let blobs    = {};
 	let sitemaps = [urls];
@@ -43,7 +46,7 @@ async function generateSitemaps(options)
 	await Promise.all(sitemaps.map(async function(urls, index, sitemaps)
 	{
 		const filename  = (sitemaps.length > 1)
-		                ? `sitemap-${index.toString().padStart(sitemaps.length.toString().length, '0')}`
+		                ? `sitemap-part-${(index + 1).toString().padStart(sitemaps.length.toString().length, '0')}`
 		                : 'sitemap'
 
 		blobs[filename] = generateSitemapXML(urls, options);
@@ -57,7 +60,7 @@ async function generateSitemapIndexXML(nbSitemaps, options)
 	const sitemaps = [...new Array(nbSitemaps).keys()]
 		.map(function(index)
 		{
-			const filename = `sitemap-${index.toString().padStart(nbSitemaps.toString().length, '0')}.xml`;
+			const filename = `sitemap-part-${(index + 1).toString().padStart(nbSitemaps.toString().length, '0')}.xml`;
 
 			return '\t<sitemap>\n'
 			     +     `\t\t<loc>${options.baseURL.replace(/\/$/, '')}/${filename}</loc>\n`
