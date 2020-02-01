@@ -632,13 +632,25 @@ describe("multiple sitemaps generation", () => {
 
 	it("generates several sitemaps and a sitemap index if the total number of URLs exceeds 50,000", async () => {
 		expect(await generate({
-			urls: [...Array(50001).keys()].map(n => `https://website.com/${n+1}`)
+			urls:    [...Array(50001).keys()].map(n => `https://website.com/${n+1}`)
 		})).to.deep.equal({
 			'sitemap-part-1': wrapSitemapXML([...Array(50000).keys()].map(n => `<url><loc>https://website.com/${n+1}</loc></url>`)),
 			'sitemap-part-2': wrapSitemapXML('<url><loc>https://website.com/50001</loc></url>'),
 			'sitemap-index':  wrapSitemapIndexXML([
 				'<sitemap><loc>/sitemap-part-1.xml</loc></sitemap>',
 				'<sitemap><loc>/sitemap-part-2.xml</loc></sitemap>',
+			]),
+		});
+
+		expect(await generate({
+			baseURL: 'https://website.com',
+			urls:    [...Array(50001).keys()].map(n => `${n+1}`)
+		})).to.deep.equal({
+			'sitemap-part-1': wrapSitemapXML([...Array(50000).keys()].map(n => `<url><loc>https://website.com/${n+1}</loc></url>`)),
+			'sitemap-part-2': wrapSitemapXML('<url><loc>https://website.com/50001</loc></url>'),
+			'sitemap-index':  wrapSitemapIndexXML([
+				'<sitemap><loc>https://website.com/sitemap-part-1.xml</loc></sitemap>',
+				'<sitemap><loc>https://website.com/sitemap-part-2.xml</loc></sitemap>',
 			]),
 		});
 	});
