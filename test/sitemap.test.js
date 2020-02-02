@@ -264,6 +264,48 @@ describe("single sitemap generation", () => {
 			]));
 		});
 
+		it("ignores other non-sitemap-related meta properties", async () => {
+			expect(await generate({
+				baseURL:   'https://website.net',
+				routes:    [{
+					path: '/about',
+					meta: {
+						progressbar: {
+							color: 'pink',
+							width: '10px',
+						}
+					}
+				}]
+			})).to.deep.equal(wrapSitemap([
+				'<url><loc>https://website.net/about</loc></url>',
+			]));
+
+			expect(await generate({
+				baseURL:   'https://website.net',
+				routes:    [{
+					path: '/about',
+					meta: {
+						progressbar: {
+							color: 'pink',
+							width: '10px',
+						},
+						sitemap: {
+							changefreq:  'monthly',
+							lastmod:     '2020-01-01',
+							priority:    0.3,
+						}
+					}
+				}]
+			})).to.deep.equal(wrapSitemap([
+				'<url>',
+					'<loc>https://website.net/about</loc>',
+					'<lastmod>2020-01-01</lastmod>',
+					'<changefreq>monthly</changefreq>',
+					'<priority>0.3</priority>',
+				'</url>',
+			]));
+		});
+
 		it("takes default meta tags into account", async () => {
 			expect(await generate({
 				baseURL:   'https://website.net',
