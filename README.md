@@ -12,8 +12,7 @@
 	<a href="https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap"><img src="https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap/branch/master/graph/badge.svg" alt="codecov badge"></a>
 </div>
 
-<p>&nbsp;</p>
-
+#### Table of contents
  * [Installation](#installation)
  * [Setup](#setup)
    * [Use with `vue-router`](#use-with-vue-router)
