@@ -55,12 +55,12 @@ module.exports = [
 	{
 		path:      '/',
 		name:      'home',
-		component: () => import(/* webpackChunkName: "home"  */ 'HomePage')
+		component: () => import(/* webpackChunkName: "home"  */ './HomePage')
 	},
 	{
 		path:      '/about',
 		name:      'about',
-		component: () => import(/* webpackChunkName: "about" */ 'AboutPage')
+		component: () => import(/* webpackChunkName: "about" */ './AboutPage')
 	},
 ]
 ```
@@ -87,7 +87,7 @@ import Vue    from 'vue'
 import Router from 'vue-router'
 
 import App    from './App.vue'
-import routes from './src/routes'
+import routes from './routes'
 
 Vue.use(Router);
 new Vue({
@@ -200,7 +200,7 @@ Example with a route object:
 ```javascript
 {
 	path:       '/about'
-	component:  () => import(/* webpackChunkName: "about" */ 'AboutPage'),
+	component:  () => import(/* webpackChunkName: "about" */ './AboutPage'),
 
 	meta: {
 		sitemap: {
