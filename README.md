@@ -5,16 +5,18 @@
 
  * [Installation](#installation)
  * [Setup](#setup)
+ * [CLI](#cli)
  * [Options](#options)
  * [Changelog](#changelog)
  * [License](#license)
 
 **vue-cli-plugin-sitemap** generates sitemaps  for your webapps. You  can use it
 on its own or integrate it in the definition of your routes. Features:
- * generate sitemaps from an array of routes
- * support for dynamic routes
- * automatically escape the URLs and enforce a (non-)trailing slash policy
- * optionally prettify the output
+ * 🛣️ generate sitemaps from an array of routes
+ * 🔀 support dynamic routes with single or multiple parameters
+ * 🚧 automatically escape the URLs and enforce a (non-)trailing slash policy
+ * ✂️  automatically split the large sitemaps and generate the associated sitemap index
+ * ✨ optionally prettify the output
 
 #### What are sitemaps?
 From [sitemaps.org](https://www.sitemaps.org):
@@ -41,25 +43,58 @@ files will be modified.
 ## Setup
 
 ### Use with `vue-router`
-The recommended  way to  provide data  to the plugin  is to  pass it  the router
-object used by the webapp. Below is an example of a very simple setup:
+The recommended  way to provide data  to the plugin is  to pass it the  array of
+routes used with `vue-router`. Below is an example of a very basic setup:
+```javascript
+// src/routes.js
 
-@TODO
+module.exports = [
+	{
+		path:      '/',
+		name:      'home',
+		component: () => import(/* webpackChunkName: "home"  */ 'HomePage')
+	},
+	{
+		path:      '/about',
+		name:      'about',
+		component: () => import(/* webpackChunkName: "about" */ 'AboutPage')
+	},
+]
+```
 
 ```javascript
 // vue.config.js
 
-const router = require('./src/routes');
+const routes = require('./src/routes');
 
 module.exports = {
 	pluginOptions: {
-		// […]
-
 		sitemap: {
-			router,
+			baseURL: 'https://website.com',
+			routes,
 		}
 	}
 }
+```
+
+```javascript
+// src/main.js
+
+import Vue    from 'vue'
+import Router from 'vue-router'
+
+import App    from './App.vue'
+import routes from './src/routes'
+
+Vue.use(Router);
+new Vue({
+	render: h => h(App),
+	router: new Router({
+		mode: 'history',
+		base: process.env.BASE_URL,
+		routes,
+	})
+}).$mount('#app');
 ```
 
 ### Use as a standalone plugin
@@ -67,13 +102,15 @@ You can also directly provide some handwritten URLs to the plugin:
 ```javascript
 // vue.config.js
 
-sitemap: {
-	// […]
-
-	urls: [
-		'https://website.com/'
-		'https://website.com/about',
-	]
+module.exports = {
+	pluginOptions: {
+		sitemap: {
+			urls: [
+				'https://website.com/',
+				'https://website.com/about',
+			]
+		}
+	}
 }
 ```
 
@@ -81,28 +118,47 @@ If both routes and  URLs are provided, they will be merged  together in a single
 sitemap.  In the  case of  duplicated locations,  URLs will  prevail over  their
 matching routes.
 
+## CLI
+To  examine the  output  without triggering  the whole  build  process, run  the
+following command to generate a sitemap in the current working directory:
+```
+npm run sitemap
+```
+
+#### CLI Options
+When running the plugin  on the command line, it will follow  the options set in
+`vue.config.js`. If needed, you can overwrite those with some CLI flags:
+ * `-p`, `--pretty`: produce a human-readable output
+ * `-o  <dir>`, `--output-dir <dir>`: specify  a directory in which  the sitemap
+   will be written
+
+> Note: when calling the CLI through npm  scripts, don't forget to add `--` before
+> specifying the  options to  ensure that  npm won't capture  them, e.g.  `npm run
+> sitemap -- --pretty -o dist/`.
+
 ## Options
 
 ### Global settings
 All the  global settings are optional  and can be omitted,  except for `baseURL`
-that must be provided for routes-based sitemaps.
+that must be provided for route-based sitemaps.
 
 ```javascript
 // vue.config.js
 
-// The config object should be placed inside 'pluginOptions'
+// The config object should of course be placed inside 'pluginOptions'
 sitemap: {
 
-	// Only generate for production builds (default: 'false')
+	// Only generate during production builds (default: 'false')
 	productionOnly: true,
 
-	// Define the output directory (default is global 'outputDir')
-	// Note: the official specification strongly recommend placing
+	// Define the output directory (default: global 'outputDir')
+	//
+	// Note: the official specification strongly recommends placing
 	//       the sitemap at the root of the website
 	outputDir: '/temp/sitemap',
 
 	// If set to 'true', add a trailing slash at the end of every URL
-	// Remove it if set to 'false' (the default)
+	// If set to 'false', always remove it (default: 'false')
 	trailingSlash: false,
 
 	// Insert line breaks and indent the tags to make the generated
@@ -110,8 +166,8 @@ sitemap: {
 	pretty: true,
 
 	// Define an URL which will serve as a prefix for every URL in the sitemap
-	// If it is provided, all URLs must be partial (e.g. '/page/subpage')
-	// and not start with the domain name
+	// If it is provided, all URLs must be partial and not start with the
+	// domain name (e.g. '/page/subpage')
 	//
 	// Note: this is required if some routes are provided, because
 	//       every URL in the sitemap must be a full URL that includes
@@ -144,8 +200,8 @@ specification](https://www.sitemaps.org/protocol.html#xmlTagDefinitions).
 Example with a route object:
 ```javascript
 {
-	path:       'https://website.com/about'
-	component:  () => import(/* webpackChunkName: "about-page" */ 'AboutPage'),
+	path:       '/about'
+	component:  () => import(/* webpackChunkName: "about" */ 'AboutPage'),
 
 	meta: {
 		sitemap: {
@@ -171,70 +227,81 @@ sitemap: {
 }
 ```
 
-### Route-specific options
-@TODO ↓
+### Dynamic routes
+If you use dynamic routes (e.g. `/user/:id`), you must either provide some slugs
+to generate the corresponding URLs, or set the `ignoreRoute` option to true:
 ```javascript
-[
+// src/routes.js
+
+module.exports = [
 	{
-		path:    '/articles/:title',
-		lastmod: new Date('December 17, 1995'),
+		path: '/articles/:title',
+		meta: {
+			sitemap: {
+				slugs: [
+					'my-amazing-article',
+					'a-life-changing-method-for-folding-socks',
 
-		// Dynamic routes need explicit slugs to generate URLs
-		// If no slugs are provided, the dynamic route will be ignored
-		slugs: [
-			'my-amazing-article',
-			'a-life-changing-method-for-folding-socks',
-
-			// Slugs can have their own meta tags
-			{
-				slug:      'a-very-important-article',
-				priority:  1.0,
-				lastmod:   '2020-01-01',
+					// Slugs can have their own meta tags
+					{
+						title:     'a-very-important-article',
+						priority:  1.0,
+					}
+				],
 			}
-		],
+		}
 	},
 	{
-		path:    '/user/:id',
-		lastmod: 1578503451000,
-		// Slugs can also be provided via an asynchronous function
-		slugs: async () => [...await someAsyncCallToADatabase()]
-	},
-	{
-		path: '/some/very-long/or/complicated/path',
+		path: '/blog/:category/:id/:post
+		meta: {
+			sitemap: {
+				// For dynamic routes with multiple parameters,
+				// each slug must be an object with a key for
+				// each parameter
+				slugs: [
+					{
+						id:        1,
+						title:     'hello-world',
+						category:  'infos',
+					},
+					{
+						id:        2,
+						title:     'how-to-fold-socks-faster',
+						category:  'lifehacks',
 
-		// Directly provide an URL that will override the path
-		loc: '/simplified-url'
+						priority:  0.9,
+						lastmod:   'February 02, 2020 09:24',
+					},
+				]
+			}
+		}
+	},
+	{
+		path: '/user/:id',
+		meta: {
+			sitemap: {
+				// Slugs can also be provided asynchronously
+				// The callback must always return an array in the end
+				slugs: async () => await getActiveUsers(),
+			}
+		}
+	},
+	{
+		path: '/admin/secure/:config',
+
+		// Explicitly ignore this route
+		meta: { sitemap: { ignoreRoute: true } }
 	},
 	{
 		// The "catch-all" routes will be automatically ignored
 		path: '*',
 		name: '404',
 	},
-	{
-		path: '/admin/protected-page',
-
-		// Explicitly ignore this route
-		ignoreRoute: true,
-	},
 ]
 ```
 
-## CLI
-To  examine the  output  without triggering  the whole  build  process, run  the
-following command to generate a sitemap in the current working directory:
-```
-npm run sitemap
-```
-
-#### CLI Options
-When running the plugin  on the command line, it will follow  the options set in
-`vue.config.js`. If needed, you can overwrite those with some CLI flags:
- * `-p`, `--pretty`: produce a human-readable output
- * `-o <dir>`, `--output-dir <dir>`: specify a directory in which the sitemap will be written
-
-> Note: when calling the CLI through npm  scripts, don't forget to add `--` before
-> specifying the  options to  ensure that  npm won't capture  them, e.g.  `npm run
-> sitemap -- -p -o dist/`.
+### Other route-specific options
+@TODO
 
 ## Changelog
 You can consult the full changelog [here](https://github.com/cheap-glitch/vue-cli-plugin-sitemap/releases).

@@ -37,7 +37,7 @@ module.exports = async function(api, options)
 
 			options: {
 				'-p, --pretty':                  'Prettify the XML to make the sitemap more human-readable',
-				'-o [dir], --output-dir [dir]':  'Output the sitemap to the specified path instead of the current working directory',
+				'-o <dir>, --output-dir <dir>':  'Output the sitemap to the specified path instead of the current working directory',
 			},
 		},
 		async function(args)
