@@ -133,9 +133,17 @@ describe("the validation of the options returns an error when:", () => {
 		});
 
 		it("there is a route with an invalid 'path' property", () => {
-			expect(validate({ routes: [{ path: 2 }] })).to.be.false;
-			expect(validate({ routes: [{ path: true }] })).to.be.false;
-			expect(validate({ routes: [{ path: { loc: '/' } }] })).to.be.false;
+			expect(validate({ routes: [{ path: 2     }] })).to.be.false;
+			expect(validate({ routes: [{ path: true  }] })).to.be.false;
+			expect(validate({ routes: [{ path: ['/'] }] })).to.be.false;
+		});
+
+		it("there is a route with an invalid 'loc' property", () => {
+			expect(validate({ routes: [{ path: '/', meta: { sitemap: { loc: true       } }}] })).to.be.false;
+			expect(validate({ routes: [{ path: '/', meta: { sitemap: { loc: 22         } }}] })).to.be.false;
+			expect(validate({ routes: [{ path: '/', meta: { sitemap: { loc: ['/other'] } }}] })).to.be.false;
+
+			expect(validate({ routes: [{ path: '/', meta: { sitemap: { loc: '/other'   } }}] })).to.be.true;
 		});
 
 		it("there is a route with invalid URL properties", () => {

@@ -244,6 +244,13 @@ const optionsValidator = ajv.compile({
 								type: 'object',
 
 								properties: {
+									loc: {
+										type: 'string'
+									},
+									ignoreRoute: {
+										type:   'boolean',
+										default: false,
+									},
 									slugs: {
 										anyOf: [
 											{ typeof:      'function'          },
@@ -251,10 +258,6 @@ const optionsValidator = ajv.compile({
 										],
 
 										items: slugsItemsSchema,
-									},
-									ignoreRoute: {
-										type:   'boolean',
-										default: false,
 									},
 									...urlMetaTagsSchema
 								},
