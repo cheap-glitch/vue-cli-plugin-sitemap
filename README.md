@@ -3,19 +3,6 @@
 ![latest release badge](https://badgen.net/github/release/cheap-glitch/vue-cli-plugin-sitemap?color=green)
 [![codecov badge](https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap/branch/master/graph/badge.svg)](https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap)
 
-> Sitemaps are an easy way for webmasters  to inform search engines about pages on
-> their sites that are available for crawling.  In its simplest form, a sitemap is
-> an XML file that lists URLs for a site along with additional metadata about each
-> URL (when it was  last updated, how often it usually  changes, and how important
-> it is,  relative to  other URLs  in the site)  so that  search engines  can more
-> intelligently crawl  the site.  Web crawlers usually  discover pages  from links
-> within the  site and from  other sites. Sitemaps  supplement this data  to allow
-> crawlers that  support sitemaps  to pick up  all URLs in  the sitemap  and learn
-> about those URLs using the associated  metadata. Using the sitemap protocol does
-> not guarantee that web pages are  included in search engines, but provides hints
-> for web crawlers to do a better job of crawling your site.
-> (from [sitemaps.org](https://www.sitemaps.org))
-
  * [Installation](#installation)
  * [Setup](#setup)
    * [Use with `vue-router`](#use-with-vue-router)
@@ -29,6 +16,15 @@
    * [Other route-specific options](#other-route-specific-options)
  * [Changelog](#changelog)
  * [License](#license)
+
+> Sitemaps are an  easy way for webmasters to inform  search engines about pages
+> on  their sites  that are  available  for crawling.  In its  simplest form,  a
+> sitemap  is an  XML file  that lists  URLs for  a site  along with  additional
+> metadata about  each URL  […] so  that search  engines can  more intelligently
+> crawl the site. Web crawlers usually discover pages from links within the site
+> and from  other sites. Sitemaps  supplement this  data to allow  crawlers that
+> support sitemaps to pick up all URLs in the sitemap and learn about those URLs
+> using the associated metadata. (from [sitemaps.org](https://www.sitemaps.org))
 
 **vue-cli-plugin-sitemap** generates sitemaps  for your webapps. You  can use it
 on its own or integrate it in the definition of your routes. Features:
@@ -134,7 +130,7 @@ npm run sitemap
 
 #### CLI options
 When running the plugin  on the command line, it will follow  the options set in
-`vue.config.js`. If needed, you can overwrite those with some CLI flags:
+`vue.config.js`. If needed, you can overwrite those with some CLI options:
  * `-p`, `--pretty`: produce a human-readable output
  * `-o  <dir>`, `--output-dir <dir>`: specify  a directory in which  the sitemap
    will be written
@@ -146,15 +142,11 @@ When running the plugin  on the command line, it will follow  the options set in
 ## Options
 
 ### Global options
-All the  global settings are optional  and can be omitted,  except for `baseURL`
-that must be provided for route-based sitemaps.
+All the  global options are  optional and can  be omitted, except  for `baseURL`
+that must be provided for route-based sitemaps:
 
 ```javascript
-// vue.config.js
-
-// The config object should of course be placed inside 'pluginOptions'
 sitemap: {
-
 	// Only generate during production builds (default: 'false')
 	productionOnly: true,
 
@@ -193,16 +185,16 @@ sitemap: {
 
 ### URL meta tags
 In the sitemap format,  each URL can be associated with  some optional meta tags
-to help the crawlers navigate the pages and prioritize the critical URLs:
+to help the crawlers update the pages and prioritize the critical URLs:
 
-  Meta tag   |                                       Accepted values for the equivalent property                                         | Default value if absent
------------- | ------------------------------------------------------------------------------------------------------------------------- | -----------------------
-`lastmod`    | a date string in the [W3C format](https://www.w3.org/TR/NOTE-datetime), a JavaScript timestamp string, or a `Date` object | Ø
-`changefreq` | `"always"`, `"hourly"`, `"daily"`, `"weekly"`, `"monthly"`, `"yearly"`, `"never"`                                         | Ø
-`priority`   | a multiple of `0.1` between `0.0` and `1.0`                                                                               | `0.5`
+  Meta tag   |                                                  Accepted values for the equivalent property                                                  | Default value if absent
+------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | -----------------------
+`lastmod`    | a date string in the [W3C format](https://www.w3.org/TR/NOTE-datetime), a JavaScript timestamp string, a numeric timestamp or a `Date` object | Ø
+`changefreq` | `"always"`, `"hourly"`, `"daily"`, `"weekly"`, `"monthly"`, `"yearly"`, `"never"`                                                             | Ø
+`priority`   | a multiple of `0.1` between `0.0` and `1.0`                                                                                                   | `0.5`
 
-For  more  information  on  those  meta  tags,  you  can  consult  the  [official
-specification](https://www.sitemaps.org/protocol.html#xmlTagDefinitions).
+> For  more  information  on  those  meta  tags,  you  can  consult  the  [official
+> specification](https://www.sitemaps.org/protocol.html#xmlTagDefinitions).
 
 Example with a route object:
 ```javascript
@@ -236,7 +228,7 @@ sitemap: {
 
 ### Dynamic routes
 If you use dynamic routes (e.g. `/user/:id`), you must either provide some slugs
-to generate the corresponding URLs, or set the `ignoreRoute` option to true:
+to generate the corresponding URLs (or set the `ignoreRoute` option to true):
 ```javascript
 // src/routes.js
 
@@ -259,7 +251,7 @@ module.exports = [
 		}
 	},
 	{
-		path: '/blog/:category/:id/:post
+		path: '/blog/:category/:id/:post',
 		meta: {
 			sitemap: {
 				// For dynamic routes with multiple parameters,
@@ -293,22 +285,33 @@ module.exports = [
 			}
 		}
 	},
+]
+```
+
+### Other route-specific options
+```javascript
+// src/routes.js
+
+module.exports = [
 	{
-		path: '/admin/secure/:config',
+		path: '/admin/secure/page',
 
 		// Explicitly ignore this route
 		meta: { sitemap: { ignoreRoute: true } }
 	},
 	{
-		// The "catch-all" routes will be automatically ignored
+		// The "catch-all" route will be automatically ignored
 		path: '*',
 		name: '404',
 	},
+	{
+		path: '/some/complicated/and-very-*-long/path',
+
+		// Provide a handwritten URL to replace the path of the route
+		meta: { sitemap: { loc: '/simplified-path' } }
+	},
 ]
 ```
-
-### Other route-specific options
-@TODO
 
 ## Changelog
 You can consult the full changelog [here](https://github.com/cheap-glitch/vue-cli-plugin-sitemap/releases).
