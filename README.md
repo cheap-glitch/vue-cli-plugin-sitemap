@@ -5,8 +5,15 @@
 
  * [Installation](#installation)
  * [Setup](#setup)
+   * [Use with `vue-router`](#use-with-vue-router)
+   * [Use as a standalone plugin](#use-as-a-standalone-plugin)
  * [CLI](#cli)
+   * [CLI options](#cli-options)
  * [Options](#options)
+   * [Global options](#global-options)
+   * [URL meta tags](#url-meta-tags)
+   * [Dynamic routes](#dynamic-routes)
+   * [Other route-specific options](#other-route-specific-options)
  * [Changelog](#changelog)
  * [License](#license)
 
@@ -125,7 +132,7 @@ following command to generate a sitemap in the current working directory:
 npm run sitemap
 ```
 
-#### CLI Options
+#### CLI options
 When running the plugin  on the command line, it will follow  the options set in
 `vue.config.js`. If needed, you can overwrite those with some CLI flags:
  * `-p`, `--pretty`: produce a human-readable output
@@ -138,7 +145,7 @@ When running the plugin  on the command line, it will follow  the options set in
 
 ## Options
 
-### Global settings
+### Global options
 All the  global settings are optional  and can be omitted,  except for `baseURL`
 that must be provided for route-based sitemaps.
 
