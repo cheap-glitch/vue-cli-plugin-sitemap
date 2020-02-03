@@ -37,7 +37,7 @@
 > using the associated metadata. (from [sitemaps.org](https://www.sitemaps.org))
 
 **vue-cli-plugin-sitemap** generates sitemaps  for your webapps. You  can use it
-on its own or integrate it in the definition of your routes. Features:
+on its own or integrate it in the definition of the routes. Features:
  * 🛣️ generate sitemaps from an array of routes
  * 🔀 support dynamic routes with single or multiple parameters
  * 🚧 automatically escape the URLs and enforce a (non-)trailing slash policy
@@ -128,8 +128,8 @@ module.exports = {
 ```
 
 If both routes and  URLs are provided, they will be merged  together in a single
-sitemap.  In the  case of  duplicated locations,  URLs will  prevail over  their
-matching routes.
+sitemap. In the case of duplicated locations, handwritten URLs will prevail over
+their matching routes.
 
 ## CLI
 To  examine the  output  without triggering  the whole  build  process, run  the
@@ -153,7 +153,7 @@ When running the plugin  on the command line, it will follow  the options set in
 
 ### Global options
 All the  global options are  optional and can  be omitted, except  for `baseURL`
-that must be provided for route-based sitemaps:
+that must be provided for route-based sitemaps.
 
 ```javascript
 sitemap: {
@@ -170,7 +170,7 @@ sitemap: {
 	// If set to 'false', always remove it (default: 'false')
 	trailingSlash: false,
 
-	// Insert line breaks and indent the tags to make the generated
+	// Insert line breaks and tabulations to make the generated
 	// file more readable (default: 'false')
 	pretty: true,
 
@@ -237,8 +237,8 @@ sitemap: {
 ```
 
 ### Dynamic routes
-If you use dynamic routes (e.g. `/user/:id`), you must either provide some slugs
-to generate the corresponding URLs (or set the `ignoreRoute` option to true):
+If you  use dynamic routes  (e.g. `/user/:id`), you  must provide some  slugs to
+generate the corresponding URLs (or set the `ignoreRoute` option to true):
 ```javascript
 // src/routes.js
 
@@ -290,7 +290,7 @@ module.exports = [
 		meta: {
 			sitemap: {
 				// Slugs can also be provided asynchronously
-				// The callback must always return an array in the end
+				// The callback must always return an array
 				slugs: async () => await getActiveUsers(),
 			}
 		}
