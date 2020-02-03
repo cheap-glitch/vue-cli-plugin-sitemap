@@ -35,13 +35,18 @@ describe("the validation of the options returns an error when:", () => {
 		expect(validate({ outputDir: './sitemap' })).to.be.true;
 	});
 
-	it("'baseURL' is not a proper URI", () => {
-		expect(validate({ baseURL: 'not an URI'                 })).to.be.false;
-		expect(validate({ baseURL: 'somedomain.wtf'             })).to.be.false;
-		expect(validate({ baseURL: 'https://missing-something'  })).to.be.false;
+	it("'baseURL' is not a proper URI or IPv4 address", () => {
+		expect(validate({ baseURL: 'not an URI'                  })).to.be.false;
+		expect(validate({ baseURL: 'somedomain.wtf'              })).to.be.false;
+		expect(validate({ baseURL: 'https://missing-something'   })).to.be.false;
+		expect(validate({ baseURL: '127.0'                       })).to.be.false;
 
-		expect(validate({ baseURL: 'https://domain.fr'          })).to.be.true;
-		expect(validate({ baseURL: 'http://www.other-domain.fr' })).to.be.true;
+		expect(validate({ baseURL: 'https://domain.fr'           })).to.be.true;
+		expect(validate({ baseURL: 'http://www.other-domain.fr'  })).to.be.true;
+		expect(validate({ baseURL: 'http://www.website.com:8080' })).to.be.true;
+		expect(validate({ baseURL: 'https://webapp.com:27'       })).to.be.true;
+		expect(validate({ baseURL: 'https://127.0.0.1'           })).to.be.true;
+		expect(validate({ baseURL: 'https://127.0.0.1:8000'      })).to.be.true;
 	});
 
 	describe("the default URL meta tags are invalid, because", () => {

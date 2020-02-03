@@ -49,6 +49,20 @@ describe("single sitemap generation", () => {
 			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
+
+			expect(await generate({
+				baseURL:   'https://website.net:7000',
+				urls:      ['/', '/about'],
+			})).to.deep.equal(wrapSitemap(
+				'<url><loc>https://website.net:7000</loc></url><url><loc>https://website.net:7000/about</loc></url>'
+			));
+
+			expect(await generate({
+				baseURL:   'https://162.75.90.1',
+				urls:      ['/', '/about'],
+			})).to.deep.equal(wrapSitemap(
+				'<url><loc>https://162.75.90.1</loc></url><url><loc>https://162.75.90.1/about</loc></url>'
+			));
 		});
 
 		it("removes trailing slashes", async () => {

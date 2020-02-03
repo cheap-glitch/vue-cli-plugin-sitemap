@@ -196,13 +196,16 @@ const optionsValidator = ajv.compile({
 
 			anyOf: [
 				{
-					minLength:  0,
-					maxLength:  0,
+					minLength: 0,
+					maxLength: 0,
 				},
 				{
-					format:     'uri',
-					pattern:    '\\.[a-z]+$',
-				}
+					format:  'uri',
+					pattern: '\\.[a-z]+(?::\\d{1,4})?$',
+				},
+				{
+					pattern: '^https?:\\/\\/(?:\\d{1,3}\\.){3}\\d{1,3}(?::\\d{1,4})?$',
+				},
 			]
 		},
 		trailingSlash: {
