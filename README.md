@@ -63,14 +63,14 @@ routes used with `vue-router`. Below is an example of a very basic setup:
 
 module.exports = [
 	{
-		path:      '/',
-		name:      'home',
-		component: () => import(/* webpackChunkName: "home"  */ './HomePage')
+		path: '/',
+		name: 'home',
+		component: () => import(/* webpackChunkName: "home" */ './Home')
 	},
 	{
-		path:      '/about',
-		name:      'about',
-		component: () => import(/* webpackChunkName: "about" */ './AboutPage')
+		path: '/about',
+		name: 'about',
+		component: () => import(/* webpackChunkName: "about" */ './About')
 	},
 ]
 ```
@@ -174,7 +174,8 @@ sitemap: {
 	// file more readable (default: 'false')
 	pretty: true,
 
-	// Define an URL which will serve as a prefix for every URL in the sitemap
+	// Define an URL which will serve as a prefix for every URL
+	// in the sitemap
 	// If it is provided, all URLs must be partial and not start with the
 	// domain name (e.g. '/page/subpage')
 	//
@@ -209,8 +210,8 @@ to help the crawlers update the pages and prioritize the critical URLs:
 Example with a route object:
 ```javascript
 {
-	path:       '/about'
-	component:  () => import(/* webpackChunkName: "about" */ './AboutPage'),
+	path: '/about'
+	component: () => import(/* webpackChunkName: "about" */ './About')
 
 	meta: {
 		sitemap: {
