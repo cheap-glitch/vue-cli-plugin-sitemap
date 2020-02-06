@@ -9,16 +9,10 @@ const MAX_NB_URLS = 50000;
 
 function flat(input, depth = 1, stack = [])
 {
-	for (let item of input)
-	{
-		if (item instanceof Array && depth > 0)
-		{
-			flat(item, depth - 1, stack);
-		}
-		else {
-			stack.push(item);
-		}
-	}
+	input.forEach(item => {
+		if(item instanceof Array && depth > 0) flat(item, depth - 1, stack)
+		else stack.push(item)
+	})
 
 	return stack;
 }
@@ -29,16 +23,10 @@ if (!Array.prototype.flat)
 		{
 			value: function(depth = 1, stack = [])
 			{
-				for (let item of this)
-				{
-					if (item instanceof Array && depth > 0)
-					{
-						item.flat(depth - 1, stack);
-					}
-					else {
-						stack.push(item);
-					}
-				}
+				this.forEach(item => {
+					if (item instanceof Array && depth > 0) item.flat(depth - 1, stack);
+					else stack.push(item);
+				})
 				return stack;
 			}
 		});
