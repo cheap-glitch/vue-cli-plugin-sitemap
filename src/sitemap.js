@@ -159,10 +159,10 @@ async function generateURLsFromRoutes(routes)
 
 			return { loc: urlPath, ...slug };
 		});
-	}));
+	}))
 
-	// Filter and flatten the array before returning it
-	return urls.filter(url => url !== null).flat();
+	// Filter and flatten the array of URLs (don't use '.flat()' to be compatible with Node 10 and under)
+	return urls.filter(url => url !== null).reduce((flatList, url) => [...flatList, ...(Array.isArray(url) ? url : [url])], []);
 }
 
 function throwError(message)
