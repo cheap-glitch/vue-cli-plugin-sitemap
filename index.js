@@ -20,9 +20,9 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-const fs                               = require('fs');
-const { ajv, optionsValidator }        = require('./src/validation');
-const { throwError, generateSitemaps } = require('./src/sitemap');
+const fs                   = require('fs');
+const { validateOptions }  = require('./src/validation');
+const { generateSitemaps } = require('./src/sitemap');
 
 module.exports = async function(api, options)
 {
@@ -69,9 +69,7 @@ module.exports = async function(api, options)
 
 async function writeSitemap(options, outputDir)
 {
-	// Validate the config and set the default values
-	if (!optionsValidator(options))
-		throwError(ajv.errorsText(optionsValidator.errors).replace(/^data/, 'options'));
+	validateOptions(options);
 
 	// Generatethe sitemaps and write them to the filesystem
 	const sitemaps = await generateSitemaps(options);

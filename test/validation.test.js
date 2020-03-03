@@ -3,11 +3,11 @@
  * tests/validation.test.js
  */
 
-const { expect }           = require('chai');
-const { optionsValidator } = require('../src/validation');
+const { expect }          = require('chai');
+const { validateOptions } = require('../src/validation');
 
 // Wrap the options to test in a minimal valid option object
-const validate = options => optionsValidator({ baseURL: 'https://url.com', routes: [{ path: '/' }], ...options});
+const validate = options => validateOptions({ baseURL: 'https://url.com', routes: [{ path: '/' }], ...options });
 
 describe("the validation of the options returns an error when:", () => {
 
@@ -16,12 +16,12 @@ describe("the validation of the options returns an error when:", () => {
 	 * ---------------------------------------------------------------------
 	 */
 	it("there are extra properties on the main options object", () => {
-		expect(validate({ someProp: true })).to.be.false;
+		expect(() => validate({ someProp: true })).to.throw();
 	});
 
 	it("neither routes nor URLs are provided", () => {
-		expect(optionsValidator({ pretty: true, baseURL: 'https://whatever.com' })).to.be.false;
-		expect(optionsValidator({ urls: [], routes: []                          })).to.be.false;
+		expect(() => validateOptions({ pretty: true, baseURL: 'https://whatever.com' })).to.throw();
+		expect(() => validateOptions({ urls: [], routes: []                          })).to.throw();
 	});
 
 	/**
@@ -29,90 +29,90 @@ describe("the validation of the options returns an error when:", () => {
 	 * ---------------------------------------------------------------------
 	 */
 	it("'outputDir' is not a string", () => {
-		expect(validate({ outputDir: true        })).to.be.false;
-		expect(validate({ outputDir: 10          })).to.be.false;
+		expect(() => validate({ outputDir: true        })).to.throw();
+		expect(() => validate({ outputDir: 10          })).to.throw();
 
-		expect(validate({ outputDir: './sitemap' })).to.be.true;
+		expect(() => validate({ outputDir: './sitemap' })).to.not.throw();
 	});
 
 	it("'baseURL' is not a proper URI or IPv4 address", () => {
-		expect(validate({ baseURL: 'not an URI'                  })).to.be.false;
-		expect(validate({ baseURL: 'somedomain.wtf'              })).to.be.false;
-		expect(validate({ baseURL: 'https://missing-something'   })).to.be.false;
-		expect(validate({ baseURL: '127.0'                       })).to.be.false;
+		expect(() => validate({ baseURL: 'not an URI'                  })).to.throw();
+		expect(() => validate({ baseURL: 'somedomain.wtf'              })).to.throw();
+		expect(() => validate({ baseURL: 'https://missing-something'   })).to.throw();
+		expect(() => validate({ baseURL: '127.0'                       })).to.throw();
 
-		expect(validate({ baseURL: 'https://domain.fr'           })).to.be.true;
-		expect(validate({ baseURL: 'http://www.other-domain.fr'  })).to.be.true;
-		expect(validate({ baseURL: 'http://www.website.com:8080' })).to.be.true;
-		expect(validate({ baseURL: 'https://webapp.com:27'       })).to.be.true;
-		expect(validate({ baseURL: 'https://127.0.0.1'           })).to.be.true;
-		expect(validate({ baseURL: 'https://127.0.0.1:8000'      })).to.be.true;
+		expect(() => validate({ baseURL: 'https://domain.fr'           })).to.not.throw();
+		expect(() => validate({ baseURL: 'http://www.other-domain.fr'  })).to.not.throw();
+		expect(() => validate({ baseURL: 'http://www.website.com:8080' })).to.not.throw();
+		expect(() => validate({ baseURL: 'https://webapp.com:27'       })).to.not.throw();
+		expect(() => validate({ baseURL: 'https://127.0.0.1'           })).to.not.throw();
+		expect(() => validate({ baseURL: 'https://127.0.0.1:8000'      })).to.not.throw();
 	});
 
 	describe("the default URL meta tags are invalid, because", () => {
 
 		it("'defaults' is not an object", () => {
-			expect(validate({ defaults: true     })).to.be.false;
-			expect(validate({ defaults: 'weekly' })).to.be.false;
+			expect(() => validate({ defaults: true     })).to.throw();
+			expect(() => validate({ defaults: 'weekly' })).to.throw();
 		});
 
 		it("'defaults' has extraneous properties", () => {
-			expect(validate({ defaults: { loc:  '/lorem/ipsum' } })).to.be.false;
-			expect(validate({ defaults: { path: '/lorem/ipsum' } })).to.be.false;
-			expect(validate({ defaults: { path: '/lorem/ipsum' } })).to.be.false;
+			expect(() => validate({ defaults: { loc:  '/lorem/ipsum' } })).to.throw();
+			expect(() => validate({ defaults: { path: '/lorem/ipsum' } })).to.throw();
+			expect(() => validate({ defaults: { path: '/lorem/ipsum' } })).to.throw();
 		});
 
 		it("'lastmod' is not a Date object or a string", () => {
-			expect(validate({ defaults: { lastmod: true                   } })).to.be.false;
-			expect(validate({ defaults: { lastmod: { date: '2012-12-21' } } })).to.be.false;
+			expect(() => validate({ defaults: { lastmod: true                   } })).to.throw();
+			expect(() => validate({ defaults: { lastmod: { date: '2012-12-21' } } })).to.throw();
 		});
 
 		it("'lastmod' is an invalid Date object", () => {
-			expect(validate({ defaults: { lastmod: new Date('the first day of the universe')     } })).to.be.false;
-			expect(validate({ defaults: { lastmod: new Date('last tuesday, when it was raining') } })).to.be.false;
-			expect(validate({ defaults: { lastmod: new Date('1867/45/90')                        } })).to.be.false;
+			expect(() => validate({ defaults: { lastmod: new Date('the first day of the universe')     } })).to.throw();
+			expect(() => validate({ defaults: { lastmod: new Date('last tuesday, when it was raining') } })).to.throw();
+			expect(() => validate({ defaults: { lastmod: new Date('1867/45/90')                        } })).to.throw();
 
-			expect(validate({ defaults: { lastmod: new Date('2019-12-28')                        } })).to.be.true;
-			expect(validate({ defaults: { lastmod: new Date('2019-12-28T21:17:34')               } })).to.be.true;
+			expect(() => validate({ defaults: { lastmod: new Date('2019-12-28')                        } })).to.not.throw();
+			expect(() => validate({ defaults: { lastmod: new Date('2019-12-28T21:17:34')               } })).to.not.throw();
 		});
 
 		it("'lastmod' is an invalid date", () => {
-			expect(validate({ defaults: { lastmod: 'the first day of the universe'     } })).to.be.false;
-			expect(validate({ defaults: { lastmod: 'last tuesday, when it was raining' } })).to.be.false;
-			expect(validate({ defaults: { lastmod: '1867/45/90'                        } })).to.be.false;
+			expect(() => validate({ defaults: { lastmod: 'the first day of the universe'     } })).to.throw();
+			expect(() => validate({ defaults: { lastmod: 'last tuesday, when it was raining' } })).to.throw();
+			expect(() => validate({ defaults: { lastmod: '1867/45/90'                        } })).to.throw();
 
-			expect(validate({ defaults: { lastmod: '2019-12-28'                        } })).to.be.true;
-			expect(validate({ defaults: { lastmod: '2019-12-28T21:17:34'               } })).to.be.true;
+			expect(() => validate({ defaults: { lastmod: '2019-12-28'                        } })).to.not.throw();
+			expect(() => validate({ defaults: { lastmod: '2019-12-28T21:17:34'               } })).to.not.throw();
 		});
 
 		it("'lastmod' is an invalid timestamp", () => {
-			expect(validate({ defaults: { lastmod: 99999999999999999 } })).to.be.false;
+			expect(() => validate({ defaults: { lastmod: 99999999999999999 } })).to.throw();
 
-			expect(validate({ defaults: { lastmod: 1578485452000     } })).to.be.true;
+			expect(() => validate({ defaults: { lastmod: 1578485452000     } })).to.not.throw();
 		});
 
 		it("'changefreq' is not a valid value", () => {
-			expect(validate({ defaults: { changefreq: 25                 } })).to.be.false;
-			expect(validate({ defaults: { changefreq: 'often'            } })).to.be.false;
-			expect(validate({ defaults: { changefreq: 'sometimes'        } })).to.be.false;
-			expect(validate({ defaults: { changefreq: 'every 12 seconds' } })).to.be.false;
+			expect(() => validate({ defaults: { changefreq: 25                 } })).to.throw();
+			expect(() => validate({ defaults: { changefreq: 'often'            } })).to.throw();
+			expect(() => validate({ defaults: { changefreq: 'sometimes'        } })).to.throw();
+			expect(() => validate({ defaults: { changefreq: 'every 12 seconds' } })).to.throw();
 
-			expect(validate({ defaults: { changefreq: 'monthly'          } })).to.be.true;
-			expect(validate({ defaults: { changefreq: 'never'            } })).to.be.true;
+			expect(() => validate({ defaults: { changefreq: 'monthly'          } })).to.not.throw();
+			expect(() => validate({ defaults: { changefreq: 'never'            } })).to.not.throw();
 		});
 
 		it("'priority' is not a valid value", () => {
-			expect(validate({ defaults: { priority: 'high' } })).to.be.false;
-			expect(validate({ defaults: { priority: 100    } })).to.be.false;
-			expect(validate({ defaults: { priority: 100.0  } })).to.be.false;
-			expect(validate({ defaults: { priority: 1.1    } })).to.be.false;
-			expect(validate({ defaults: { priority: 0.88   } })).to.be.false;
-			expect(validate({ defaults: { priority: -1.0   } })).to.be.false;
+			expect(() => validate({ defaults: { priority: 'high' } })).to.throw();
+			expect(() => validate({ defaults: { priority: 100    } })).to.throw();
+			expect(() => validate({ defaults: { priority: 100.0  } })).to.throw();
+			expect(() => validate({ defaults: { priority: 1.1    } })).to.throw();
+			expect(() => validate({ defaults: { priority: 0.88   } })).to.throw();
+			expect(() => validate({ defaults: { priority: -1.0   } })).to.throw();
 
-			expect(validate({ defaults: { priority: 0.3    } })).to.be.true;
-			expect(validate({ defaults: { priority: 0.8    } })).to.be.true;
-			expect(validate({ defaults: { priority: 0.0    } })).to.be.true;
-			expect(validate({ defaults: { priority: 0.1    } })).to.be.true;
+			expect(() => validate({ defaults: { priority: 0.3    } })).to.not.throw();
+			expect(() => validate({ defaults: { priority: 0.8    } })).to.not.throw();
+			expect(() => validate({ defaults: { priority: 0.0    } })).to.not.throw();
+			expect(() => validate({ defaults: { priority: 0.1    } })).to.not.throw();
 		});
 	});
 
@@ -123,69 +123,69 @@ describe("the validation of the options returns an error when:", () => {
 	describe("the routes are invalid, because", () => {
 
 		it("'routes' is not an array", () => {
-			expect(optionsValidator({ routes: {}   })).to.be.false;
-			expect(optionsValidator({ routes: true })).to.be.false;
+			expect(() => validateOptions({ routes: {}   })).to.throw();
+			expect(() => validateOptions({ routes: true })).to.throw();
 		});
 
 		it("there is a route with no 'path' property", () => {
-			expect(validate({ routes: [{}                                                            ] })).to.be.false;
-			expect(validate({ routes: [{ path: '/' }, {}                                             ] })).to.be.false;
-			expect(validate({ routes: [{ meta: { sitemap: { changefreq: 'weekly' } } }               ] })).to.be.false;
-			expect(validate({ routes: [{ path: '/' }, { meta: { sitemap: { changefreq: 'weekly' } } }] })).to.be.false;
+			expect(() => validate({ routes: [{}                                                            ] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/' }, {}                                             ] })).to.throw();
+			expect(() => validate({ routes: [{ meta: { sitemap: { changefreq: 'weekly' } } }               ] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/' }, { meta: { sitemap: { changefreq: 'weekly' } } }] })).to.throw();
 
-			expect(validate({ routes: [{ path: '/' }                                                 ] })).to.be.true;
-			expect(validate({ routes: [{ path: '/' }, { path: '/about' }                             ] })).to.be.true;
+			expect(() => validate({ routes: [{ path: '/' }                                                 ] })).to.not.throw();
+			expect(() => validate({ routes: [{ path: '/' }, { path: '/about' }                             ] })).to.not.throw();
 		});
 
 		it("there is a route with an invalid 'path' property", () => {
-			expect(validate({ routes: [{ path: 2     }] })).to.be.false;
-			expect(validate({ routes: [{ path: true  }] })).to.be.false;
-			expect(validate({ routes: [{ path: ['/'] }] })).to.be.false;
+			expect(() => validate({ routes: [{ path: 2     }] })).to.throw();
+			expect(() => validate({ routes: [{ path: true  }] })).to.throw();
+			expect(() => validate({ routes: [{ path: ['/'] }] })).to.throw();
 		});
 
 		it("there is a route with an invalid 'loc' property", () => {
-			expect(validate({ routes: [{ path: '/', meta: { sitemap: { loc: true       } }}] })).to.be.false;
-			expect(validate({ routes: [{ path: '/', meta: { sitemap: { loc: 22         } }}] })).to.be.false;
-			expect(validate({ routes: [{ path: '/', meta: { sitemap: { loc: ['/other'] } }}] })).to.be.false;
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: true       } }}] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: 22         } }}] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: ['/other'] } }}] })).to.throw();
 
-			expect(validate({ routes: [{ path: '/', meta: { sitemap: { loc: '/other'   } }}] })).to.be.true;
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: '/other'   } }}] })).to.not.throw();
 		});
 
 		it("there is a route with invalid URL properties", () => {
-			expect(validate({ routes: [{ path: '/', meta: { sitemap: { changefreq: true        } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/', meta: { sitemap: { changefreq: true        } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/', meta: { sitemap: { lastmod:    'yesterday' } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/', meta: { sitemap: { lastmod:    'yesterday' } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/', meta: { sitemap: { priority:   72          } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/', meta: { sitemap: { priority:   72          } } }] })).to.be.false;
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { changefreq: true        } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { changefreq: true        } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { lastmod:    'yesterday' } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { lastmod:    'yesterday' } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { priority:   72          } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { priority:   72          } } }] })).to.throw();
 		});
 
 		it("a route has invalid slugs", () => {
 			// Property 'slugs' is object
-			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: {}                                        } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: 'title' }                        } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: {} }                             } } }] })).to.be.false;
+			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: {}                                        } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: 'title' }                        } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: {} }                             } } }] })).to.throw();
 			// Non-string/number value
-			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: [false, 'title']                          } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: null }                           } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: {} }                             } } }] })).to.be.false;
+			expect(() => validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: [false, 'title']                          } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: null }                           } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/article/:title', meta: { sitemap: { slugs: { title: {} }                             } } }] })).to.throw();
 			// No value for slug
-			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{}]                                      } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{ changefreq: 'yearly', priority: 1.0 }] } } }] })).to.be.false;
+			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{}]                                      } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{ changefreq: 'yearly', priority: 1.0 }] } } }] })).to.throw();
 
-			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: ['ok', 'pseudo']                          } } }] })).to.be.true;
-			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: ['ok', { pseudo: 'pseudo'}]               } } }] })).to.be.true;
-			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{ pseudo: 'ok' }]                        } } }] })).to.be.true;
-			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{ pseudo: 'ok', priority: 0.2 }]         } } }] })).to.be.true;
-			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: () => ['ok']                              } } }] })).to.be.true;
-			expect(validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: async () => ['ok']                        } } } ] })).to.be.true;
+			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: ['ok', 'pseudo']                          } } }] })).to.not.throw();
+			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: ['ok', { pseudo: 'pseudo'}]               } } }] })).to.not.throw();
+			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{ pseudo: 'ok' }]                        } } }] })).to.not.throw();
+			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{ pseudo: 'ok', priority: 0.2 }]         } } }] })).to.not.throw();
+			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: () => ['ok']                              } } }] })).to.not.throw();
+			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: async () => ['ok']                        } } } ] })).to.not.throw();
 		});
 
 		it("a route has slugs with invalid meta tags", () => {
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'pseudo', priority: 22              }] } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'pseudo', priority: 'high'          }] } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'pseudo', lastmod: 'a while ago'    }] } } }] })).to.be.false;
-			expect(validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'pseudo', changefreq: 'a whole lot' }] } } }] })).to.be.false;
+			expect(() => validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'pseudo', priority: 22              }] } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'pseudo', priority: 'high'          }] } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'pseudo', lastmod: 'a while ago'    }] } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/user/:pseudo', meta: { sitemap: { slugs: [{ pseudo: 'pseudo', changefreq: 'a whole lot' }] } } }] })).to.throw();
 		});
 	});
 
@@ -196,57 +196,57 @@ describe("the validation of the options returns an error when:", () => {
 	describe("the URLs are invalid, because", () => {
 
 		it("the 'urls' property is not an array", () => {
-			expect(optionsValidator({ urls: {}                                })).to.be.false;
-			expect(optionsValidator({ urls: 'https://mywebsite.com'           })).to.be.false;
+			expect(() => validateOptions({ urls: {}                                })).to.throw();
+			expect(() => validateOptions({ urls: 'https://mywebsite.com'           })).to.throw();
 
-			expect(optionsValidator({ urls: ['https://www.site.org']          })).to.be.true;
-			expect(optionsValidator({ urls: [{ loc: 'https://www.site.org' }] })).to.be.true;
+			expect(() => validateOptions({ urls: ['https://www.site.org']          })).to.not.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://www.site.org' }] })).to.not.throw();
 		});
 
 		it("some URLs are missing the 'loc' property", () => {
-			expect(optionsValidator({ urls: [{}]                                                          })).to.be.false;
-			expect(optionsValidator({ urls: [{ lastmod: '2020-01-01' }]                                   })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'about' }, { changefreq: 'always' }]                  })).to.be.false;
+			expect(() => validateOptions({ urls: [{}]                                                          })).to.throw();
+			expect(() => validateOptions({ urls: [{ lastmod: '2020-01-01' }]                                   })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'about' }, { changefreq: 'always' }]                  })).to.throw();
 
-			expect(optionsValidator({ urls: ['https://website.com', { loc: 'https://website.com/about' }] })).to.be.true;
+			expect(() => validateOptions({ urls: ['https://website.com', { loc: 'https://website.com/about' }] })).to.not.throw();
 		});
 
 		it("the locations are full URIs even though a base URL is provided", () => {
-			expect(optionsValidator({ baseURL: 'https://domain.com', urls: ['https://domain.com/about']                                })).to.be.false;
-			expect(optionsValidator({ baseURL: 'https://domain.com', urls: [{ loc: 'https://domain.com/about' }]                       })).to.be.false;
-			expect(optionsValidator({ baseURL: 'https://www.awesome-stuff.net', urls: ['https://www.awesome-stuff.net/about']          })).to.be.false;
-			expect(optionsValidator({ baseURL: 'https://www.awesome-stuff.net', urls: [{ loc: 'https://www.awesome-stuff.net/about' }] })).to.be.false;
+			expect(() => validateOptions({ baseURL: 'https://domain.com', urls: ['https://domain.com/about']                                })).to.throw();
+			expect(() => validateOptions({ baseURL: 'https://domain.com', urls: [{ loc: 'https://domain.com/about' }]                       })).to.throw();
+			expect(() => validateOptions({ baseURL: 'https://www.awesome-stuff.net', urls: ['https://www.awesome-stuff.net/about']          })).to.throw();
+			expect(() => validateOptions({ baseURL: 'https://www.awesome-stuff.net', urls: [{ loc: 'https://www.awesome-stuff.net/about' }] })).to.throw();
 
-			expect(optionsValidator({ baseURL: 'https://domain.com', urls: ['/about']                                                  })).to.be.true;
-			expect(optionsValidator({ baseURL: 'https://domain.com', urls: [{ loc: '/about' }]                                         })).to.be.true;
-			expect(optionsValidator({ baseURL: 'https://www.awesome-stuff.net', urls: ['about']                                        })).to.be.true;
-			expect(optionsValidator({ baseURL: 'https://www.awesome-stuff.net', urls: [{ loc: 'about' }]                               })).to.be.true;
+			expect(() => validateOptions({ baseURL: 'https://domain.com', urls: ['/about']                                                  })).to.not.throw();
+			expect(() => validateOptions({ baseURL: 'https://domain.com', urls: [{ loc: '/about' }]                                         })).to.not.throw();
+			expect(() => validateOptions({ baseURL: 'https://www.awesome-stuff.net', urls: ['about']                                        })).to.not.throw();
+			expect(() => validateOptions({ baseURL: 'https://www.awesome-stuff.net', urls: [{ loc: 'about' }]                               })).to.not.throw();
 		});
 
 		it("the locations are partial URIs even though no base URL is provided", () => {
-			expect(optionsValidator({ urls: ['/about']          })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: '/about' }] })).to.be.false;
-			expect(optionsValidator({ urls: ['about']           })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'about' }]  })).to.be.false;
+			expect(() => validateOptions({ urls: ['/about']          })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: '/about' }] })).to.throw();
+			expect(() => validateOptions({ urls: ['about']           })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'about' }]  })).to.throw();
 		});
 
 		it("there is an URL with invalid URL properties", () => {
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', changefreq: false                    }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', changefreq: {}                       }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', changefreq: 'sometimes'              }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', lastmod: true                        }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', lastmod: 'yesterday'                 }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', priority: 'low'                      }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', priority: 'high'                     }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', priority: 10                         }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', sitemap: { changefreq: false       } }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', sitemap: { changefreq: {}          } }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', sitemap: { changefreq: 'sometimes' } }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', sitemap: { lastmod: true           } }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', sitemap: { lastmod: 'yesterday'    } }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', sitemap: { priority: 'low'         } }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', sitemap: { priority: 'high'        } }] })).to.be.false;
-			expect(optionsValidator({ urls: [{ loc: 'https://website.com', sitemap: { priority: 10            } }] })).to.be.false;
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', changefreq: false                    }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', changefreq: {}                       }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', changefreq: 'sometimes'              }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', lastmod: true                        }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', lastmod: 'yesterday'                 }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', priority: 'low'                      }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', priority: 'high'                     }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', priority: 10                         }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { changefreq: false       } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { changefreq: {}          } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { changefreq: 'sometimes' } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { lastmod: true           } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { lastmod: 'yesterday'    } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { priority: 'low'         } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { priority: 'high'        } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { priority: 10            } }] })).to.throw();
 		});
 	});
 });

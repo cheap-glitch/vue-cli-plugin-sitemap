@@ -8,7 +8,7 @@ const expect               = chai.expect;
 const chaiAsPromised       = require("chai-as-promised");
 
 const { generateSitemaps } = require('../src/sitemap');
-const { optionsValidator } = require('../src/validation');
+const { validateOptions  } = require('../src/validation');
 
 chai.use(chaiAsPromised);
 
@@ -179,7 +179,7 @@ describe("single sitemap generation", () => {
 					},
 				]
 			};
-			optionsValidator(data);
+			validateOptions(data);
 			expect(await generate(data)).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net/about</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>',
 				'<url><loc>https://website.net/info</loc><lastmod>1995-12-17T02:24:00.000Z</lastmod></url>',

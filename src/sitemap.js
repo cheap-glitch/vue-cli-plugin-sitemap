@@ -3,7 +3,7 @@
  * src/sitemap.js
  */
 
-const { ajv, slugsValidator } = require('./validation');
+const { throwError, validateSlugs } = require('./validation');
 
 const MAX_NB_URLS = 50000;
 
@@ -136,8 +136,7 @@ async function generateURLsFromRoutes(routes)
 		if (!meta.slugs) throwError(`need slugs to generate URLs from dynamic route '${route.path}'`);
 
 		let slugs = await (typeof meta.slugs == 'function' ? meta.slugs.call() : meta.slugs);
-		if (!slugsValidator(slugs))
-			throwError(ajv.errorsText(slugsValidator.errors).replace(/^data/, 'slugs'));
+		validateSlugs(slugs);
 
 		// Build the array of URLs
 		return slugs.map(function(slug)
@@ -165,12 +164,6 @@ async function generateURLsFromRoutes(routes)
 	return urls.filter(url => url !== null).reduce((flatList, url) => [...flatList, ...(Array.isArray(url) ? url : [url])], []);
 }
 
-function throwError(message)
-{
-	throw new Error(`[vue-cli-plugin-sitemap]: ${message}`);
-}
-
 module.exports = {
-	throwError,
-	generateSitemaps,
+	generateSitemaps
 }
