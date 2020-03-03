@@ -69,7 +69,7 @@ module.exports = async function(api, options)
 
 async function writeSitemap(options, outputDir)
 {
-	validateOptions(options);
+	validateOptions(options, true);
 
 	// Generatethe sitemaps and write them to the filesystem
 	const sitemaps = await generateSitemaps(options);

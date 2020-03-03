@@ -39,19 +39,24 @@ function throwError(message)
 /**
  * Validate the slugs
  */
-function validateSlugs(slugs)
+function validateSlugs(slugs, errorMsg = '')
 {
 	if (!slugsValidator(slugs))
-		throwError(betterAjvErrors(optionsSchema, slugs, optionsValidator.errors));
+		throwError(errorMsg);
 }
 
 /**
  * Validate the config and set the default values
  */
-function validateOptions(options)
+function validateOptions(options, printError = false)
 {
 	if (!optionsValidator(options))
-		throwError(betterAjvErrors(optionsSchema, options, optionsValidator.errors));
+	{
+		if (printError)
+			console.error(betterAjvErrors(optionsSchema, options, optionsValidator.errors));
+
+		throwError('invalid configuration');
+	}
 }
 
 module.exports = {
