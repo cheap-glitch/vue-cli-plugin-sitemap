@@ -688,6 +688,54 @@ describe("single sitemap generation", () => {
 			]));
 		});
 
+		it("generates a sitemap from nested routes with relative and absolute paths", async () => {
+			expect(await generate({
+				baseURL:   'https://website.net',
+				routes:    [{
+					path: '/',
+					children: [{
+						path: 'about',
+						children: [{
+							path: '/contact',
+							children: [{
+								path: 'infos'
+							}]
+						}]
+					}]
+				}],
+			})).to.deep.equal(wrapSitemap([
+				'<url><loc>https://website.net</loc></url>',
+				'<url><loc>https://website.net/about</loc></url>',
+				'<url><loc>https://website.net/contact</loc></url>',
+				'<url><loc>https://website.net/contact/infos</loc></url>',
+			]));
+		});
+
+		it("takes meta properties from nested routes into account", async () => {
+			expect(await generate({
+				baseURL:   'https://website.net',
+				routes:    [{
+					path: '/',
+					children: [
+						{ path: '/about', meta: { sitemap: { lastmod: '2020-02-03' } } },
+						{ path: '/error', meta: { sitemap: { ignoreRoute: true     } } },
+						{ path: '/blog',  meta: { sitemap: { changefreq: 'weekly'  } },
+							children: [
+								{ path: 'articles', meta: { sitemap: { priority: 1.0 } } },
+								{ path: 'notes',    meta: { sitemap: { priority: 0.5 } } },
+							]
+						},
+					]
+				}],
+			})).to.deep.equal(wrapSitemap([
+				'<url><loc>https://website.net</loc></url>',
+				'<url><loc>https://website.net/about</loc><lastmod>2020-02-03</lastmod></url>',
+				'<url><loc>https://website.net/blog</loc><changefreq>weekly</changefreq></url>',
+				'<url><loc>https://website.net/blog/articles</loc><priority>1.0</priority></url>',
+				'<url><loc>https://website.net/blog/notes</loc><priority>0.5</priority></url>',
+			]));
+		});
+
 	});
 	/**
 	 * }}}
