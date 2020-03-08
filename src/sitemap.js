@@ -114,14 +114,14 @@ function escapeUrl(url)
 		.replace('>',   '&gt;');
 }
 
-async function generateURLsFromRoutes(routes)
+async function generateURLsFromRoutes(routes, parentPath = '')
 {
 	const urlArrays = await Promise.all(routes.map(async function(route)
 	{
-		const path     = route.path.replace(/^\/+/, '');
+		const path     = (route.path.startsWith('/') ? route.path : `${parentPath}/${route.path}`).replace(/^\/+/, '');
 		const meta     = route.meta ? (route.meta.sitemap || {}) : {};
 		const params   = path.match(/:\w+/g);
-		const children = ('children' in route) ? await generateURLsFromRoutes(route.children) : [];
+		const children = ('children' in route) ? await generateURLsFromRoutes(route.children, route.path) : [];
 
 		/**
 		 * Ignored routes
