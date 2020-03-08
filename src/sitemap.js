@@ -116,30 +116,34 @@ function escapeUrl(url)
 
 async function generateURLsFromRoutes(routes)
 {
-	const urls = await Promise.all(routes.map(async function(route)
+	const urlArrays = await Promise.all(routes.map(async function(route)
 	{
-		const path   = route.path.replace(/^\/+/, '');
-		const meta   = route.meta ? (route.meta.sitemap || {}) : {};
-		const params = path.match(/:\w+/g);
+		const path     = route.path.replace(/^\/+/, '');
+		const meta     = route.meta ? (route.meta.sitemap || {}) : {};
+		const params   = path.match(/:\w+/g);
+		const children = ('children' in route) ? await generateURLsFromRoutes(route.children) : [];
 
+		/**
+		 * Ignored routes
+		 */
 		if (meta.ignoreRoute || route.path === '*') return null;
 
 		/**
 		 * Static routes
 		 */
-		if ('loc' in meta) return meta;
-		if (!params)       return { loc: path, ...meta };
+		if ('loc' in meta) return [...children, meta];
+		if (!params)       return [...children, { loc: path, ...meta }];
 
 		/**
 		 * Dynamic routes
 		 */
 		if (!meta.slugs) throwError(`need slugs to generate URLs from dynamic route '${route.path}'`);
 
-		let slugs = await (typeof meta.slugs == 'function' ? meta.slugs.call() : meta.slugs);
+		let slugs = (typeof meta.slugs == 'function') ? await meta.slugs.call() : meta.slugs;
 		validateSlugs(slugs, `invalid slug for route '${route.path}'`);
 
 		// Build the array of URLs
-		return slugs.map(function(slug)
+		return [...children, ...slugs.map(function(slug)
 		{
 			// Wrap the slug in an object if needed
 			if (typeof slug != 'object') slug = { [params[0].slice(1)]: slug };
@@ -157,11 +161,11 @@ async function generateURLsFromRoutes(routes)
 			});
 
 			return { loc: urlPath, ...slug };
-		});
+		})];
 	}))
 
-	// Filter and flatten the array of URLs (don't use '.flat()' to be compatible with Node 10 and under)
-	return urls.filter(url => url !== null).reduce((flatList, url) => [...flatList, ...(Array.isArray(url) ? url : [url])], []);
+	// Filter and flatten the array of URLs (don't use flat() to be compatible with Node 10 and under)
+	return urlArrays.filter(urls => urls !== null).reduce((flatList, urls) => [...flatList, ...urls], []);
 }
 
 module.exports = {
