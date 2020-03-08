@@ -172,6 +172,9 @@ const optionsSchema = {
 					path: {
 						type: 'string',
 					},
+					children: {
+						'$ref': 'options.json#/properties/routes',
+					},
 					meta: {
 						type: 'object',
 

@@ -27,6 +27,9 @@ ajv.addKeyword('W3CDate', {
 	modifying: true,
 });
 
+// Add the options schema to allow recursive references
+ajv.addSchema(optionsSchema, 'options.json');
+
 // Compile the validators
 const slugsValidator   = ajv.compile(slugsSchema);
 const optionsValidator = ajv.compile(optionsSchema);
