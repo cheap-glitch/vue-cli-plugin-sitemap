@@ -136,7 +136,7 @@ async function generateURLsFromRoutes(routes)
 		if (!meta.slugs) throwError(`need slugs to generate URLs from dynamic route '${route.path}'`);
 
 		let slugs = await (typeof meta.slugs == 'function' ? meta.slugs.call() : meta.slugs);
-		validateSlugs(slugs, `invalid slug for route '${route.path}'`, true);
+		validateSlugs(slugs, `invalid slug for route '${route.path}'`);
 
 		// Build the array of URLs
 		return slugs.map(function(slug)

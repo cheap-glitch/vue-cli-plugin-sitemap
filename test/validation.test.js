@@ -125,6 +125,8 @@ describe("the validation of the options returns an error when:", () => {
 		it("'routes' is not an array", () => {
 			expect(() => validateOptions({ routes: {}   })).to.throw();
 			expect(() => validateOptions({ routes: true })).to.throw();
+			expect(() => validateOptions({ routes: [{ path: '/', children: {}   }] })).to.throw();
+			expect(() => validateOptions({ routes: [{ path: '/', children: true }] })).to.throw();
 		});
 
 		it("there is a route with no 'path' property", () => {
@@ -132,32 +134,42 @@ describe("the validation of the options returns an error when:", () => {
 			expect(() => validate({ routes: [{ path: '/' }, {}                                             ] })).to.throw();
 			expect(() => validate({ routes: [{ meta: { sitemap: { changefreq: 'weekly' } } }               ] })).to.throw();
 			expect(() => validate({ routes: [{ path: '/' }, { meta: { sitemap: { changefreq: 'weekly' } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', children: [{}]                                  }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', children: [{ meta: {} }]                        }] })).to.throw();
 
 			expect(() => validate({ routes: [{ path: '/' }                                                 ] })).to.not.throw();
 			expect(() => validate({ routes: [{ path: '/' }, { path: '/about' }                             ] })).to.not.throw();
+			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/about' }] }                 ] })).to.not.throw();
 		});
 
 		it("there is a route with an invalid 'path' property", () => {
 			expect(() => validate({ routes: [{ path: 2     }] })).to.throw();
 			expect(() => validate({ routes: [{ path: true  }] })).to.throw();
 			expect(() => validate({ routes: [{ path: ['/'] }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', children: [{ path: 2     }] }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', children: [{ path: true  }] }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', children: [{ path: ['/'] }] }] })).to.throw();
 		});
 
 		it("there is a route with an invalid 'loc' property", () => {
 			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: true       } }}] })).to.throw();
 			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: 22         } }}] })).to.throw();
 			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: ['/other'] } }}] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/', meta: { sitemap: { loc: true       } }}] } ]})).to.throw();
+			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/', meta: { sitemap: { loc: 22         } }}] } ]})).to.throw();
+			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/', meta: { sitemap: { loc: ['/other'] } }}] } ]})).to.throw();
 
 			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: '/other'   } }}] })).to.not.throw();
+			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/', meta: { sitemap: { loc: '/other'   } }}] } ]})).to.not.throw();
 		});
 
 		it("there is a route with invalid URL properties", () => {
 			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { changefreq: true        } } }] })).to.throw();
-			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { changefreq: true        } } }] })).to.throw();
-			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { lastmod:    'yesterday' } } }] })).to.throw();
 			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { lastmod:    'yesterday' } } }] })).to.throw();
 			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { priority:   72          } } }] })).to.throw();
-			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { priority:   72          } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/', meta: { sitemap: { changefreq: true        } } }] } ]})).to.throw();
+			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/', meta: { sitemap: { lastmod:    'yesterday' } } }] } ]})).to.throw();
+			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/', meta: { sitemap: { priority:   72          } } }] } ]})).to.throw();
 		});
 
 		it("a route has invalid slugs", () => {
@@ -177,8 +189,8 @@ describe("the validation of the options returns an error when:", () => {
 			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: ['ok', { pseudo: 'pseudo'}]               } } }] })).to.not.throw();
 			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{ pseudo: 'ok' }]                        } } }] })).to.not.throw();
 			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: [{ pseudo: 'ok', priority: 0.2 }]         } } }] })).to.not.throw();
-			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: () => ['ok']                              } } }] })).to.not.throw();
-			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: async () => ['ok']                        } } } ] })).to.not.throw();
+			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs:       () => ['ok']                        } } }] })).to.not.throw();
+			expect(() => validate({ routes: [{ path: '/user/:pseudo',   meta: { sitemap: { slugs: async () => ['ok']                        } } }] })).to.not.throw();
 		});
 
 		it("a route has slugs with invalid meta tags", () => {

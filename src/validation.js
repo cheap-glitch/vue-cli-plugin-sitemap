@@ -42,7 +42,7 @@ function throwError(message)
 /**
  * Validate the slugs
  */
-function validateSlugs(slugs, errorMsg = '')
+function validateSlugs(slugs, errorMsg)
 {
 	if (!slugsValidator(slugs))
 		throwError(errorMsg);
@@ -55,6 +55,7 @@ function validateOptions(options, printError = false)
 {
 	if (!optionsValidator(options))
 	{
+		/* istanbul ignore if */
 		if (printError)
 			console.error(betterAjvErrors(optionsSchema, options, optionsValidator.errors));
 
