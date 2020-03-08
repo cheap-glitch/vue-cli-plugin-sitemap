@@ -121,7 +121,7 @@ async function generateURLsFromRoutes(routes, parentPath = '')
 		const path     = (route.path.startsWith('/') ? route.path : `${parentPath}/${route.path}`).replace(/^\/+/, '');
 		const meta     = route.meta ? (route.meta.sitemap || {}) : {};
 		const params   = path.match(/:\w+/g);
-		const children = ('children' in route) ? await generateURLsFromRoutes(route.children, route.path) : [];
+		const children = ('children' in route) ? await generateURLsFromRoutes(route.children, path) : [];
 
 		/**
 		 * Ignored routes
@@ -131,8 +131,8 @@ async function generateURLsFromRoutes(routes, parentPath = '')
 		/**
 		 * Static routes
 		 */
-		if ('loc' in meta) return [...children, meta];
-		if (!params)       return [...children, { loc: path, ...meta }];
+		if ('loc' in meta) return [meta,                   ...children];
+		if (!params)       return [{ loc: path, ...meta }, ...children];
 
 		/**
 		 * Dynamic routes
@@ -143,7 +143,7 @@ async function generateURLsFromRoutes(routes, parentPath = '')
 		validateSlugs(slugs, `invalid slug for route '${route.path}'`);
 
 		// Build the array of URLs
-		return [...children, ...slugs.map(function(slug)
+		return [...slugs.map(function(slug)
 		{
 			// Wrap the slug in an object if needed
 			if (typeof slug != 'object') slug = { [params[0].slice(1)]: slug };
@@ -161,7 +161,8 @@ async function generateURLsFromRoutes(routes, parentPath = '')
 			});
 
 			return { loc: urlPath, ...slug };
-		})];
+		}),
+		...children];
 	}))
 
 	// Filter and flatten the array of URLs (don't use flat() to be compatible with Node 10 and under)
