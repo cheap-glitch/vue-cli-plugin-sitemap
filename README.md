@@ -23,6 +23,7 @@
    * [Global options](#global-options)
    * [URL meta tags](#url-meta-tags)
    * [Dynamic routes](#dynamic-routes)
+   * [Nested routes](#nested-routes)
    * [Other route-specific options](#other-route-specific-options)
  * [Changelog](#changelog)
  * [License](#license)
