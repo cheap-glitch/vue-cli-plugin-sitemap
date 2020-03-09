@@ -635,17 +635,17 @@ describe("single sitemap generation", () => {
 
 		it("generates a sitemap from nested routes", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{ path: '/', children: [{ path: '/about' }] }],
+				baseURL: 'https://website.net',
+				routes:  [{ path: '/', children: [{ path: '/about' }] }],
 			})).to.deep.equal(wrapSitemap(
-				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
+				'<url><loc>https://website.net/about</loc></url>'
 			));
 		});
 
 		it("generates a sitemap from deeply nested routes", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/',
 					children: [{
 						path: '/about',
@@ -658,17 +658,14 @@ describe("single sitemap generation", () => {
 					}]
 				}],
 			})).to.deep.equal(wrapSitemap([
-				'<url><loc>https://website.net</loc></url>',
-				'<url><loc>https://website.net/about</loc></url>',
-				'<url><loc>https://website.net/contact</loc></url>',
 				'<url><loc>https://website.net/infos</loc></url>',
 			]));
 		});
 
 		it("generates a sitemap from nested routes with relative paths", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/',
 					children: [{
 						path: 'about',
@@ -681,6 +678,30 @@ describe("single sitemap generation", () => {
 					}]
 				}],
 			})).to.deep.equal(wrapSitemap([
+				'<url><loc>https://website.net/about/contact/infos</loc></url>',
+			]));
+		});
+
+		it("generates a sitemap from nested routes and parent routes", async () => {
+			expect(await generate({
+				baseURL: 'https://website.net',
+				routes:  [{
+					path: '/',
+					children: [
+						{ path: '' },
+						{
+							path: 'about',
+							children: [
+								{ path: '' },
+								{
+									path: 'contact',
+									children: [{ path: '' }, { path: 'infos' }]
+								},
+							]
+						},
+					]
+				}],
+			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net</loc></url>',
 				'<url><loc>https://website.net/about</loc></url>',
 				'<url><loc>https://website.net/about/contact</loc></url>',
@@ -690,8 +711,8 @@ describe("single sitemap generation", () => {
 
 		it("generates a sitemap from nested routes with relative and absolute paths", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/',
 					children: [{
 						path: 'about',
@@ -704,22 +725,67 @@ describe("single sitemap generation", () => {
 					}]
 				}],
 			})).to.deep.equal(wrapSitemap([
-				'<url><loc>https://website.net</loc></url>',
-				'<url><loc>https://website.net/about</loc></url>',
-				'<url><loc>https://website.net/contact</loc></url>',
 				'<url><loc>https://website.net/contact/infos</loc></url>',
 			]));
 		});
 
+		it("generates a sitemap from nested dynamic routes", async () => {
+			expect(await generate({
+				baseURL: 'https://website.net',
+				routes:  [{
+					path: '/site',
+					children: [
+						{
+							path: 'user/:id',
+							meta: { sitemap: { slugs: [1, 2] } },
+						},
+						{
+							path: 'article/:title',
+							meta: { sitemap: { slugs: ['hello-world', 'on-folding-socks'] } },
+						}
+					]
+				}],
+			})).to.deep.equal(wrapSitemap([
+				'<url><loc>https://website.net/site/user/1</loc></url>',
+				'<url><loc>https://website.net/site/user/2</loc></url>',
+				'<url><loc>https://website.net/site/article/hello-world</loc></url>',
+				'<url><loc>https://website.net/site/article/on-folding-socks</loc></url>',
+			]));
+		});
+
+		it("generates a sitemap from dynamic routes with children", async () => {
+			expect(await generate({
+				baseURL: 'https://website.net',
+				routes:  [{
+					path: '/user/:id',
+					meta: { sitemap: { slugs: [1, 2] } },
+
+					children: [{ path: 'posts' }, { path: 'profile' }]
+				}],
+			})).to.deep.equal(wrapSitemap([
+				'<url><loc>https://website.net/user/1/posts</loc></url>',
+				'<url><loc>https://website.net/user/1/profile</loc></url>',
+				'<url><loc>https://website.net/user/2/posts</loc></url>',
+				'<url><loc>https://website.net/user/2/profile</loc></url>',
+			]));
+		});
+
+		it("ignores children routes if the parent route is ignored", async () => {
+			expect(await generate({
+				baseURL: 'https://website.net',
+				routes:  [{ path: '/', meta: { sitemap: { ignoreRoute: true } }, children: [{ path: '/about' }] }],
+			})).to.deep.equal(wrapSitemap(''));
+		});
+
 		it("takes meta properties from nested routes into account", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/',
 					children: [
 						{ path: '/about', meta: { sitemap: { lastmod: '2020-02-03' } } },
 						{ path: '/error', meta: { sitemap: { ignoreRoute: true     } } },
-						{ path: '/blog',  meta: { sitemap: { changefreq: 'weekly'  } },
+						{ path: '/blog',
 							children: [
 								{ path: 'articles', meta: { sitemap: { priority: 1.0 } } },
 								{ path: 'notes',    meta: { sitemap: { priority: 0.5 } } },
@@ -728,9 +794,7 @@ describe("single sitemap generation", () => {
 					]
 				}],
 			})).to.deep.equal(wrapSitemap([
-				'<url><loc>https://website.net</loc></url>',
 				'<url><loc>https://website.net/about</loc><lastmod>2020-02-03</lastmod></url>',
-				'<url><loc>https://website.net/blog</loc><changefreq>weekly</changefreq></url>',
 				'<url><loc>https://website.net/blog/articles</loc><priority>1.0</priority></url>',
 				'<url><loc>https://website.net/blog/notes</loc><priority>0.5</priority></url>',
 			]));

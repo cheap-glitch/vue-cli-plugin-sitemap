@@ -114,28 +114,27 @@ function escapeUrl(url)
 		.replace('>',   '&gt;');
 }
 
-async function generateURLsFromRoutes(routes, parentPath = '')
+async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
 {
-	const urlArrays = await Promise.all(routes.map(async function(route)
+	const urls = await Promise.all(routes.map(async function(route)
 	{
-		const path     = (route.path.startsWith('/') ? route.path : `${parentPath}/${route.path}`).replace(/^\/+/, '');
-		const meta     = route.meta ? (route.meta.sitemap || {}) : {};
-		const params   = path.match(/:\w+/g);
-		const children = ('children' in route) ? await generateURLsFromRoutes(route.children, path) : [];
+		const path   = (route.path.startsWith('/') ? route.path : `${parentPath}/${route.path}`).replace(/^\/+/, '');
+		const meta   = { ...parentMeta, ...(route.meta ? (route.meta.sitemap || {}) : {}) };
+		const params = path.match(/:\w+/g);
 
 		/**
-		 * Ignored routes
+		 * Ignored route
 		 */
 		if (meta.ignoreRoute || route.path === '*') return null;
 
 		/**
-		 * Static routes
+		 * Static route
 		 */
-		if ('loc' in meta) return [meta,                   ...children];
-		if (!params)       return [{ loc: path, ...meta }, ...children];
+		if ('loc' in meta) return ('children' in route) ? await generateURLsFromRoutes(route.children, meta.loc, meta) : meta;
+		if (!params)       return ('children' in route) ? await generateURLsFromRoutes(route.children, path,     meta) : { loc: path, ...meta };
 
 		/**
-		 * Dynamic routes
+		 * Dynamic route
 		 */
 		if (!meta.slugs) throwError(`need slugs to generate URLs from dynamic route '${route.path}'`);
 
@@ -143,30 +142,45 @@ async function generateURLsFromRoutes(routes, parentPath = '')
 		validateSlugs(slugs, `invalid slug for route '${route.path}'`);
 
 		// Build the array of URLs
-		return [...slugs.map(function(slug)
+		return simpleFlat(await Promise.all(slugs.map(async function(slug)
 		{
 			// Wrap the slug in an object if needed
 			if (typeof slug != 'object') slug = { [params[0].slice(1)]: slug };
 
 			// Replace each parameter by its corresponding value
-			let urlPath = path;
-			params.forEach(function(param)
+			const loc = params.reduce(function(result, param)
 			{
 				const paramName = param.slice(1);
 
 				if (paramName in slug === false)
 					throwError(`need slug for param '${paramName}' of route '${route.path}'`);
 
-				urlPath = urlPath.replace(param, slug[paramName]);
-			});
+				return result.replace(param, slug[paramName]);
+			}, path);
 
-			return { loc: urlPath, ...slug };
-		}),
-		...children];
+			return ('children' in route) ? await generateURLsFromRoutes(route.children, loc, meta) : { loc, ...slug };
+		})));
 	}))
 
-	// Filter and flatten the array of URLs (don't use flat() to be compatible with Node 10 and under)
-	return urlArrays.filter(urls => urls !== null).reduce((flatList, urls) => [...flatList, ...urls], []);
+	// Filter and flatten the array of URLs
+	return simpleFlat(urls.filter(url => url !== null));
+}
+
+/**
+ * Flatten an array with a depth of 1
+ * Don't use flat() to be compatible with Node 10 and under
+ */
+function simpleFlat(array)
+{
+	return array.reduce(function(flat, item)
+	{
+		if (Array.isArray(item))
+			return [...flat, ...item];
+
+		flat.push(item);
+
+		return flat;
+	}, []);
 }
 
 module.exports = {
