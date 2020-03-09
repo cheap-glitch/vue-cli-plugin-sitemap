@@ -40,6 +40,7 @@
 on its own or integrate it in the definition of the routes. Features:
  * 🛣️ generate sitemaps from an array of routes
  * 🔀 support dynamic routes with single or multiple parameters
+ * 🍱 support nested routes
  * 🚧 automatically escape the URLs and enforce a (non-)trailing slash policy
  * ✂️  automatically split the large sitemaps (more than 50,000 URLs) and generate
    the associated sitemap index
@@ -204,8 +205,7 @@ to help the crawlers update the pages and prioritize the critical URLs:
 `changefreq` | `"always"`, `"hourly"`, `"daily"`, `"weekly"`, `"monthly"`, `"yearly"`, `"never"`                                                             | Ø
 `priority`   | a multiple of `0.1` between `0.0` and `1.0`                                                                                                   | `0.5`
 
-> For  more  information  on  those  meta  tags,  you  can  consult  the  [official
-> specification](https://www.sitemaps.org/protocol.html#xmlTagDefinitions).
+> For more information on those meta tags, you can consult the [official specification](https://www.sitemaps.org/protocol.html#xmlTagDefinitions).
 
 Example with a route object:
 ```javascript
@@ -297,6 +297,59 @@ module.exports = [
 		}
 	},
 ]
+```
+
+### Nested routes
+Nested routes are supported:
+```javascript
+// src/routes.js
+
+module.exports = [
+	{
+		path: '/user/:id',
+		meta: {
+			sitemap: {
+				// Meta properties on parent will be
+				// inherited by their children
+				changefreq: 'monthly',
+				priority:   0.7,
+
+				slugs: getUserList(),
+			}
+		},
+
+		children: [
+			{
+				path: 'profile',
+				meta: {
+					sitemap: {
+						// Meta properties on children
+						// override those on parents
+						changefreq: 'weekly',
+					}
+				}
+			},
+		]
+	},
+]
+```
+
+This example will produce the following sitemap:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+	<url>
+		<loc>https://website.com/user/1/profile</loc>
+		<priority>0.7</priority>
+		<changefreq>weekly</changefreq>
+	</url>
+	<url>
+		<loc>https://website.com/user/2/profile</loc>
+		<priority>0.7</priority>
+		<changefreq>weekly</changefreq>
+	</url>
+	<!-- [...] -->
+</urlset>
 ```
 
 ### Other route-specific options
