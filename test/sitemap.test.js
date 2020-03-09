@@ -770,6 +770,52 @@ describe("single sitemap generation", () => {
 			]));
 		});
 
+		it("generates a sitemap from nested dynamic routes", async () => {
+			expect(await generate({
+				baseURL: 'https://website.net',
+				routes:  [{
+					path: '/user/:id',
+					meta: { sitemap: { slugs: [1, 2] } },
+
+					children: [{
+						path: 'post/:id',
+						meta: { sitemap: { slugs: [1, 2] } }
+					}]
+				}],
+			})).to.deep.equal(wrapSitemap([
+				'<url><loc>https://website.net/user/1/post/1</loc></url>',
+				'<url><loc>https://website.net/user/1/post/2</loc></url>',
+				'<url><loc>https://website.net/user/2/post/1</loc></url>',
+				'<url><loc>https://website.net/user/2/post/2</loc></url>',
+			]));
+		});
+
+		it("generates a sitemap from nested dynamic routes with multiple parameters", async () => {
+			expect(await generate({
+				baseURL: 'https://website.net',
+				routes:  [{
+					path: '/user/:pseudo/:id',
+					meta: { sitemap: { slugs: [
+						{ id: 1, pseudo: 'foo' },
+						{ id: 2, pseudo: 'bar' },
+					] } },
+
+					children: [{
+						path: 'post/:title/:id',
+						meta: { sitemap: { slugs: [
+							{ id: 1, title: 'foobar' },
+							{ id: 2, title: 'foobaz' },
+						] } }
+					}]
+				}],
+			})).to.deep.equal(wrapSitemap([
+				'<url><loc>https://website.net/user/foo/1/post/foobar/1</loc></url>',
+				'<url><loc>https://website.net/user/foo/1/post/foobaz/2</loc></url>',
+				'<url><loc>https://website.net/user/bar/2/post/foobar/1</loc></url>',
+				'<url><loc>https://website.net/user/bar/2/post/foobaz/2</loc></url>',
+			]));
+		});
+
 		it("ignores children routes if the parent route is ignored", async () => {
 			expect(await generate({
 				baseURL: 'https://website.net',
@@ -798,6 +844,61 @@ describe("single sitemap generation", () => {
 				'<url><loc>https://website.net/blog/articles</loc><priority>1.0</priority></url>',
 				'<url><loc>https://website.net/blog/notes</loc><priority>0.5</priority></url>',
 			]));
+		});
+
+		it("inherits meta properties form parent routes in nested routes", async () => {
+			expect(await generate({
+				baseURL: 'https://website.net',
+				routes:  [{
+					path: '/',
+					children: [
+						{ path: '/about', meta: { sitemap: { lastmod: '2020-02-03' } } },
+						{ path: '/error', meta: { sitemap: { ignoreRoute: true     } } },
+						{ path: '/blog',  meta: { sitemap: { changefreq: 'weekly'  } },
+							children: [
+								{ path: 'articles', meta: { sitemap: { priority: 1.0 } } },
+								{ path: 'notes',    meta: { sitemap: { priority: 0.5 } } },
+							]
+						},
+					]
+				}],
+			})).to.deep.equal(wrapSitemap([
+				'<url><loc>https://website.net/about</loc><lastmod>2020-02-03</lastmod></url>',
+				'<url><loc>https://website.net/blog/articles</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>',
+				'<url><loc>https://website.net/blog/notes</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>',
+			]));
+		});
+
+		it("overwrites inherited meta properties", async () => {
+			expect(await generate({
+				baseURL: 'https://website.net',
+				routes:  [{
+					path: '/',
+					children: [
+						{ path: '/about', meta: { sitemap: { lastmod: '2020-02-03' } } },
+						{ path: '/error', meta: { sitemap: { ignoreRoute: true     } } },
+						{ path: '/blog',  meta: { sitemap: { changefreq: 'weekly'  } },
+							children: [
+								{ path: 'articles', meta: { sitemap: { priority: 1.0 } } },
+								{ path: 'notes',    meta: { sitemap: { priority: 0.5, changefreq: 'monthly' } } },
+							]
+						},
+					]
+				}],
+			})).to.deep.equal(wrapSitemap([
+				'<url><loc>https://website.net/about</loc><lastmod>2020-02-03</lastmod></url>',
+				'<url><loc>https://website.net/blog/articles</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>',
+				'<url><loc>https://website.net/blog/notes</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>',
+			]));
+		});
+
+		it("takes the 'loc' property into account", async () => {
+			expect(await generate({
+				baseURL: 'https://website.net',
+				routes:  [{ path: '/', meta: { sitemap: { loc: '/other-path' } }, children: [{ path: 'about' }] }],
+			})).to.deep.equal(wrapSitemap(
+				'<url><loc>https://website.net/other-path/about</loc></url>'
+			));
 		});
 
 	});

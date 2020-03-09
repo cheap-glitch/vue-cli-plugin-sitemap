@@ -118,6 +118,9 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
 {
 	const urls = await Promise.all(routes.map(async function(route)
 	{
+		// Avoid "contaminating" children route with parent 'loc' property
+		delete parentMeta.loc;
+
 		const path   = (route.path.startsWith('/') ? route.path : `${parentPath}/${route.path}`).replace(/^\/+/, '');
 		const meta   = { ...parentMeta, ...(route.meta ? (route.meta.sitemap || {}) : {}) };
 		const params = path.match(/:\w+/g);
