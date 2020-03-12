@@ -24,8 +24,10 @@ const fs                   = require('fs');
 const { validateOptions }  = require('./src/validation');
 const { generateSitemaps } = require('./src/sitemap');
 
-module.exports = async function(api, options)
+module.exports = async function(api, vueCliOptions)
 {
+	const options = vueCliOptions ? (vueCliOptions.pluginOptions ? (vueCliOptions.pluginOptions.sitemap || null) : null) : null;
+
 	/**
 	 * Add a new command to generate the sitemap
 	 */
@@ -42,14 +44,23 @@ module.exports = async function(api, options)
 		},
 		async function(args)
 		{
-			const cliOptions = { ...options.pluginOptions.sitemap };
+			if (!options)
+			{
+				console.error("Please add in 'vue.config.js' the minimum configuration required for the plugin to work (see https://github.com/cheap-glitch/vue-cli-plugin-sitemap#setup)");
+				return;
+			}
 
+			// Use the config as the default for the options
+			const cliOptions = { ...options };
 			if (args.pretty || args.p)
 				cliOptions.pretty = true;
 
-			await writeSitemap(cliOptions, args['output-dir'] || args.o || options.pluginOptions.sitemap.outputDir || '.');
+			await writeSitemap(cliOptions, args['output-dir'] || args['o'] || options.outputDir || '.');
 		}
 	);
+
+	// Do nothing during the build if the config isn't set up
+	if (!options) return;
 
 	/**
 	 * Modify the 'build' command to generate the sitemap automatically
@@ -61,9 +72,9 @@ module.exports = async function(api, options)
 		await buildFn(...args);
 
 		// Don't generate the sitemap if not in production and the option 'productionOnly' is set
-		if (options.pluginOptions.sitemap.productionOnly && process.env.NODE_ENV !== 'production') return;
+		if (options.productionOnly && process.env.NODE_ENV !== 'production') return;
 
-		await writeSitemap(options.pluginOptions.sitemap, options.pluginOptions.sitemap.outputDir || options.outputDir || 'dist');
+		await writeSitemap(options, options.outputDir || vueCliOptions.outputDir || 'dist');
 	};
 }
 
