@@ -229,7 +229,7 @@ Example with a handwritten URL:
 sitemap: {
 	urls: [
 		{
-			loc:        'https://website.com/about'
+			loc:        'https://website.com/about',
 			lastmod:    'December 22, 2019',
 			priority:    0.8,
 			changefreq: 'daily',
