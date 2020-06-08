@@ -84,7 +84,13 @@ async function writeSitemap(options, outputDir)
 	const sitemaps = await generateSitemaps(options);
 	Object.keys(sitemaps).forEach(function(filename)
 	{
-		fs.writeFileSync(`${outputDir}/${filename}.xml`, options.pretty ? sitemaps[filename] : sitemaps[filename].replace(/\t+|\n/g, ''));
-		console.info(`${chalk.black.bgGreen(' DONE ')} Sitemap successfully generated (${outputDir.replace(/\/$/, '')}/${filename}.xml)`);
+		const output = `${outputDir}/${filename}.xml`;
+
+		// Avoid writing the same sitemap twice when creating two bundles (e.g. using --modern option)
+		if (!fs.existsSync(output))
+		{
+			fs.writeFileSync(output, options.pretty ? sitemaps[filename] : sitemaps[filename].replace(/\t+|\n/g, ''));
+			console.info(`${chalk.black.bgGreen(' DONE ')} Sitemap successfully generated (${output})`);
+		}
 	});
 }
