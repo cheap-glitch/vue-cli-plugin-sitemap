@@ -21,12 +21,15 @@
  */
 
 const fs                   = require('fs');
-const { validateOptions }  = require('./src/validation');
-const { generateSitemaps } = require('./src/sitemap');
+const chalk                = require('chalk');
+
+const { validateOptions }  = require('./src/validation.js');
+const { generateSitemaps } = require('./src/sitemap.js');
 
 module.exports = async function(api, vueCliOptions)
 {
-	const options = vueCliOptions ? (vueCliOptions.pluginOptions ? (vueCliOptions.pluginOptions.sitemap || null) : null) : null;
+	const options = vueCliOptions ? vueCliOptions.pluginOptions ? (vueCliOptions.pluginOptions.sitemap || null) : null : null;
+	if (!options) return;
 
 	/**
 	 * Add a new command to generate the sitemap
@@ -34,23 +37,19 @@ module.exports = async function(api, vueCliOptions)
 	api.registerCommand(
 		'sitemap',
 		{
-			usage:        'vue-cli-service sitemap [options]',
-			description:  'Generate the sitemap',
+			usage:       'vue-cli-service sitemap [options]',
+			description: 'Generate the sitemap',
 
 			options: {
-				'-p, --pretty':                  'Prettify the XML to make the sitemap more human-readable',
-				'-o <dir>, --output-dir <dir>':  'Output the sitemap to the specified path instead of the current working directory',
+				'-p, --pretty':                 'Prettify the XML to make the sitemap more human-readable',
+				'-o <dir>, --output-dir <dir>': 'Output the sitemap to the specified path instead of the current working directory',
 			},
 		},
 		async function(args)
 		{
-			if (!options)
-			{
-				console.error("Please add in 'vue.config.js' the minimum configuration required for the plugin to work (see https://github.com/cheap-glitch/vue-cli-plugin-sitemap#setup)");
-				return;
-			}
+			if (!options) return;
 
-			// Use the config as the default for the options
+			// Use the config as the default for the CLI options
 			const cliOptions = { ...options };
 			if (args.pretty || args.p)
 				cliOptions.pretty = true;
@@ -59,17 +58,15 @@ module.exports = async function(api, vueCliOptions)
 		}
 	);
 
-	// Do nothing during the build if the config isn't set up
-	if (!options) return;
-
 	/**
 	 * Modify the 'build' command to generate the sitemap automatically
 	 */
-	const { build } = api.service.commands;
-	const buildFn   = build.fn;
+	const { build }     = api.service.commands;
+	const buildFunction = build.fn;
+
 	build.fn = async function(...args)
 	{
-		await buildFn(...args);
+		await buildFunction(...args);
 
 		// Don't generate the sitemap if not in production and the option 'productionOnly' is set
 		if (options.productionOnly && process.env.NODE_ENV !== 'production') return;
@@ -80,13 +77,14 @@ module.exports = async function(api, vueCliOptions)
 
 async function writeSitemap(options, outputDir)
 {
+	// Validate options and set default values
 	validateOptions(options, true);
 
-	// Generatethe sitemaps and write them to the filesystem
+	// Generate the sitemaps and write them to the filesystem
 	const sitemaps = await generateSitemaps(options);
 	Object.keys(sitemaps).forEach(function(filename)
 	{
 		fs.writeFileSync(`${outputDir}/${filename}.xml`, options.pretty ? sitemaps[filename] : sitemaps[filename].replace(/\t+|\n/g, ''));
-		console.info(`Generated and written sitemap at '${outputDir.replace(/\/$/, '')}/${filename}.xml'`);
+		console.info(`${chalk.black.bgGreen(' DONE ')} Sitemap successfully generated (${outputDir.replace(/\/$/, '')}/${filename}.xml)`);
 	});
 }

@@ -117,15 +117,15 @@ const optionsSchema = {
 		 * -------------------------------------------------------------
 		 */
 		productionOnly: {
-			type:     'boolean',
-			default:  false,
+			type:    'boolean',
+			default: false,
 		},
 		outputDir: {
-			type:     'string',
+			type:    'string',
 		},
 		baseURL: {
-			type:     'string',
-			default:  '',
+			type:    'string',
+			default: '',
 
 			anyOf: [
 				{
@@ -142,19 +142,19 @@ const optionsSchema = {
 			]
 		},
 		trailingSlash: {
-			type:     'boolean',
-			default:  false,
+			type:    'boolean',
+			default: false,
 		},
 		pretty: {
-			type:     'boolean',
-			default:  false,
+			type:    'boolean',
+			default: false,
 		},
 		// Default URL meta tags
 		defaults: {
-			type:                  'object',
-			properties:            urlMetaTagsSchema,
-			additionalProperties:  false,
-			default:               {},
+			type:                 'object',
+			properties:           urlMetaTagsSchema,
+			additionalProperties: false,
+			default:              {},
 		},
 
 		/**

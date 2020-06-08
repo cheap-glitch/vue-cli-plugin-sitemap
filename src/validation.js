@@ -6,7 +6,7 @@
 const AJV             = require('ajv');
 const betterAjvErrors = require('better-ajv-errors');
 
-const { validateW3CDate, slugsSchema, optionsSchema } = require('./schemas');
+const { validateW3CDate, slugsSchema, optionsSchema } = require('./schemas.js');
 
 const ajv = new AJV({
 	useDefaults:          true,
