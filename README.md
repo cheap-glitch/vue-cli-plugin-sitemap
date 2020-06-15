@@ -1,15 +1,11 @@
-<p align="center">
-	<img src="https://raw.githubusercontent.com/cheap-glitch/vue-cli-plugin-sitemap/master/docs/banner.png" alt="banner">
-</p>
+<p align="center"><img src="./docs/banner.png" alt="banner"></p>
 
-<div align="center">
-	<h1>vue-cli-plugin-sitemap</h1>
-</div>
+<div align="center"><h1>vue-cli-plugin-sitemap</h1></div>
 
 <div align="center">
 	<img src="https://badgen.net/github/license/cheap-glitch/vue-cli-plugin-sitemap?color=green" alt="license badge">
 	<img src="https://badgen.net/github/release/cheap-glitch/vue-cli-plugin-sitemap?color=green" alt="latest release badge">
-	<a href="https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap"><img src="https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap/branch/master/graph/badge.svg" alt="codecov badge"></a>
+	<a href="https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap"><img src="https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap/branch/main/graph/badge.svg" alt="codecov badge"></a>
 </div>
 
 #### Table of contents
@@ -44,7 +40,7 @@ on its own or integrate it in the definition of the routes. Features:
  * 🍱 support nested routes
  * 🚧 automatically escape the URLs and enforce a (non-)trailing slash policy
  * ✂️  automatically split the large sitemaps (more than 50,000 URLs) and generate
-   the associated sitemap index
+      the associated sitemap index
  * ✨ optionally prettify the output
 
 ## Installation
