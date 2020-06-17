@@ -9,8 +9,8 @@ const betterAjvErrors = require('better-ajv-errors');
 const { validateW3CDate, slugsSchema, optionsSchema } = require('./schemas.js');
 
 const ajv = new AJV({
-	useDefaults:          true,
-	multipleOfPrecision:  3,
+	useDefaults:         true,
+	multipleOfPrecision: 3,
 
 	// Needed for better-ajv-errors
 	jsonPointers: true,
@@ -56,8 +56,7 @@ function validateOptions(options, printError = false)
 	if (!optionsValidator(options))
 	{
 		/* istanbul ignore if */
-		if (printError)
-			console.error(betterAjvErrors(optionsSchema, options, optionsValidator.errors));
+		if (printError) console.log(betterAjvErrors(optionsSchema, options, optionsValidator.errors, { indent: 2 }) + '\n');
 
 		throwError('invalid configuration');
 	}
