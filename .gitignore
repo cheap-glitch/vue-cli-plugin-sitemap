@@ -10,3 +10,6 @@ npm-debug.log
 # Code coverage
 /.codecov.yml
 /.nyc_output/
+
+# Test app
+/test-app/
