@@ -8,6 +8,17 @@
 	<a href="https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap"><img src="https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap/branch/main/graph/badge.svg" alt="codecov badge"></a>
 </div>
 
+**vue-cli-plugin-sitemap** generates sitemaps for your Vue web apps. You can use
+it on  its own  or integrate  it in  the definition  of the  routes used  in Vue
+Router. Features:
+ * 🛣️ generate sitemaps from an array of routes
+ * 🔀 support dynamic routes with single or multiple parameters
+ * 🍱 support nested routes
+ * 🚧 automatically escape the URLs and enforce a (non-)trailing slash policy
+ * ✂️  automatically split the large sitemaps (more than 50,000 URLs) and generate
+      the associated sitemap index
+ * ✨ optionally prettify the output
+
 #### Table of contents
  * [Installation](#installation)
  * [Setup](#setup)
@@ -23,25 +34,6 @@
    * [Other route-specific options](#other-route-specific-options)
  * [Changelog](#changelog)
  * [License](#license)
-
-> Sitemaps are an  easy way for webmasters to inform  search engines about pages
-> on  their sites  that are  available  for crawling.  In its  simplest form,  a
-> sitemap  is an  XML file  that lists  URLs for  a site  along with  additional
-> metadata about  each URL  […] so  that search  engines can  more intelligently
-> crawl the site. Web crawlers usually discover pages from links within the site
-> and from  other sites. Sitemaps  supplement this  data to allow  crawlers that
-> support sitemaps to pick up all URLs in the sitemap and learn about those URLs
-> using the associated metadata. (from [sitemaps.org](https://www.sitemaps.org))
-
-**vue-cli-plugin-sitemap** generates sitemaps  for your webapps. You  can use it
-on its own or integrate it in the definition of the routes. Features:
- * 🛣️ generate sitemaps from an array of routes
- * 🔀 support dynamic routes with single or multiple parameters
- * 🍱 support nested routes
- * 🚧 automatically escape the URLs and enforce a (non-)trailing slash policy
- * ✂️  automatically split the large sitemaps (more than 50,000 URLs) and generate
-      the associated sitemap index
- * ✨ optionally prettify the output
 
 ## Installation
 ```
@@ -259,7 +251,8 @@ module.exports = [
 		}
 	},
 	{
-		path: '/blog/:category/:id/:post',
+		// Optional and regexp-validated parameters are supported
+		path: '/blog/:category/:id(\\d+)/:post?',
 		meta: {
 			sitemap: {
 				// For dynamic routes with multiple parameters,
@@ -279,6 +272,15 @@ module.exports = [
 						priority:  0.9,
 						lastmod:   'February 02, 2020 09:24',
 					},
+					{
+						// Slugs that don't match the
+						// regex pattern of their param
+						// will throw an error
+						id:        'invalid-slug',
+
+						title:     'another-post',
+						category:  'misc',
+					}
 				]
 			}
 		}
@@ -355,21 +357,21 @@ This example will produce the following sitemap:
 
 module.exports = [
 	{
-		path: '/admin/secure/page',
+		path: '/admin/secure-page',
 
-		// Explicitly ignore this route
+		// Explicitly ignore this route and all its children
 		meta: { sitemap: { ignoreRoute: true } }
 	},
 	{
-		// The "catch-all" route will be automatically ignored
+		// Routes with a glob in their path will be ignored...
 		path: '*',
 		name: '404',
 	},
 	{
-		path: '/some/complicated/and-very-*-long/path',
+		path: '/glob/*',
 
-		// Provide a handwritten URL to replace the path of the route
-		meta: { sitemap: { loc: '/simplified-path' } }
+		// ...unless you provide a handwritten path to replace it
+		meta: { sitemap: { loc: '/glob/lorem/ipsum' } }
 	},
 ]
 ```
