@@ -123,7 +123,7 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
 
 		const path   = (route.path.startsWith('/') ? route.path : `${parentPath}/${route.path}`).replace(/^\/+/, '');
 		const meta   = { ...parentMeta, ...(route.meta ? (route.meta.sitemap || {}) : {}) };
-		const params = path.match(/:\w+/g);
+		const params = path.match(/:\w+\??/g);
 
 		/**
 		 * Ignored route
@@ -148,12 +148,12 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
 		return simpleFlat(await Promise.all(slugs.map(async function(slug)
 		{
 			// Wrap the slug in an object if needed
-			if (typeof slug != 'object') slug = { [params[0].slice(1)]: slug };
+			if (typeof slug != 'object') slug = { [getParamName(params[0])]: slug };
 
 			// Replace each parameter by its corresponding value
 			const loc = params.reduce(function(result, param)
 			{
-				const paramName = param.slice(1);
+				const paramName = getParamName(param);
 
 				if (paramName in slug === false)
 					throwError(`need slug for param '${paramName}' of route '${route.path}'`);
@@ -167,6 +167,14 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
 
 	// Filter and flatten the array of URLs
 	return simpleFlat(urls.filter(url => url !== null));
+}
+
+/**
+ * Get the clean name of a route path parameter
+ */
+function getParamName(param)
+{
+	return param.slice(1).replace('?', '');
 }
 
 /**
@@ -186,6 +194,4 @@ function simpleFlat(array)
 	}, []);
 }
 
-module.exports = {
-	generateSitemaps
-}
+module.exports = { generateSitemaps };
