@@ -218,8 +218,8 @@ describe("single sitemap generation", () => {
 
 		it("generates a sitemap from simple routes", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{ path: '/' }, { path: '/about' }],
+				baseURL: 'https://website.net',
+				routes:  [{ path: '/' }, { path: '/about' }],
 			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
@@ -227,8 +227,8 @@ describe("single sitemap generation", () => {
 
 		it("handles routes with a 'loc' property", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{ path: '/' }, { path: '/complicated/path/here', meta: { sitemap: { loc: '/about' } } }],
+				baseURL: 'https://website.net',
+				routes:  [{ path: '/' }, { path: '/complicated/path/here', meta: { sitemap: { loc: '/about' } } }],
 			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
@@ -236,8 +236,8 @@ describe("single sitemap generation", () => {
 
 		it("removes trailing slashes", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{ path: '/' }, { path: '/about' }, { path: '/page/' }],
+				baseURL: 'https://website.net',
+				routes:  [{ path: '/' }, { path: '/about' }, { path: '/page/' }],
 			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>',
 				'<url><loc>https://website.net/page</loc></url>',
@@ -246,8 +246,8 @@ describe("single sitemap generation", () => {
 
 		it("adds trailing slashes if the 'trailingSlash' option is set", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{ path: '/' }, { path: '/about' }, { path: '/page/' }],
+				baseURL: 'https://website.net',
+				routes:  [{ path: '/' }, { path: '/about' }, { path: '/page/' }],
 				trailingSlash: true,
 			})).to.deep.equal(wrapSitemap([
 				'<url><loc>https://website.net/</loc></url><url><loc>https://website.net/about/</loc></url>',
@@ -257,14 +257,14 @@ describe("single sitemap generation", () => {
 
 		it("takes per-route meta tags into account", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/about',
 					meta: {
 						sitemap: {
-							changefreq:  'monthly',
-							lastmod:     '2020-01-01',
-							priority:    0.3,
+							changefreq: 'monthly',
+							lastmod:    '2020-01-01',
+							priority:   0.3,
 						}
 					}
 				}]
@@ -280,8 +280,8 @@ describe("single sitemap generation", () => {
 
 		it("ignores other non-sitemap-related meta properties", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/about',
 					meta: {
 						progressbar: {
@@ -295,18 +295,18 @@ describe("single sitemap generation", () => {
 			]));
 
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/about',
 					meta: {
 						progressbar: {
-							color: 'pink',
-							width: '10px',
+							color:      'pink',
+							width:      '10px',
 						},
 						sitemap: {
-							changefreq:  'monthly',
-							lastmod:     '2020-01-01',
-							priority:    0.3,
+							changefreq: 'monthly',
+							lastmod:    '2020-01-01',
+							priority:   0.3,
 						}
 					}
 				}]
@@ -322,13 +322,13 @@ describe("single sitemap generation", () => {
 
 		it("takes default meta tags into account", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				defaults:  {
-					changefreq:  'monthly',
-					lastmod:     '2020-01-01',
-					priority:    0.3,
+				baseURL:  'https://website.net',
+				defaults: {
+					changefreq: 'monthly',
+					lastmod:    '2020-01-01',
+					priority:   0.3,
 				},
-				routes:    [{ path: '/about' }]
+				routes: [{ path: '/about' }]
 			})).to.deep.equal(wrapSitemap([
 				'<url>',
 					'<loc>https://website.net/about</loc>',
@@ -341,18 +341,18 @@ describe("single sitemap generation", () => {
 
 		it("prioritizes per-route meta tags over global defaults", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				defaults:  {
+				baseURL:  'https://website.net',
+				defaults: {
 					changefreq:  'never',
 					priority:    0.8,
 				},
-				routes:    [{
+				routes: [{
 					path: '/about',
 					meta: {
 						sitemap: {
-							changefreq:  'monthly',
-							lastmod:     '2020-01-01',
-							priority:    0.3,
+							changefreq: 'monthly',
+							lastmod:    '2020-01-01',
+							priority:   0.3,
 						}
 					}
 				}]
@@ -368,8 +368,8 @@ describe("single sitemap generation", () => {
 
 		it("generates an URL for each slug", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/article/:title',
 					meta: {
 						sitemap: {
@@ -388,21 +388,21 @@ describe("single sitemap generation", () => {
 
 		it("works for multiple parameters", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/article/:category/:id/:title',
 					meta: {
 						sitemap: {
 							slugs: [
 								{
-									id:        1,
-									category:  'blog',
-									title:     'my-first-article',
+									id:       1,
+									category: 'blog',
+									title:    'my-first-article',
 								},
 								{
-									id:        14,
-									category:  'lifehacks',
-									title:     '3-tricks-to-better-fold-your-socks',
+									id:       14,
+									category: 'lifehacks',
+									title:    '3-tricks-to-better-fold-your-socks',
 								},
 							]
 						}
@@ -416,10 +416,11 @@ describe("single sitemap generation", () => {
 
 		it("removes duplicate slugs", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				defaults:  {},
-				urls:      [],
-				routes:    [{
+				baseURL:  'https://website.net',
+				defaults: {},
+				urls:     [],
+
+				routes: [{
 					path: '/article/:title',
 					meta: {
 						sitemap: {
@@ -440,20 +441,21 @@ describe("single sitemap generation", () => {
 
 		it("takes slug-specific meta tags into account", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				defaults:  {},
-				urls:      [],
-				routes:    [{
+				baseURL:  'https://website.net',
+				defaults: {},
+				urls:     [],
+
+				routes: [{
 					path: '/article/:title',
 					meta: {
 						sitemap: {
 							slugs: [
 								'my-first-article',
 								{
-									title:       '3-tricks-to-better-fold-your-socks',
-									changefreq:  'never',
-									lastmod:     '2018-06-24',
-									priority:    0.8,
+									title:      '3-tricks-to-better-fold-your-socks',
+									changefreq: 'never',
+									lastmod:    '2018-06-24',
+									priority:   0.8,
 								}
 							]
 						}
@@ -469,25 +471,26 @@ describe("single sitemap generation", () => {
 				'</url>',
 			]));
 			expect(await generate({
-				baseURL:   'https://website.net',
-				defaults:  {},
-				urls:      [],
-				routes:    [{
+				baseURL:  'https://website.net',
+				defaults: {},
+				urls:     [],
+
+				routes: [{
 					path: '/article/:category/:title',
 					meta: {
 						sitemap: {
 							slugs: [
 								{
-									title:       'my-first-article',
-									category:    'blog',
+									title:      'my-first-article',
+									category:   'blog',
 								},
 								{
-									title:       '3-tricks-to-better-fold-your-socks',
-									category:    'lifehacks',
+									title:      '3-tricks-to-better-fold-your-socks',
+									category:   'lifehacks',
 
-									changefreq:  'never',
-									lastmod:     '2018-06-24',
-									priority:    0.8,
+									changefreq: 'never',
+									lastmod:    '2018-06-24',
+									priority:   0.8,
 								},
 							]
 						}
@@ -506,21 +509,21 @@ describe("single sitemap generation", () => {
 
 		it("prioritizes slug-specific meta tags over route meta tags and global defaults", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				defaults:  {
+				baseURL:  'https://website.net',
+				defaults: {
 					priority:    0.1,
 					changefreq:  'always',
 				},
-				routes:    [{
+				routes: [{
 					path: '/article/:title',
 					meta: {
 						sitemap: {
 							lastmod: '2020-01-01',
 							slugs: [{
-								title:       '3-tricks-to-better-fold-your-socks',
-								changefreq:  'never',
-								lastmod:     '2018-06-24',
-								priority:    0.8,
+								title:      '3-tricks-to-better-fold-your-socks',
+								changefreq: 'never',
+								lastmod:    '2018-06-24',
+								priority:   0.8,
 							}]
 						}
 					}
@@ -537,8 +540,8 @@ describe("single sitemap generation", () => {
 
 		it("accepts a synchronous generator for the slugs", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/user/:id',
 					meta: { sitemap: { slugs: () => [1, 2, 3] } },
 				}]
@@ -551,8 +554,8 @@ describe("single sitemap generation", () => {
 
 		it("accepts an asynchronous generator for the slugs", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/user/:id',
 					meta: { sitemap: { slugs: async () => [1, 2, 3] } },
 				}]
@@ -563,10 +566,10 @@ describe("single sitemap generation", () => {
 			]));
 		});
 
-		it("ignores routes with the 'ignoreRoute' option set to 'true'", async () => {
+		it("ignores routes with the 'ignoreRoute' option set to `true`", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{ path: '/' }, { path: '/about' }, { path: '/ignore/me', meta: { sitemap: { ignoreRoute: true } } }],
+				baseURL: 'https://website.net',
+				routes:  [{ path: '/' }, { path: '/about' }, { path: '/ignore/me', meta: { sitemap: { ignoreRoute: true } } }],
 			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
@@ -574,31 +577,49 @@ describe("single sitemap generation", () => {
 
 		it("ignores the catch-all route", async () => {
 			expect(await generate({
-				baseURL:   'https://website.net',
-				routes:    [{ path: '/' }, { path: '/about' }, { path: '*', name: '404' }],
+				baseURL: 'https://website.net',
+				routes:  [{ path: '/' }, { path: '/about' }, { path: '*', name: '404' }],
 			})).to.deep.equal(wrapSitemap(
 				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
 			));
 		});
 
+		it("ignores routes with a glob in their path", async () => {
+			expect(await generate({
+				baseURL: 'https://website.net',
+				routes:  [{ path: '/' }, { path: '/about' }, { path: '/glob/*' }, { path: '/another/*/glob' }],
+			})).to.deep.equal(wrapSitemap(
+				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url>'
+			));
+		});
+
+		it("include glob routes that have a 'loc' meta property", async () => {
+			expect(await generate({
+				baseURL: 'https://website.net',
+				routes:  [{ path: '/' }, { path: '/about' }, { path: '/lorem/ipsum/*', meta: { sitemap: { loc: '/lorem/ipsum/dolor' } } }],
+			})).to.deep.equal(wrapSitemap(
+				'<url><loc>https://website.net</loc></url><url><loc>https://website.net/about</loc></url><url><loc>https://website.net/lorem/ipsum/dolor</loc></url>'
+			));
+		});
+
 		it("throws an error when dynamic routes are not given slugs", async () => {
 			expect(Promise.resolve(generate({
-				baseURL:   'https://website.net',
-				routes:    [{ path: '/' }, { path: '/about' }, { path: '/user/:id' }],
+				baseURL: 'https://website.net',
+				routes:  [{ path: '/' }, { path: '/about' }, { path: '/user/:id' }],
 			}))).to.be.rejected;
 		});
 
 		it("throws an error if the asynchronously generated slugs are invalid", async () => {
 			expect(Promise.resolve(generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/user/:id',
 					meta: { sitemap: { slugs: async () => 5 } },
 				}]
 			}))).to.be.rejected;
 			expect(Promise.resolve(generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/user/:id',
 					meta: { sitemap: { slugs: async () => [null] } },
 				}]
@@ -607,15 +628,15 @@ describe("single sitemap generation", () => {
 
 		it("throws an error if the parameter of a dynamic route doesn't have an associated slug", async () => {
 			expect(Promise.resolve(generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/user/:id',
 					meta: { sitemap: { slugs: [{ title: 5 }] } },
 				}]
 			}))).to.be.rejected;
 			expect(Promise.resolve(generate({
-				baseURL:   'https://website.net',
-				routes:    [{
+				baseURL: 'https://website.net',
+				routes:  [{
 					path: '/article/:title/:id',
 					meta: { sitemap: { slugs: [{ id: 5 }] } },
 				}]

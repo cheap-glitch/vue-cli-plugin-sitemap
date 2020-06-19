@@ -128,7 +128,7 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
 		/**
 		 * Ignored route
 		 */
-		if (meta.ignoreRoute || route.path === '*') return null;
+		if (meta.ignoreRoute || (route.path.includes('*') && !('loc' in meta))) return null;
 
 		/**
 		 * Static route
