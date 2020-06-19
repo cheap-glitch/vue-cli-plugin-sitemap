@@ -386,7 +386,35 @@ describe("single sitemap generation", () => {
 			]));
 		});
 
-		it("works with multiple and optional parameters", async () => {
+		it("works for multiple parameters", async () => {
+			expect(await generate({
+				baseURL: 'https://website.net',
+				routes:  [{
+					path: '/article/:category/:id/:title',
+					meta: {
+						sitemap: {
+							slugs: [
+								{
+									id:       1,
+									category: 'blog',
+									title:    'my-first-article',
+								},
+								{
+									id:       14,
+									category: 'lifehacks',
+									title:    '3-tricks-to-better-fold-your-socks',
+								},
+							]
+						}
+					}
+				}]
+			})).to.deep.equal(wrapSitemap([
+				'<url><loc>https://website.net/article/blog/1/my-first-article</loc></url>',
+				'<url><loc>https://website.net/article/lifehacks/14/3-tricks-to-better-fold-your-socks</loc></url>',
+			]));
+		});
+
+		it("works with optional and regexp-tested parameters", async () => {
 			expect(await generate({
 				baseURL: 'https://website.net',
 				routes:  [{
