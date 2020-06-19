@@ -123,7 +123,12 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
 
 		const path   = (route.path.startsWith('/') ? route.path : `${parentPath}/${route.path}`).replace(/^\/+/, '');
 		const meta   = { ...parentMeta, ...(route.meta ? (route.meta.sitemap || {}) : {}) };
-		const params = path.match(/:\w+(:?\(.+?\)|\?)?/g);
+		const params = (path.match(/:\w+(:?\(.+?\)|\?)?/g) || []).map(param => ({
+			str:        param,
+			name:       param.slice(1).replace(/\(.+?\)/, '').replace('?', ''),
+			regexp:     /\(.+?\)/.test(param) ? new RegExp(param.match(/\((.+?)\)/)[1]) : null,
+			isOptional: param.endsWith('?'),
+		}));
 
 		/**
 		 * Ignored route
@@ -133,8 +138,8 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
 		/**
 		 * Static route
 		 */
-		if ('loc' in meta) return ('children' in route) ? await generateURLsFromRoutes(route.children, meta.loc, meta) : meta;
-		if (!params)       return ('children' in route) ? await generateURLsFromRoutes(route.children, path,     meta) : { loc: path, ...meta };
+		if ('loc' in meta)  return ('children' in route) ? await generateURLsFromRoutes(route.children, meta.loc, meta) : meta;
+		if (!params.length) return ('children' in route) ? await generateURLsFromRoutes(route.children, path,     meta) : { loc: path, ...meta };
 
 		/**
 		 * Dynamic route
@@ -148,17 +153,20 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
 		return simpleFlat(await Promise.all(slugs.map(async function(slug)
 		{
 			// Wrap the slug in an object if needed
-			if (typeof slug != 'object') slug = { [getParamName(params[0])]: slug };
+			if (typeof slug != 'object') slug = { [params[0].name]: slug };
 
 			// Replace each parameter by its corresponding value
 			const loc = params.reduce(function(result, param)
 			{
-				const paramName = getParamName(param);
+				// Check that the correct slug exists
+				if (param.name in slug === false)
+					throwError(`need slug for param '${param.name}' of route '${route.path}'`);
 
-				if (paramName in slug === false)
-					throwError(`need slug for param '${paramName}' of route '${route.path}'`);
+				// Check that the slug matched a potential regex pattern used to validate the param
+				if (param.regexp && !param.regexp.test(slug[param.name].toString()))
+					throwError(`the slug \`${slug[param.name]}\` for param '${param.name}' doesn't match its regex pattern ${param.regexp.toString()}`);
 
-				return result.replace(param, slug[paramName]);
+				return result.replace(param.str, slug[param.name]);
 			}, path);
 
 			return ('children' in route) ? await generateURLsFromRoutes(route.children, loc, meta) : { loc, ...slug };
@@ -167,14 +175,6 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
 
 	// Filter and flatten the array of URLs
 	return simpleFlat(urls.filter(url => url !== null));
-}
-
-/**
- * Get the clean name of a route path parameter
- */
-function getParamName(param)
-{
-	return param.slice(1).replace(/\(.+?\)/, '').replace('?', '');
 }
 
 /**

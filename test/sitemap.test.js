@@ -643,12 +643,12 @@ describe("single sitemap generation", () => {
 			}))).to.eventually.be.rejected;
 		});
 
-		// it("throws an error when slugs don't match the regexp of their corresponding parameter", async () => {
-		// 	return expect(Promise.resolve(generate({
-		// 		baseURL: 'https://website.net',
-		// 		routes:  [{ path: '/user/:id(\\d+)', meta: { sitemap: { slugs: [1, 2, 'invalid-slug'] } } }],
-		// 	}))).to.eventually.be.rejected;
-		// });
+		it("throws an error when slugs don't match the regex pattern of their corresponding parameter", async () => {
+			return expect(Promise.resolve(generate({
+				baseURL: 'https://website.net',
+				routes:  [{ path: '/user/:id(\\d+)', meta: { sitemap: { slugs: [1, 2, 'invalid-slug'] } } }],
+			}))).to.eventually.be.rejected;
+		});
 
 		it("throws an error if the asynchronously generated slugs are invalid", async () => {
 			return expect(Promise.resolve(generate({
