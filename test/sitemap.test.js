@@ -3,9 +3,9 @@
  * tests/sitemap.test.js
  */
 
-const chai                 = require("chai");
+const chai                 = require('chai');
 const expect               = chai.expect;
-const chaiAsPromised       = require("chai-as-promised");
+const chaiAsPromised       = require('chai-as-promised');
 
 const { generateSitemaps } = require('../src/sitemap');
 const { validateOptions  } = require('../src/validation');
@@ -637,44 +637,51 @@ describe("single sitemap generation", () => {
 		});
 
 		it("throws an error when dynamic routes are not given slugs", async () => {
-			expect(Promise.resolve(generate({
+			return expect(Promise.resolve(generate({
 				baseURL: 'https://website.net',
 				routes:  [{ path: '/' }, { path: '/about' }, { path: '/user/:id' }],
-			}))).to.be.rejected;
+			}))).to.eventually.be.rejected;
 		});
 
+		// it("throws an error when slugs don't match the regexp of their corresponding parameter", async () => {
+		// 	return expect(Promise.resolve(generate({
+		// 		baseURL: 'https://website.net',
+		// 		routes:  [{ path: '/user/:id(\\d+)', meta: { sitemap: { slugs: [1, 2, 'invalid-slug'] } } }],
+		// 	}))).to.eventually.be.rejected;
+		// });
+
 		it("throws an error if the asynchronously generated slugs are invalid", async () => {
-			expect(Promise.resolve(generate({
+			return expect(Promise.resolve(generate({
 				baseURL: 'https://website.net',
 				routes:  [{
 					path: '/user/:id',
 					meta: { sitemap: { slugs: async () => 5 } },
 				}]
-			}))).to.be.rejected;
-			expect(Promise.resolve(generate({
+			}))).to.eventually.be.rejected;
+			return expect(Promise.resolve(generate({
 				baseURL: 'https://website.net',
 				routes:  [{
 					path: '/user/:id',
 					meta: { sitemap: { slugs: async () => [null] } },
 				}]
-			}))).to.be.rejected;
+			}))).to.eventually.be.rejected;
 		});
 
 		it("throws an error if the parameter of a dynamic route doesn't have an associated slug", async () => {
-			expect(Promise.resolve(generate({
+			return expect(Promise.resolve(generate({
 				baseURL: 'https://website.net',
 				routes:  [{
 					path: '/user/:id',
 					meta: { sitemap: { slugs: [{ title: 5 }] } },
 				}]
-			}))).to.be.rejected;
-			expect(Promise.resolve(generate({
+			}))).to.eventually.be.rejected;
+			return expect(Promise.resolve(generate({
 				baseURL: 'https://website.net',
 				routes:  [{
 					path: '/article/:title/:id',
 					meta: { sitemap: { slugs: [{ id: 5 }] } },
 				}]
-			}))).to.be.rejected;
+			}))).to.eventually.be.rejected;
 		});
 	});
 	/**
