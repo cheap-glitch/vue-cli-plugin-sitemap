@@ -655,13 +655,6 @@ describe("single sitemap generation", () => {
 				baseURL: 'https://website.net',
 				routes:  [{
 					path: '/user/:id',
-					meta: { sitemap: { slugs: async () => 5 } },
-				}]
-			}))).to.eventually.be.rejected;
-			return expect(Promise.resolve(generate({
-				baseURL: 'https://website.net',
-				routes:  [{
-					path: '/user/:id',
 					meta: { sitemap: { slugs: async () => [null] } },
 				}]
 			}))).to.eventually.be.rejected;
@@ -673,13 +666,6 @@ describe("single sitemap generation", () => {
 				routes:  [{
 					path: '/user/:id',
 					meta: { sitemap: { slugs: [{ title: 5 }] } },
-				}]
-			}))).to.eventually.be.rejected;
-			return expect(Promise.resolve(generate({
-				baseURL: 'https://website.net',
-				routes:  [{
-					path: '/article/:title/:id',
-					meta: { sitemap: { slugs: [{ id: 5 }] } },
 				}]
 			}))).to.eventually.be.rejected;
 		});
