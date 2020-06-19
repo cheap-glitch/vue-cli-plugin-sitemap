@@ -8,6 +8,8 @@
 	<a href="https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap"><img src="https://codecov.io/gh/cheap-glitch/vue-cli-plugin-sitemap/branch/main/graph/badge.svg" alt="codecov badge"></a>
 </div>
 
+<p></p>
+
 **vue-cli-plugin-sitemap** generates sitemaps for your Vue web apps. You can use
 it on  its own  or integrate  it in  the definition  of the  routes used  in Vue
 Router. Features:
