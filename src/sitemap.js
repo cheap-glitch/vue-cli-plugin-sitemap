@@ -123,7 +123,7 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
 
 		const path   = (route.path.startsWith('/') ? route.path : `${parentPath}/${route.path}`).replace(/^\/+/, '');
 		const meta   = { ...parentMeta, ...(route.meta ? (route.meta.sitemap || {}) : {}) };
-		const params = path.match(/:\w+\??/g);
+		const params = path.match(/:\w+(:?\(.+?\)|\?)?/g);
 
 		/**
 		 * Ignored route
@@ -174,7 +174,7 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
  */
 function getParamName(param)
 {
-	return param.slice(1).replace('?', '');
+	return param.slice(1).replace(/\(.+?\)/, '').replace('?', '');
 }
 
 /**

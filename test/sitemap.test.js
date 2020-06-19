@@ -390,7 +390,7 @@ describe("single sitemap generation", () => {
 			expect(await generate({
 				baseURL: 'https://website.net',
 				routes:  [{
-					path: '/article/:category/:id/:title?',
+					path: '/article/:category/:id(\\d+)/:title?',
 					meta: {
 						sitemap: {
 							slugs: [
