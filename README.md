@@ -24,8 +24,8 @@ Router. Features:
 #### Table of contents
  * [Installation](#installation)
  * [Setup](#setup)
-   * [Use with `vue-router`](#use-with-vue-router)
-   * [Use as a standalone plugin](#use-as-a-standalone-plugin)
+   * [Usage with `vue-router`](#usage-with-vue-router)
+   * [Usage as a standalone plugin](#usage-as-a-standalone-plugin)
  * [CLI](#cli)
    * [CLI options](#cli-options)
  * [Options](#options)
@@ -47,7 +47,7 @@ files will be modified.
 
 ## Setup
 
-### Use with `vue-router`
+### Usage with `vue-router`
 The recommended  way to provide data  to the plugin is  to pass it the  array of
 routes used with `vue-router`. Below is an example of a very basic setup:
 ```javascript
@@ -102,7 +102,7 @@ new Vue({
 }).$mount('#app');
 ```
 
-### Use as a standalone plugin
+### Usage as a standalone plugin
 You can also directly provide some handwritten URLs to the plugin:
 ```javascript
 // vue.config.js
