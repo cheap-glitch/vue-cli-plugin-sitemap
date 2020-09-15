@@ -18,6 +18,8 @@
 
 	"extends": "eslint:recommended",
 
+  "ignorePatterns": ["test-app/**/*.js"],
+
 	"rules": {
 		"no-mixed-spaces-and-tabs":  ["warn", "smart-tabs"],
 		"smarter-tabs/smarter-tabs": "warn"
