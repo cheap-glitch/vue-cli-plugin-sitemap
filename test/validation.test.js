@@ -41,10 +41,10 @@ describe("the validation of the options returns an error when:", () => {
 		expect(() => validate({ baseURL: 'https://missing-something'   })).to.throw();
 		expect(() => validate({ baseURL: '127.0'                       })).to.throw();
 
-		expect(() => validate({ baseURL: 'https://domain.fr'           })).to.not.throw();
-		expect(() => validate({ baseURL: 'http://www.other-domain.fr'  })).to.not.throw();
-		expect(() => validate({ baseURL: 'http://www.website.com:8080' })).to.not.throw();
-		expect(() => validate({ baseURL: 'https://webapp.com:27'       })).to.not.throw();
+		expect(() => validate({ baseURL: 'https://example.fr'          })).to.not.throw();
+		expect(() => validate({ baseURL: 'http://www.example.fr'       })).to.not.throw();
+		expect(() => validate({ baseURL: 'http://www.example.com:8080' })).to.not.throw();
+		expect(() => validate({ baseURL: 'https://example.com:27'      })).to.not.throw();
 		expect(() => validate({ baseURL: 'https://127.0.0.1'           })).to.not.throw();
 		expect(() => validate({ baseURL: 'https://127.0.0.1:8000'      })).to.not.throw();
 	});
@@ -123,8 +123,8 @@ describe("the validation of the options returns an error when:", () => {
 	describe("the routes are invalid, because", () => {
 
 		it("'routes' is not an array", () => {
-			expect(() => validateOptions({ routes: {}   })).to.throw();
-			expect(() => validateOptions({ routes: true })).to.throw();
+			expect(() => validateOptions({ routes: {}                              })).to.throw();
+			expect(() => validateOptions({ routes: true                            })).to.throw();
 			expect(() => validateOptions({ routes: [{ path: '/', children: {}   }] })).to.throw();
 			expect(() => validateOptions({ routes: [{ path: '/', children: true }] })).to.throw();
 		});
@@ -152,21 +152,21 @@ describe("the validation of the options returns an error when:", () => {
 		});
 
 		it("there is a route with an invalid 'loc' property", () => {
-			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: true       } }}] })).to.throw();
-			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: 22         } }}] })).to.throw();
-			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: ['/other'] } }}] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: true                               } }}] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: 22                                 } }}] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: ['/other']                         } }}] })).to.throw();
 			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/', meta: { sitemap: { loc: true       } }}] } ]})).to.throw();
 			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/', meta: { sitemap: { loc: 22         } }}] } ]})).to.throw();
 			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/', meta: { sitemap: { loc: ['/other'] } }}] } ]})).to.throw();
 
-			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: '/other'   } }}] })).to.not.throw();
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: '/other'                           } }}] })).to.not.throw();
 			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/', meta: { sitemap: { loc: '/other'   } }}] } ]})).to.not.throw();
 		});
 
 		it("there is a route with invalid URL properties", () => {
-			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { changefreq: true        } } }] })).to.throw();
-			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { lastmod:    'yesterday' } } }] })).to.throw();
-			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { priority:   72          } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { changefreq: true                                } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { lastmod:    'yesterday'                         } } }] })).to.throw();
+			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { priority:   72                                  } } }] })).to.throw();
 			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/', meta: { sitemap: { changefreq: true        } } }] } ]})).to.throw();
 			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/', meta: { sitemap: { lastmod:    'yesterday' } } }] } ]})).to.throw();
 			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/', meta: { sitemap: { priority:   72          } } }] } ]})).to.throw();
@@ -209,7 +209,7 @@ describe("the validation of the options returns an error when:", () => {
 
 		it("the 'urls' property is not an array", () => {
 			expect(() => validateOptions({ urls: {}                                })).to.throw();
-			expect(() => validateOptions({ urls: 'https://mywebsite.com'           })).to.throw();
+			expect(() => validateOptions({ urls: 'https://example.com'             })).to.throw();
 
 			expect(() => validateOptions({ urls: ['https://www.site.org']          })).to.not.throw();
 			expect(() => validateOptions({ urls: [{ loc: 'https://www.site.org' }] })).to.not.throw();
@@ -220,19 +220,19 @@ describe("the validation of the options returns an error when:", () => {
 			expect(() => validateOptions({ urls: [{ lastmod: '2020-01-01' }]                                   })).to.throw();
 			expect(() => validateOptions({ urls: [{ loc: 'about' }, { changefreq: 'always' }]                  })).to.throw();
 
-			expect(() => validateOptions({ urls: ['https://website.com', { loc: 'https://website.com/about' }] })).to.not.throw();
+			expect(() => validateOptions({ urls: ['https://example.com', { loc: 'https://example.com/about' }] })).to.not.throw();
 		});
 
 		it("the locations are full URIs even though a base URL is provided", () => {
-			expect(() => validateOptions({ baseURL: 'https://domain.com', urls: ['https://domain.com/about']                                })).to.throw();
-			expect(() => validateOptions({ baseURL: 'https://domain.com', urls: [{ loc: 'https://domain.com/about' }]                       })).to.throw();
-			expect(() => validateOptions({ baseURL: 'https://www.awesome-stuff.net', urls: ['https://www.awesome-stuff.net/about']          })).to.throw();
-			expect(() => validateOptions({ baseURL: 'https://www.awesome-stuff.net', urls: [{ loc: 'https://www.awesome-stuff.net/about' }] })).to.throw();
+			expect(() => validateOptions({ baseURL: 'https://example.com',     urls: ['https://example.com/about']              })).to.throw();
+			expect(() => validateOptions({ baseURL: 'https://example.com',     urls: [{ loc: 'https://example.com/about' }]     })).to.throw();
+			expect(() => validateOptions({ baseURL: 'https://www.example.net', urls: ['https://www.example.net/about']          })).to.throw();
+			expect(() => validateOptions({ baseURL: 'https://www.example.net', urls: [{ loc: 'https://www.example.net/about' }] })).to.throw();
 
-			expect(() => validateOptions({ baseURL: 'https://domain.com', urls: ['/about']                                                  })).to.not.throw();
-			expect(() => validateOptions({ baseURL: 'https://domain.com', urls: [{ loc: '/about' }]                                         })).to.not.throw();
-			expect(() => validateOptions({ baseURL: 'https://www.awesome-stuff.net', urls: ['about']                                        })).to.not.throw();
-			expect(() => validateOptions({ baseURL: 'https://www.awesome-stuff.net', urls: [{ loc: 'about' }]                               })).to.not.throw();
+			expect(() => validateOptions({ baseURL: 'https://example.com',     urls: ['/about']                                 })).to.not.throw();
+			expect(() => validateOptions({ baseURL: 'https://example.com',     urls: [{ loc: '/about' }]                        })).to.not.throw();
+			expect(() => validateOptions({ baseURL: 'https://www.example.net', urls: ['about']                                  })).to.not.throw();
+			expect(() => validateOptions({ baseURL: 'https://www.example.net', urls: [{ loc: 'about' }]                         })).to.not.throw();
 		});
 
 		it("the locations are partial URIs even though no base URL is provided", () => {
@@ -243,22 +243,22 @@ describe("the validation of the options returns an error when:", () => {
 		});
 
 		it("there is an URL with invalid URL properties", () => {
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', changefreq: false                    }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', changefreq: {}                       }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', changefreq: 'sometimes'              }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', lastmod: true                        }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', lastmod: 'yesterday'                 }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', priority: 'low'                      }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', priority: 'high'                     }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', priority: 10                         }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { changefreq: false       } }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { changefreq: {}          } }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { changefreq: 'sometimes' } }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { lastmod: true           } }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { lastmod: 'yesterday'    } }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { priority: 'low'         } }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { priority: 'high'        } }] })).to.throw();
-			expect(() => validateOptions({ urls: [{ loc: 'https://website.com', sitemap: { priority: 10            } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', changefreq: false                    }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', changefreq: {}                       }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', changefreq: 'sometimes'              }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', lastmod: true                        }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', lastmod: 'yesterday'                 }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', priority: 'low'                      }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', priority: 'high'                     }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', priority: 10                         }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', sitemap: { changefreq: false       } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', sitemap: { changefreq: {}          } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', sitemap: { changefreq: 'sometimes' } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', sitemap: { lastmod: true           } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', sitemap: { lastmod: 'yesterday'    } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', sitemap: { priority: 'low'         } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', sitemap: { priority: 'high'        } }] })).to.throw();
+			expect(() => validateOptions({ urls: [{ loc: 'https://example.com', sitemap: { priority: 10            } }] })).to.throw();
 		});
 	});
 });

@@ -75,7 +75,7 @@ const routes = require('./src/routes');
 module.exports = {
 	pluginOptions: {
 		sitemap: {
-			baseURL: 'https://website.com',
+			baseURL: 'https://example.com',
 			routes,
 		}
 	}
@@ -111,8 +111,8 @@ module.exports = {
 	pluginOptions: {
 		sitemap: {
 			urls: [
-				'https://website.com/',
-				'https://website.com/about',
+				'https://example.com/',
+				'https://example.com/about',
 			]
 		}
 	}
@@ -174,7 +174,7 @@ sitemap: {
 	// Note: this is required if some routes are provided, because
 	//       every URL in the sitemap must be a full URL that includes
 	//       the protocol and domain
-	baseURL: 'https://webapp.com',
+	baseURL: 'https://example.com',
 
 	// Default meta tags for every URL
 	// These will be overridden by URL-specific tags
@@ -219,7 +219,7 @@ Example with a handwritten URL:
 sitemap: {
 	urls: [
 		{
-			loc:        'https://website.com/about',
+			loc:        'https://example.com/about',
 			lastmod:    'December 22, 2019',
 			priority:    0.8,
 			changefreq: 'daily',
@@ -275,9 +275,9 @@ module.exports = [
 						lastmod:   'February 02, 2020 09:24',
 					},
 					{
-						// Slugs that don't match the
-						// regex pattern of their param
-						// will throw an error
+						// Slugs that don't match the regex
+						// pattern of their parameter will
+						// throw an error
 						id:        'invalid-slug',
 
 						title:     'another-post',
@@ -340,12 +340,12 @@ This example will produce the following sitemap:
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
-		<loc>https://website.com/user/1/profile</loc>
+		<loc>https://example.com/user/1/profile</loc>
 		<priority>0.7</priority>
 		<changefreq>weekly</changefreq>
 	</url>
 	<url>
-		<loc>https://website.com/user/2/profile</loc>
+		<loc>https://example.com/user/2/profile</loc>
 		<priority>0.7</priority>
 		<changefreq>weekly</changefreq>
 	</url>
