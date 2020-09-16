@@ -44,5 +44,8 @@
     "eslint-plugin-smarter-tabs": "^1.1.1",
     "mocha": "^8.1.3",
     "nyc": "^15.1.0"
+  },
+  "peerDependencies": {
+    "esm": "^3.2.25"
   }
 }
