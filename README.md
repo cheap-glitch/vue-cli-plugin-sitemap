@@ -99,7 +99,7 @@ export const routes = [
 import Vue        from 'vue'
 import Router     from 'vue-router'
 import App        from './App.vue'
-import { routes } from './src/routes.js'
+import { routes } from './routes.js'
 
 Vue.use(Router);
 const router = new Router({
