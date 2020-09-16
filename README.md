@@ -49,28 +49,24 @@ files will be modified.
 
 ### Usage with `vue-router`
 The recommended  way to provide data  to the plugin is  to pass it the  array of
-routes used with `vue-router`. Below is an example of a very basic setup:
-```javascript
-// src/routes.js
+routes used by Vue  Router. To do this, you'll need  to separate the declaration
+of  the routes  and  the instantiation  of  the Vue  Router  into two  different
+modules.
 
-module.exports = [
-	{
-		path: '/',
-		name: 'home',
-		component: () => import(/* webpackChunkName: "home" */ './Home')
-	},
-	{
-		path: '/about',
-		name: 'about',
-		component: () => import(/* webpackChunkName: "about" */ './About')
-	},
-]
-```
+Below is a simplified example of this setup, using [`esm`](https://github.com/standard-things/esm)
+to load ES6 modules into `vue.config.js` (this is needed until [#4477](https://github.com/vuejs/vue-cli/issues/4477)
+is implemented). Note that this comes with a few restrictions in `src/routes.js`:
+ * you can import other JS modules, but no `.vue` files because `esm` won't know
+   how to load them (you'll have to rely on dynamic imports using Node's `require()` for the `component` property)
+ * you can't use the `@` placeholder in the inclusion paths, as this is a bit of
+   sugar syntax defined by `vue-loader` to shorten paths when loading files with
+   webpack
 
 ```javascript
 // vue.config.js
 
-const routes = require('./src/routes');
+require = require('esm')(module);
+const { routes } = require('./src/routes.js');
 
 module.exports = {
 	pluginOptions: {
@@ -81,25 +77,38 @@ module.exports = {
 	}
 }
 ```
+```javascript
+// src/routes.js
 
+export const routes = [
+	{
+		path: '/',
+		name: 'home',
+		component: () => import(/* webpackChunkName: "home" */ './views/Home.vue')
+	},
+	{
+		path: '/about',
+		name: 'about',
+		component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+	},
+]
+```
 ```javascript
 // src/main.js
 
-import Vue    from 'vue'
-import Router from 'vue-router'
-
-import App    from './App.vue'
-import routes from './routes'
+import Vue        from 'vue'
+import Router     from 'vue-router'
+import App        from './App.vue'
+import { routes } from './src/routes.js'
 
 Vue.use(Router);
-new Vue({
-	render: h => h(App),
-	router: new Router({
-		mode: 'history',
-		base: process.env.BASE_URL,
-		routes,
-	})
-}).$mount('#app');
+const router = new Router({
+	mode: 'history',
+	base: process.env.BASE_URL,
+	routes,
+});
+
+new Vue({ router, render: h => h(App) }).$mount('#app');
 ```
 
 ### Usage as a standalone plugin
