@@ -1,8 +1,3 @@
-
-/**
- * src/schemas.js
- */
-
 /**
  * Regex to check that the date follows the W3C format
  *
@@ -237,19 +232,16 @@ const optionsSchema = {
 /**
  * Custom validation function for the 'W3CDate' keyword
  */
-function validateW3CDate(data, dataPath, parentData, parentDataPropName)
-{
+function validateW3CDate(data, dataPath, parentData, parentDataPropName) {
 	const errorBase = {
 		keyword: 'W3CDate',
 		params:  {},
 	};
 
 	// If the provided data is a Date object
-	if (Object.prototype.toString.call(data) == "[object Date]")
-	{
+	if (Object.prototype.toString.call(data) == "[object Date]") {
 		// Check the Date object is valid
-		if (isNaN(data.getTime()))
-		{
+		if (isNaN(data.getTime())) {
 			validateW3CDate.errors = [{
 				...errorBase,
 				message: 'the provided Date object is invalid'
@@ -265,8 +257,7 @@ function validateW3CDate(data, dataPath, parentData, parentDataPropName)
 	}
 
 	// If the data is a string
-	if (typeof data == 'string')
-	{
+	if (typeof data == 'string') {
 		// Check that it matches the W3C date format
 		const W3CDateFormat = new RegExp(w3cDatePattern);
 		if (W3CDateFormat.test(data))
@@ -277,8 +268,7 @@ function validateW3CDate(data, dataPath, parentData, parentDataPropName)
 	}
 
 	// If the data is a numeric timestamp
-	if (typeof data == 'number')
-	{
+	if (typeof data == 'number') {
 		// Create a Date object with the data and validate it
 		return validateW3CDate(new Date(data), dataPath, parentData, parentDataPropName);
 	}

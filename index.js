@@ -26,8 +26,7 @@ const chalk                = require('chalk');
 const { validateOptions }  = require('./src/validation.js');
 const { generateSitemaps } = require('./src/sitemap.js');
 
-module.exports = async function(api, vueCliOptions)
-{
+module.exports = async function(api, vueCliOptions) {
 	const options = vueCliOptions ? vueCliOptions.pluginOptions ? (vueCliOptions.pluginOptions.sitemap || null) : null : null;
 
 	/**
@@ -44,10 +43,8 @@ module.exports = async function(api, vueCliOptions)
 				'-o <dir>, --output-dir <dir>': 'Output the sitemap to the specified path instead of the current working directory',
 			},
 		},
-		async function(args)
-		{
-			if (!options)
-			{
+		async function(args) {
+			if (!options) {
 				console.error(`${chalk.black.bgRed(' ERROR ')} Please set up the plugin before using it (more infos at https://github.com/cheap-glitch/vue-cli-plugin-sitemap#setup)`);
 				return;
 			}
@@ -64,13 +61,11 @@ module.exports = async function(api, vueCliOptions)
 	/**
 	 * Modify the 'build' command to generate the sitemap automatically
 	 */
-	if (options)
-	{
+	if (options) {
 		const { build }     = api.service.commands;
 		const buildFunction = build.fn;
 
-		build.fn = async function(...args)
-		{
+		build.fn = async function(...args) {
 			await buildFunction(...args);
 
 			// Don't generate the sitemap if not in production and the option 'productionOnly' is set
@@ -81,20 +76,17 @@ module.exports = async function(api, vueCliOptions)
 	}
 }
 
-async function writeSitemap(options, outputDir)
-{
+async function writeSitemap(options, outputDir) {
 	// Validate options and set default values
 	validateOptions(options, true);
 
 	// Generate the sitemaps and write them to the filesystem
 	const sitemaps = await generateSitemaps(options);
-	Object.keys(sitemaps).forEach(function(filename)
-	{
+	Object.keys(sitemaps).forEach(function(filename) {
 		const output = `${outputDir}/${filename}.xml`;
 
 		// Avoid writing the same sitemap twice when creating two bundles (e.g. using --modern option)
-		if (!fs.existsSync(output))
-		{
+		if (!fs.existsSync(output)) {
 			fs.writeFileSync(output, options.pretty ? sitemaps[filename] : sitemaps[filename].replace(/\t+|\n/g, ''));
 			console.info(`${chalk.black.bgGreen(' DONE ')} Sitemap successfully generated (${output})`);
 		}

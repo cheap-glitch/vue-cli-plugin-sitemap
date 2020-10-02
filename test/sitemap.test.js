@@ -1,8 +1,3 @@
-
-/**
- * tests/sitemap.test.js
- */
-
 const chai                 = require('chai');
 const expect               = chai.expect;
 const chaiAsPromised       = require('chai-as-promised');
@@ -1081,8 +1076,7 @@ describe("multiple sitemaps generation", () => {
  * Call 'generateSitemaps' with some default options
  * Also take care of the removing of the formatting characters
  */
-async function generate(options, pretty = false)
-{
+async function generate(options, pretty = false) {
 	const sitemaps = await generateSitemaps({
 		baseURL:  '',
 		defaults: {},
@@ -1102,16 +1096,14 @@ async function generate(options, pretty = false)
  * Wrap a sitemap inside an object to mimic
  * the output of 'generateSitemaps' with a single sitemap
  */
-function wrapSitemap(sitemap)
-{
+function wrapSitemap(sitemap) {
 	return { sitemap: wrapSitemapXML(sitemap) };
 }
 
 /**
  * Wrap some XML inside the markup of a sitemap
  */
-function wrapSitemapXML(xml)
-{
+function wrapSitemapXML(xml) {
 	return '<?xml version="1.0" encoding="UTF-8"?>'
 	     + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
 	         + (Array.isArray(xml) ? xml.join('') : xml)
@@ -1121,8 +1113,7 @@ function wrapSitemapXML(xml)
 /**
  * Wrap some XML inside the markup of a sitemap index
  */
-function wrapSitemapIndexXML(xml)
-{
+function wrapSitemapIndexXML(xml) {
 	return '<?xml version="1.0" encoding="UTF-8"?>'
 	     + '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
 	         + (Array.isArray(xml) ? xml.join('') : xml)

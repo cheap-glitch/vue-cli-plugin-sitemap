@@ -1,8 +1,3 @@
-
-/**
- * src/validation.js
- */
-
 const AJV             = require('ajv');
 const betterAjvErrors = require('better-ajv-errors');
 
@@ -34,16 +29,14 @@ ajv.addSchema(optionsSchema, 'options.json');
 const slugsValidator   = ajv.compile(slugsSchema);
 const optionsValidator = ajv.compile(optionsSchema);
 
-function throwError(message)
-{
+function throwError(message) {
 	throw new Error(`[vue-cli-plugin-sitemap]: ${message}`);
 }
 
 /**
  * Validate the slugs
  */
-function validateSlugs(slugs, errorMsg)
-{
+function validateSlugs(slugs, errorMsg) {
 	if (!slugsValidator(slugs))
 		throwError(errorMsg);
 }
@@ -51,10 +44,8 @@ function validateSlugs(slugs, errorMsg)
 /**
  * Validate the config and set the default values
  */
-function validateOptions(options, printError = false)
-{
-	if (!optionsValidator(options))
-	{
+function validateOptions(options, printError = false) {
+	if (!optionsValidator(options)) {
 		/* istanbul ignore if */
 		if (printError) console.log(betterAjvErrors(optionsSchema, options, optionsValidator.errors, { indent: 2 }) + '\n');
 

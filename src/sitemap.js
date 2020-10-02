@@ -1,8 +1,3 @@
-
-/**
- * src/sitemap.js
- */
-
 const { throwError, validateSlugs } = require('./validation');
 
 const MAX_NB_URLS = 50000;
@@ -11,8 +6,7 @@ const MAX_NB_URLS = 50000;
  * Generate one or more sitemaps, and an accompanying sitemap index if needed
  * Return an object of text blobs to save to different files ([filename]: [contents])
  */
-async function generateSitemaps(options)
-{
+async function generateSitemaps(options) {
 	// If a base URL is specified, make sure it ends with a slash
 	const baseURL = options.baseURL ? `${options.baseURL.replace(/\/+$/, '')}/` : '';
 
@@ -29,8 +23,7 @@ async function generateSitemaps(options)
 	let sitemaps = [urls];
 
 	// If there is more than 50,000 URLs, split them into several sitemaps
-	if (urls.length > MAX_NB_URLS)
-	{
+	if (urls.length > MAX_NB_URLS) {
 		sitemaps = [];
 		const nb_sitemaps = Math.ceil(urls.length / MAX_NB_URLS);
 
@@ -43,8 +36,7 @@ async function generateSitemaps(options)
 	}
 
 	// Generate the sitemaps
-	await Promise.all(sitemaps.map(async function(urls, index, sitemaps)
-	{
+	await Promise.all(sitemaps.map(async function(urls, index, sitemaps) {
 		const filename  = (sitemaps.length > 1)
 		                ? `sitemap-part-${(index + 1).toString().padStart(sitemaps.length.toString().length, '0')}`
 		                : 'sitemap'
@@ -55,11 +47,9 @@ async function generateSitemaps(options)
 	return blobs;
 }
 
-async function generateSitemapIndexXML(nbSitemaps, options)
-{
+async function generateSitemapIndexXML(nbSitemaps, options) {
 	const sitemaps = [...new Array(nbSitemaps).keys()]
-		.map(function(index)
-		{
+		.map(function(index) {
 			const filename = `sitemap-part-${(index + 1).toString().padStart(nbSitemaps.toString().length, '0')}.xml`;
 
 			return '\t<sitemap>\n'
@@ -73,27 +63,23 @@ async function generateSitemapIndexXML(nbSitemaps, options)
 	     + '</sitemapindex>';
 }
 
-function generateSitemapXML(urls, options)
-{
+function generateSitemapXML(urls, options) {
 	return '<?xml version="1.0" encoding="UTF-8"?>\n'
 	     + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
 	     +     `${urls.map(url => generateURLTag(url, options)).join('')}`
 	     + '</urlset>';
 }
 
-function generateURLTag(url, options)
-{
+function generateURLTag(url, options) {
 	// Create a tag for each meta property
-	const metaTags = ['lastmod', 'changefreq', 'priority'].map(function(tag)
-	{
+	const metaTags = ['lastmod', 'changefreq', 'priority'].map(function(tag) {
 		if (tag in url == false && tag in options.defaults == false)
 			return '';
 
 		let value = (tag in url) ? url[tag] : options.defaults[tag];
 
 		// Fix the bug of whole-number priorities
-		if (tag == 'priority')
-		{
+		if (tag == 'priority') {
 			if (value == 0) value = '0.0';
 			if (value == 1) value = '1.0';
 		}
@@ -104,8 +90,7 @@ function generateURLTag(url, options)
 	return `\t<url>\n\t\t<loc>${url.loc}</loc>\n${metaTags.join('')}\t</url>\n`;
 }
 
-function escapeUrl(url)
-{
+function escapeUrl(url) {
 	return encodeURI(url)
 		.replace('&',  '&amp;')
 		.replace("'", '&apos;')
@@ -114,10 +99,8 @@ function escapeUrl(url)
 		.replace('>',   '&gt;');
 }
 
-async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
-{
-	const urls = await Promise.all(routes.map(async function(route)
-	{
+async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {}) {
+	const urls = await Promise.all(routes.map(async function(route) {
 		// Avoid "contaminating" children route with parent 'loc' property
 		delete parentMeta.loc;
 
@@ -150,14 +133,12 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
 		validateSlugs(slugs, `invalid slug for route '${route.path}'`);
 
 		// Build the array of URLs
-		return simpleFlat(await Promise.all(slugs.map(async function(slug)
-		{
+		return simpleFlat(await Promise.all(slugs.map(async function(slug) {
 			// Wrap the slug in an object if needed
 			if (typeof slug != 'object') slug = { [params[0].name]: slug };
 
 			// Replace each parameter by its corresponding value
-			const loc = params.reduce(function(result, param)
-			{
+			const loc = params.reduce(function(result, param) {
 				// Check that the correct slug exists
 				if (param.name in slug === false)
 					throwError(`need slug for param '${param.name}' of route '${route.path}'`);
@@ -181,10 +162,8 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {})
  * Flatten an array with a depth of 1
  * Don't use flat() to be compatible with Node 10 and under
  */
-function simpleFlat(array)
-{
-	return array.reduce(function(flat, item)
-	{
+function simpleFlat(array) {
+	return array.reduce(function(flat, item) {
 		if (Array.isArray(item))
 			return [...flat, ...item];
 
