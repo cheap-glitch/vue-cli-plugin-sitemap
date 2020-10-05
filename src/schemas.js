@@ -42,18 +42,18 @@ const urlLocSchemas = {
  */
 const urlMetaTagsSchema = {
 	lastmod: {
-		type:        ['object', 'string', 'number'],
-		W3CDate:     true,
+		type:       ['object', 'string', 'number'],
+		W3CDate:    true,
 	},
 	changefreq: {
-		type:        'string',
-		enum:        ['always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never'],
+		type:       'string',
+		enum:       ['always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never'],
 	},
 	priority: {
-		type:        'number',
-		multipleOf:  0.1,
-		minimum:     0.0,
-		maximum:     1.0,
+		type:       'number',
+		multipleOf: 0.1,
+		minimum:    0.0,
+		maximum:    1.0,
 	},
 };
 
@@ -97,29 +97,29 @@ const optionsSchema = {
 	// Set the validation schema of the URL location according to the 'baseURL' option:
 	//  - if set, require the locations to be simple strings and NOT resembling URIs
 	//  - if unset, require the locations to be full URIs
-	if:     { properties: { baseURL: { minLength: 1 } } },
-	then:   { properties: { urls: { items: { ...urlLocSchemas['withBaseURL'],    properties: { loc: urlLocSchemas['withBaseURL']    } } } } },
-	else:   { properties: { urls: { items: { ...urlLocSchemas['withoutBaseURL'], properties: { loc: urlLocSchemas['withoutBaseURL'] } } } } },
+	if:   { properties: { baseURL: { minLength: 1 } } },
+	then: { properties: { urls: { items: { ...urlLocSchemas['withBaseURL'],    properties: { loc: urlLocSchemas['withBaseURL']    } } } } },
+	else: { properties: { urls: { items: { ...urlLocSchemas['withoutBaseURL'], properties: { loc: urlLocSchemas['withoutBaseURL'] } } } } },
 
 	properties: {
 
 		// If some routes are passed, require the 'baseURL' property
-		if:     { properties: { routes:  { minItems:  1 } } },
-		then:   { properties: { baseURL: { minLength: 1 } } },
+		if:   { properties: { routes:  { minItems:  1 } } },
+		then: { properties: { baseURL: { minLength: 1 } } },
 
 		/**
 		 * Global options
 		 * -------------------------------------------------------------
 		 */
 		productionOnly: {
-			type:    'boolean',
+			type: 'boolean',
 			default: false,
 		},
 		outputDir: {
-			type:    'string',
+			type: 'string',
 		},
 		baseURL: {
-			type:    'string',
+			type: 'string',
 			default: '',
 
 			anyOf: [
@@ -128,7 +128,7 @@ const optionsSchema = {
 					maxLength: 0,
 				},
 				{
-					format:  'uri',
+					format: 'uri',
 					pattern: '\\.[a-z]+(?::\\d{1,4})?$',
 				},
 				{
@@ -137,19 +137,23 @@ const optionsSchema = {
 			]
 		},
 		trailingSlash: {
-			type:    'boolean',
+			type: 'boolean',
+			default: false,
+		},
+		hashMode: {
+			type: 'boolean',
 			default: false,
 		},
 		pretty: {
-			type:    'boolean',
+			type: 'boolean',
 			default: false,
 		},
 		// Default URL meta tags
 		defaults: {
-			type:                 'object',
-			properties:           urlMetaTagsSchema,
+			type: 'object',
+			properties: urlMetaTagsSchema,
 			additionalProperties: false,
-			default:              {},
+			default: {},
 		},
 
 		/**
@@ -157,7 +161,7 @@ const optionsSchema = {
 		 * -------------------------------------------------------------
 		 */
 		routes: {
-			type:    'array',
+			type: 'array',
 			default: [],
 
 			items: {
@@ -182,12 +186,12 @@ const optionsSchema = {
 										type: 'string'
 									},
 									ignoreRoute: {
-										type:   'boolean',
+										type: 'boolean',
 										default: false,
 									},
 									slugs: {
 										anyOf: [
-											{ typeof:      'function'          },
+											{ typeof: 'function' },
 											{ instanceof: ['Array', 'Promise'] },
 										],
 
@@ -202,7 +206,7 @@ const optionsSchema = {
 					}
 				},
 				required: ['path'],
-				additionalProperties:  true
+				additionalProperties: true
 			}
 		},
 
@@ -211,7 +215,7 @@ const optionsSchema = {
 		 * -------------------------------------------------------------
 		 */
 		urls: {
-			type:    'array',
+			type: 'array',
 			default: [],
 
 			items: {
@@ -222,7 +226,7 @@ const optionsSchema = {
 					...urlMetaTagsSchema
 				},
 				required: ['loc'],
-				additionalProperties:  false,
+				additionalProperties: false,
 			}
 		},
 	},
@@ -234,8 +238,8 @@ const optionsSchema = {
  */
 function validateW3CDate(data, dataPath, parentData, parentDataPropName) {
 	const errorBase = {
+		params: {},
 		keyword: 'W3CDate',
-		params:  {},
 	};
 
 	// If the provided data is a Date object

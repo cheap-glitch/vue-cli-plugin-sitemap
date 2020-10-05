@@ -8,14 +8,12 @@ const MAX_NB_URLS = 50000;
  */
 async function generateSitemaps(options) {
 	// If a base URL is specified, make sure it ends with a slash
-	const baseURL = options.baseURL ? `${options.baseURL.replace(/\/+$/, '')}/` : '';
+	const baseURL = options.baseURL ? `${options.baseURL.replace(/\/+$/, '')}/${options.hashMode ? '#/' : ''}` : '';
 
 	const seen = {};
 	const urls = [...options.urls.map(url => (typeof url == 'string') ? { loc: url } : url), ...await generateURLsFromRoutes(options.routes)]
-
 		// Generate the location of each URL
 		.map(url => ({...url, loc: escapeUrl(baseURL + url.loc.replace(/^\//, '')).replace(/\/$/, '') + (options.trailingSlash ? '/' : '') }))
-
 		// Remove duplicate URLs (handwritten URLs have preference over routes)
 		.filter(url => Object.prototype.hasOwnProperty.call(seen, url.loc) ? false : (seen[url.loc] = true));
 
@@ -48,14 +46,11 @@ async function generateSitemaps(options) {
 }
 
 async function generateSitemapIndexXML(nbSitemaps, options) {
-	const sitemaps = [...new Array(nbSitemaps).keys()]
-		.map(function(index) {
-			const filename = `sitemap-part-${(index + 1).toString().padStart(nbSitemaps.toString().length, '0')}.xml`;
-
-			return '\t<sitemap>\n'
-			     +     `\t\t<loc>${options.baseURL.replace(/\/$/, '')}/${filename}</loc>\n`
-			     + '\t</sitemap>\n'
-		});
+	const sitemaps = [...Array(nbSitemaps).keys()].map(index =>
+		  '\t<sitemap>\n'
+		+     `\t\t<loc>${options.baseURL.replace(/\/$/, '')}/${`sitemap-part-${(index + 1).toString().padStart(nbSitemaps.toString().length, '0')}.xml`}</loc>\n`
+		+ '\t</sitemap>\n'
+	);
 
 	return '<?xml version="1.0" encoding="UTF-8"?>\n'
 	     + '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
@@ -73,8 +68,9 @@ function generateSitemapXML(urls, options) {
 function generateURLTag(url, options) {
 	// Create a tag for each meta property
 	const metaTags = ['lastmod', 'changefreq', 'priority'].map(function(tag) {
-		if (tag in url == false && tag in options.defaults == false)
+		if (tag in url == false && tag in options.defaults == false) {
 			return '';
+		}
 
 		let value = (tag in url) ? url[tag] : options.defaults[tag];
 
@@ -160,14 +156,15 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {}) 
 
 /**
  * Flatten an array with a depth of 1
- * Don't use flat() to be compatible with Node 10 and under
+ * Don't use `flat()` to be compatible with Node 10 and under
  */
 function simpleFlat(array) {
 	return array.reduce(function(flat, item) {
-		if (Array.isArray(item))
-			return [...flat, ...item];
-
-		flat.push(item);
+		if (Array.isArray(item)) {
+			Array.prototype.push.apply(flat, item);
+		} else {
+			flat.push(item);
+		}
 
 		return flat;
 	}, []);

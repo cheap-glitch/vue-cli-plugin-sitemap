@@ -7,7 +7,7 @@ const { validateOptions  } = require('../src/validation');
 
 chai.use(chaiAsPromised);
 
-describe("single sitemap generation", () => {
+describe("single sitemap", () => {
 
 	/**
 	 * URLs
@@ -70,7 +70,7 @@ describe("single sitemap generation", () => {
 			]));
 		});
 
-		it("adds trailing slashes if the 'trailingSlash' option is set", async () => {
+		it("adds trailing slashes if the `trailingSlash` option is set", async () => {
 			expect(await generate({
 				trailingSlash: true,
 				baseURL:   'https://example.com',
@@ -220,7 +220,7 @@ describe("single sitemap generation", () => {
 			));
 		});
 
-		it("handles routes with a 'loc' property", async () => {
+		it("handles routes with a `loc` property", async () => {
 			expect(await generate({
 				baseURL: 'https://example.com',
 				routes:  [{ path: '/' }, { path: '/complicated/path/here', meta: { sitemap: { loc: '/about' } } }],
@@ -239,14 +239,52 @@ describe("single sitemap generation", () => {
 			]));
 		});
 
-		it("adds trailing slashes if the 'trailingSlash' option is set", async () => {
+		it("adds trailing slashes if the `trailingSlash` option is set", async () => {
 			expect(await generate({
-				baseURL: 'https://example.com',
-				routes:  [{ path: '/' }, { path: '/about' }, { path: '/page/' }],
+				baseURL:       'https://example.com',
+				routes:        [{ path: '/' }, { path: '/about' }, { path: '/page/' }],
 				trailingSlash: true,
 			})).to.deep.equal(wrapSitemap([
-				'<url><loc>https://example.com/</loc></url><url><loc>https://example.com/about/</loc></url>',
+				'<url><loc>https://example.com/</loc></url>',
+				'<url><loc>https://example.com/about/</loc></url>',
 				'<url><loc>https://example.com/page/</loc></url>',
+			]));
+		});
+
+		it("supports hash mode if the option is set", async () => {
+			expect(await generate({
+				baseURL:  'https://example.com',
+				routes:   [{ path: '/' }, { path: '/about' }, { path: '/page' }],
+				hashMode: true,
+			})).to.deep.equal(wrapSitemap([
+				'<url><loc>https://example.com/#</loc></url>',
+				'<url><loc>https://example.com/#/about</loc></url>',
+				'<url><loc>https://example.com/#/page</loc></url>',
+			]));
+		});
+
+		it("supports hash mode if `hashMode` is set to `true`", async () => {
+			expect(await generate({
+				baseURL:  'https://example.com',
+				routes:   [{ path: '/' }, { path: '/about' }, { path: '/page' }],
+				hashMode: true,
+			})).to.deep.equal(wrapSitemap([
+				'<url><loc>https://example.com/#</loc></url>',
+				'<url><loc>https://example.com/#/about</loc></url>',
+				'<url><loc>https://example.com/#/page</loc></url>',
+			]));
+		});
+
+		it("works with both `trailingSlash` and `hashMode`", async () => {
+			expect(await generate({
+				baseURL:       'https://example.com',
+				routes:        [{ path: '/' }, { path: '/about' }, { path: '/page' }],
+				hashMode:      true,
+				trailingSlash: true,
+			})).to.deep.equal(wrapSitemap([
+				'<url><loc>https://example.com/#/</loc></url>',
+				'<url><loc>https://example.com/#/about/</loc></url>',
+				'<url><loc>https://example.com/#/page/</loc></url>',
 			]));
 		});
 
@@ -622,7 +660,7 @@ describe("single sitemap generation", () => {
 			));
 		});
 
-		it("include glob routes that have a 'loc' meta property", async () => {
+		it("include glob routes that have a `loc` meta property", async () => {
 			expect(await generate({
 				baseURL: 'https://example.com',
 				routes:  [{ path: '/' }, { path: '/about' }, { path: '/lorem/ipsum/*', meta: { sitemap: { loc: '/lorem/ipsum/dolor' } } }],
@@ -935,7 +973,7 @@ describe("single sitemap generation", () => {
 			]));
 		});
 
-		it("takes the 'loc' property into account", async () => {
+		it("takes the `loc` property into account", async () => {
 			expect(await generate({
 				baseURL: 'https://example.com',
 				routes:  [{ path: '/', meta: { sitemap: { loc: '/other-path' } }, children: [{ path: 'about' }] }],
@@ -995,7 +1033,7 @@ describe("single sitemap generation", () => {
 	 * {{{
 	 * ---------------------------------------------------------------------
 	 */
-	it("keeps tabs and line breaks when option 'pretty' is specified", async () => {
+	it("keeps tabs and line breaks when option `pretty` is specified", async () => {
 		expect((await generate({
 			baseURL:   'https://example.com',
 			routes:    [{ path: '/about' }],
@@ -1007,7 +1045,7 @@ describe("single sitemap generation", () => {
 	 */
 });
 
-describe("multiple sitemaps generation", () => {
+describe("multiple sitemaps", () => {
 
 	/**
 	 * URLs

@@ -4,10 +4,10 @@ const betterAjvErrors = require('better-ajv-errors');
 const { validateW3CDate, slugsSchema, optionsSchema } = require('./schemas.js');
 
 const ajv = new AJV({
-	useDefaults:         true,
+	useDefaults: true,
 	multipleOfPrecision: 3,
 
-	// Needed for better-ajv-errors
+	// Needed for `better-ajv-errors`
 	jsonPointers: true,
 });
 
@@ -37,20 +37,23 @@ function throwError(message) {
  * Validate the slugs
  */
 function validateSlugs(slugs, errorMsg) {
-	if (!slugsValidator(slugs))
+	if (!slugsValidator(slugs)) {
 		throwError(errorMsg);
+	}
 }
 
 /**
  * Validate the config and set the default values
  */
 function validateOptions(options, printError = false) {
-	if (!optionsValidator(options)) {
-		/* istanbul ignore if */
-		if (printError) console.log(betterAjvErrors(optionsSchema, options, optionsValidator.errors, { indent: 2 }) + '\n');
+	if (optionsValidator(options)) return;
 
-		throwError('invalid configuration');
+	/* istanbul ignore if */
+	if (printError) {
+		console.log(betterAjvErrors(optionsSchema, options, optionsValidator.errors, { indent: 2 }) + '\n');
 	}
+
+	throwError('invalid configuration');
 }
 
 module.exports = {

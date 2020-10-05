@@ -46,23 +46,23 @@ describe("the validation of the options returns an error when:", () => {
 
 	describe("the default URL meta tags are invalid, because", () => {
 
-		it("'defaults' is not an object", () => {
+		it("`defaults` is not an object", () => {
 			expect(() => validate({ defaults: true     })).to.throw();
 			expect(() => validate({ defaults: 'weekly' })).to.throw();
 		});
 
-		it("'defaults' has extraneous properties", () => {
+		it("`defaults` has extraneous properties", () => {
 			expect(() => validate({ defaults: { loc:  '/lorem/ipsum' } })).to.throw();
 			expect(() => validate({ defaults: { path: '/lorem/ipsum' } })).to.throw();
 			expect(() => validate({ defaults: { path: '/lorem/ipsum' } })).to.throw();
 		});
 
-		it("'lastmod' is not a Date object or a string", () => {
+		it("`lastmod` is not a Date object or a string", () => {
 			expect(() => validate({ defaults: { lastmod: true                   } })).to.throw();
 			expect(() => validate({ defaults: { lastmod: { date: '2012-12-21' } } })).to.throw();
 		});
 
-		it("'lastmod' is an invalid Date object", () => {
+		it("`lastmod` is an invalid Date object", () => {
 			expect(() => validate({ defaults: { lastmod: new Date('the first day of the universe')     } })).to.throw();
 			expect(() => validate({ defaults: { lastmod: new Date('last tuesday, when it was raining') } })).to.throw();
 			expect(() => validate({ defaults: { lastmod: new Date('1867/45/90')                        } })).to.throw();
@@ -71,7 +71,7 @@ describe("the validation of the options returns an error when:", () => {
 			expect(() => validate({ defaults: { lastmod: new Date('2019-12-28T21:17:34')               } })).to.not.throw();
 		});
 
-		it("'lastmod' is an invalid date", () => {
+		it("`lastmod` is an invalid date", () => {
 			expect(() => validate({ defaults: { lastmod: 'the first day of the universe'     } })).to.throw();
 			expect(() => validate({ defaults: { lastmod: 'last tuesday, when it was raining' } })).to.throw();
 			expect(() => validate({ defaults: { lastmod: '1867/45/90'                        } })).to.throw();
@@ -80,13 +80,13 @@ describe("the validation of the options returns an error when:", () => {
 			expect(() => validate({ defaults: { lastmod: '2019-12-28T21:17:34'               } })).to.not.throw();
 		});
 
-		it("'lastmod' is an invalid timestamp", () => {
+		it("`lastmod` is an invalid timestamp", () => {
 			expect(() => validate({ defaults: { lastmod: 99999999999999999 } })).to.throw();
 
 			expect(() => validate({ defaults: { lastmod: 1578485452000     } })).to.not.throw();
 		});
 
-		it("'changefreq' is not a valid value", () => {
+		it("`changefreq` is not a valid value", () => {
 			expect(() => validate({ defaults: { changefreq: 25                 } })).to.throw();
 			expect(() => validate({ defaults: { changefreq: 'often'            } })).to.throw();
 			expect(() => validate({ defaults: { changefreq: 'sometimes'        } })).to.throw();
@@ -96,7 +96,7 @@ describe("the validation of the options returns an error when:", () => {
 			expect(() => validate({ defaults: { changefreq: 'never'            } })).to.not.throw();
 		});
 
-		it("'priority' is not a valid value", () => {
+		it("`priority` is not a valid value", () => {
 			expect(() => validate({ defaults: { priority: 'high' } })).to.throw();
 			expect(() => validate({ defaults: { priority: 100    } })).to.throw();
 			expect(() => validate({ defaults: { priority: 100.0  } })).to.throw();
@@ -117,14 +117,14 @@ describe("the validation of the options returns an error when:", () => {
 	 */
 	describe("the routes are invalid, because", () => {
 
-		it("'routes' is not an array", () => {
+		it("`routes` is not an array", () => {
 			expect(() => validateOptions({ routes: {}                              })).to.throw();
 			expect(() => validateOptions({ routes: true                            })).to.throw();
 			expect(() => validateOptions({ routes: [{ path: '/', children: {}   }] })).to.throw();
 			expect(() => validateOptions({ routes: [{ path: '/', children: true }] })).to.throw();
 		});
 
-		it("there is a route with no 'path' property", () => {
+		it("there is a route with no `path` property", () => {
 			expect(() => validate({ routes: [{}                                                            ] })).to.throw();
 			expect(() => validate({ routes: [{ path: '/' }, {}                                             ] })).to.throw();
 			expect(() => validate({ routes: [{ meta: { sitemap: { changefreq: 'weekly' } } }               ] })).to.throw();
@@ -137,7 +137,7 @@ describe("the validation of the options returns an error when:", () => {
 			expect(() => validate({ routes: [{ path: '/', children: [{ path: '/about' }] }                 ] })).to.not.throw();
 		});
 
-		it("there is a route with an invalid 'path' property", () => {
+		it("there is a route with an invalid `path` property", () => {
 			expect(() => validate({ routes: [{ path: 2     }] })).to.throw();
 			expect(() => validate({ routes: [{ path: true  }] })).to.throw();
 			expect(() => validate({ routes: [{ path: ['/'] }] })).to.throw();
@@ -146,7 +146,7 @@ describe("the validation of the options returns an error when:", () => {
 			expect(() => validate({ routes: [{ path: '/', children: [{ path: ['/'] }] }] })).to.throw();
 		});
 
-		it("there is a route with an invalid 'loc' property", () => {
+		it("there is a route with an invalid `loc` property", () => {
 			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: true                               } }}] })).to.throw();
 			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: 22                                 } }}] })).to.throw();
 			expect(() => validate({ routes: [{ path: '/', meta: { sitemap: { loc: ['/other']                         } }}] })).to.throw();
@@ -202,7 +202,7 @@ describe("the validation of the options returns an error when:", () => {
 	 */
 	describe("the URLs are invalid, because", () => {
 
-		it("the 'urls' property is not an array", () => {
+		it("the `urls` property is not an array", () => {
 			expect(() => validateOptions({ urls: {}                                })).to.throw();
 			expect(() => validateOptions({ urls: 'https://example.com'             })).to.throw();
 
@@ -210,7 +210,7 @@ describe("the validation of the options returns an error when:", () => {
 			expect(() => validateOptions({ urls: [{ loc: 'https://www.site.org' }] })).to.not.throw();
 		});
 
-		it("some URLs are missing the 'loc' property", () => {
+		it("some URLs are missing the `loc` property", () => {
 			expect(() => validateOptions({ urls: [{}]                                                          })).to.throw();
 			expect(() => validateOptions({ urls: [{ lastmod: '2020-01-01' }]                                   })).to.throw();
 			expect(() => validateOptions({ urls: [{ loc: 'about' }, { changefreq: 'always' }]                  })).to.throw();
