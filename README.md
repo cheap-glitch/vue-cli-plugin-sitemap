@@ -267,13 +267,12 @@ module.exports = [
 		}
 	},
 	{
-		// Optional and regexp-validated parameters are supported
-		path: '/blog/:category/:id(\\d+)/:post?',
+		// Optional and regex-validated parameters are supported
+		path: '/blog/:category/:id(\\d+)/:title?',
 		meta: {
 			sitemap: {
-				// For dynamic routes with multiple parameters,
-				// each slug must be an object with a key for
-				// each parameter
+				// For dynamic routes with multiple parameters, each slug
+				// must be an object with a key for each parameter
 				slugs: [
 					{
 						id:        1,
@@ -289,11 +288,9 @@ module.exports = [
 						lastmod:   'February 02, 2020 09:24',
 					},
 					{
-						// Slugs that don't match the regex
-						// pattern of their parameter will
-						// throw an error
+						// Slugs that don't match the regex pattern
+						// of their parameter will throw an error
 						id:        'invalid-slug',
-
 						title:     'another-post',
 						category:  'misc',
 					}
@@ -324,8 +321,8 @@ module.exports = [
 		path: '/user/:id',
 		meta: {
 			sitemap: {
-				// Meta properties on parent will be
-				// inherited by their children
+				// The meta properties of parents
+				// will be inherited by their children
 				changefreq: 'monthly',
 				priority:   0.7,
 
@@ -338,8 +335,8 @@ module.exports = [
 				path: 'profile',
 				meta: {
 					sitemap: {
-						// Meta properties on children
-						// override those on parents
+						// The meta properties of children
+						// override those of their parents
 						changefreq: 'weekly',
 					}
 				}
