@@ -57,7 +57,8 @@ Below is a simplified example of this setup, using [`esm`](https://github.com/st
 to load ES6 modules into `vue.config.js` (this is needed until [#4477](https://github.com/vuejs/vue-cli/issues/4477)
 is implemented). Note that this comes with a few restrictions in `src/routes.js`:
  * you can import other JS modules, but no `.vue` files because `esm` won't know
-   how to load them (you'll have to rely on dynamic imports using Node's `require()` for the `component` property)
+   how  to  load  them (you'll  have  to  rely on  dynamic imports  using Node's
+   `require()` for the `component` property)
  * you can't use the `@` placeholder in the inclusion paths, as this is a bit of
    sugar syntax defined by `vue-loader` to shorten paths when loading files with
    webpack
@@ -158,21 +159,25 @@ that must be provided for route-based sitemaps.
 
 ```javascript
 sitemap: {
-	// Only generate during production builds (default: 'false')
+	// Only generate during production builds (default: `false`)
 	productionOnly: true,
 
-	// Define the output directory (default: global 'outputDir')
+	// Define the output directory (default: global `outputDir`)
 	//
 	// Note: the official specification strongly recommends placing
 	//       the sitemap at the root of the website
 	outputDir: '/temp/sitemap',
 
-	// If set to 'true', add a trailing slash at the end of every URL
-	// If set to 'false', always remove it (default: 'false')
+	// If set to `true`, add a trailing slash at the end of every URL
+	// If set to `false`, always remove it (default: `false`)
 	trailingSlash: false,
 
+	// Set to `true` to produce URLs compatible with hash mode
+	// (default: `false`)
+	hashMode: false,
+
 	// Insert line breaks and tabulations to make the generated
-	// file more readable (default: 'false')
+	// file more readable (default: `false`)
 	pretty: true,
 
 	// Define an URL which will serve as a prefix for every URL
