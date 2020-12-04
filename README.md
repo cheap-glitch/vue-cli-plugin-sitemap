@@ -1,4 +1,4 @@
-<p align="center"><img src="./docs/banner.png" alt="banner"></p>
+<div align="center"><img src="./docs/banner.png" alt="banner"></div>
 
 <div align="center"><h1>vue-cli-plugin-sitemap</h1></div>
 
