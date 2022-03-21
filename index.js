@@ -77,6 +77,10 @@ module.exports = async function(api, vueCliOptions) {
 }
 
 async function writeSitemap(options, outputDir) {
+
+	// Resolve if urls is Promise
+	options.urls = await options.urls;
+
 	// Validate options and set default values
 	validateOptions(options, true);
 
