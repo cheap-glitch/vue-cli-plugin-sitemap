@@ -129,6 +129,20 @@ module.exports = {
 }
 ```
 
+#### Usage as a standalone plugin with dynamic urls
+You can also use dynamic urls:
+```javascript
+// vue.config.js
+
+module.exports = {
+	pluginOptions: {
+		sitemap: {
+                        urls: (async () => { return await buildSitemapUrls(); })()
+		}
+	}
+}
+```
+
 If both routes and  URLs are provided, they will be merged  together in a single
 sitemap. In the case of duplicated locations, handwritten URLs will prevail over
 their matching routes.
