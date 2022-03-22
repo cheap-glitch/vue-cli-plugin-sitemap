@@ -134,10 +134,21 @@ You can also use dynamic urls:
 ```javascript
 // vue.config.js
 
+// Async function to get dynamic url
+async function buildSitemapUrls() {
+   const boardList = await fetch('your_api').then(function (response) {
+      return response.json();
+   }).then(function (responseJson) {
+      // It depends on your json format.
+      return responseJson.body.items.map(each => "/your_path/" + each.board.boardWriteId);
+   });
+   return [ '/', '/about'].concat(boardList);
+}
+
 module.exports = {
 	pluginOptions: {
 		sitemap: {
-                        urls: (async () => { return await buildSitemapUrls(); })()
+                        urls: buildSitemapUrls()
 		}
 	}
 }
