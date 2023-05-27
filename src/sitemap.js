@@ -117,8 +117,8 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {}) 
 		/**
 		 * Static route
 		 */
-		if ('loc' in meta)  return ('children' in route) ? await generateURLsFromRoutes(route.children, meta.loc, meta) : meta;
-		if (!params.length) return ('children' in route) ? await generateURLsFromRoutes(route.children, path,     meta) : { loc: path, ...meta };
+		if ('loc' in meta)  return ('children' in route && route.children != null) ? await generateURLsFromRoutes(route.children, meta.loc, meta) : meta;
+		if (!params.length) return ('children' in route && route.children != null) ? await generateURLsFromRoutes(route.children, path,     meta) : { loc: path, ...meta };
 
 		/**
 		 * Dynamic route
@@ -146,7 +146,7 @@ async function generateURLsFromRoutes(routes, parentPath = '', parentMeta = {}) 
 				return result.replace(param.str, slug[param.name]);
 			}, path);
 
-			return ('children' in route) ? await generateURLsFromRoutes(route.children, loc, meta) : { loc, ...slug };
+			return ('children' in route && route.children != null) ? await generateURLsFromRoutes(route.children, loc, meta) : { loc, ...slug };
 		})));
 	}))
 
