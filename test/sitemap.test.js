@@ -670,13 +670,15 @@ describe("single sitemap", () => {
 		});
 
 		it("does not throw for dynamic route with undefined children when given slugs", async () => {
-			return expect(Promise.resolve(generate({
+			return expect(await generate({
 				baseURL: 'https://example.com',
 				routes:  [
 					{ path: '/' }, 
-					{ path: '/something/:alt', children: undefined, meta: { sitemap: { slugs: [{alt: "someting", priority: 0.8}] }}}
+					{ path: '/something/:alt', children: undefined, meta: { sitemap: { slugs: [{alt: "something", priority: 0.8}] }}}
 				],
-			}))).to.eventually.be.any;
+			})).to.deep.equal(wrapSitemap(
+				'<url><loc>https://example.com</loc></url><url><loc>https://example.com/something/something</loc><priority>0.8</priority></url>'
+			));
 		});
 
 		it("throws an error when dynamic routes are not given slugs", async () => {
